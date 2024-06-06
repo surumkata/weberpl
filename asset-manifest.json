@@ -1,0 +1,13 @@
+{
+  "files": {
+    "main.css": "/weberpl/static/css/main.935c907b.css",
+    "main.js": "/weberpl/static/js/main.8e687c68.js",
+    "index.html": "/weberpl/index.html",
+    "main.935c907b.css.map": "/weberpl/static/css/main.935c907b.css.map",
+    "main.8e687c68.js.map": "/weberpl/static/js/main.8e687c68.js.map"
+  },
+  "entrypoints": [
+    "static/css/main.935c907b.css",
+    "static/js/main.8e687c68.js"
+  ]
+}
