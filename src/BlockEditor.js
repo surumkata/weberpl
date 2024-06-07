@@ -36,6 +36,7 @@ function BlockEditor() {
             <Block type="size"/>
             <Block type="position"/>
             <Block type="url"/>
+            <Block type="image"/>
             <Block type="story"/>
         </Category>
         <Category name="Triggers">

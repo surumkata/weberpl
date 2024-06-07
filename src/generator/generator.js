@@ -81,8 +81,13 @@ javascriptGenerator.forBlock['position'] = function(block, generator) {
 
 javascriptGenerator.forBlock['url'] = function(block, generator) {
   var text_url = block.getFieldValue('URL');
-  console.log(text_url)
   return [text_url, javascriptGenerator.ORDER_NONE];
+};
+
+javascriptGenerator.forBlock['image'] = function(block, generator) {
+  var dropdown_image = block.getFieldValue('IMAGE');
+  var code = '/assets/'+dropdown_image+'.png';
+  return [code, javascriptGenerator.ORDER_NONE];
 };
 
 
