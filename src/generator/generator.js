@@ -35,11 +35,11 @@ javascriptGenerator.forBlock['escape_room'] = function(block, generator) {
   
   // Remover os parênteses externos da string
   sizeString = sizeString.slice(1, -1);
-  transitionString = transitionString.replace("}{","},\n{");
+  transitionString = transitionString.replaceAll("}{","},\n{");
   transitionString = "[" + transitionString + "]";
-  scenariosString = scenariosString.replace("}{","},\n{");
+  scenariosString = scenariosString.replaceAll("}{","},\n{");
   scenariosString = "[" + scenariosString + "]"
-  eventsString = eventsString.replace("}{","},\n{");
+  eventsString = eventsString.replaceAll("}{","},\n{");
   eventsString = "[" + eventsString + "]"
 
   // Converter a string para objeto JSON
@@ -104,17 +104,19 @@ javascriptGenerator.forBlock['scenario'] = function(block, generator) {
   var stringViews = generator.statementToCode(block, 'VIEWS');
   var stringObjects = generator.statementToCode(block, 'OBJECTS');
 
-  stringViews = stringViews.replace("}{","},\n{");
+  stringViews = stringViews.replaceAll("}{","},\n{");
   stringViews = "[" + stringViews + "]"
   var viewsObject = JSON.parse(stringViews);
 
-  stringObjects = stringObjects.replace("}{","},\n{");
+  
+  stringObjects = stringObjects.replaceAll("}{","},\n{");
   stringObjects = "[" + stringObjects + "]"
+  console.log(stringObjects)
   var objectsObject = JSON.parse(stringObjects);
 
   var code = {
     'id' : text_id,
-    'intial_view' : text_initial_view,
+    'initial_view' : text_initial_view,
     'views' : viewsObject,
     'objects' : objectsObject
   }
@@ -182,7 +184,7 @@ javascriptGenerator.forBlock['object'] = function(block, generator) {
   var text_initial_view = block.getFieldValue('initial_view');
   var stringViews = generator.statementToCode(block, 'VIEWS');
 
-  stringViews = stringViews.replace("}{", "},\n{");
+  stringViews = stringViews.replaceAll("}{", "},\n{");
   stringViews = "[" + stringViews + "]"
   var viewsObject = JSON.parse(stringViews);
 

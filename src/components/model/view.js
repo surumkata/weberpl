@@ -1,4 +1,4 @@
-export class State {
+export class View {
   constructor(p5,id, src_images, size, position, time_sprite, repeate) {
     this.id = id;
     this.position = position;
@@ -11,7 +11,6 @@ export class State {
 
     for (let i in this.src_images){
       //TODO: colocar assets para funcionar :)
-      console.log(process.env.PUBLIC_URL + this.src_images[i])
       this.images[i] = p5.loadImage(process.env.PUBLIC_URL + this.src_images[i]);
       //console.log(this.src_images[i])
     }

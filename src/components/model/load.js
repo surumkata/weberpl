@@ -1,20 +1,45 @@
-import { State } from './state.js';
+import { View } from './view.js';
 import { Object } from './object.js';
 import {EscapeRoom} from './escape_room.js';
 import {Position,Size} from './utils.js';
 import {Scene} from './scene.js';
 
 const load = (p5,json) => {
-    let map = json.map
+    let scenarios = json.scenarios
+    var er = new EscapeRoom(json.title,new Size(json.size.x,json.size.y))
+    load_scenarios(p5,er,scenarios);
     let events = json.events
-    let sounds = json.sounds
-    console.log(map)
-    //Load the room
-    let er = load_room(p5,map);
+    let transitions = json.transitions
+    //let map = json.map
+    //let events = json.events
+    //let sounds = json.sounds
+    ////Load the room
+    //let er = load_room(p5,map);
     return er;
 }
 
 export {load};
+
+function load_scenarios(p5,er,scenarios){
+    scenarios.forEach(function(scenario){
+        let s = new Scene(scenario.id);
+        s.current_view = scenario.initial_view;
+        scenario.views.forEach(function(view){
+            let sv = new View(p5,view.id,[view.src],er.size,new Position(0,0),0,0);
+            s.add_view(sv);
+        })
+        er.add_scene(s);
+        scenario.objects.forEach(function(object){
+            let o = new Object(object.id,scenario.id,new Position(0,0),new Size(0,0));
+            o.current_view = object.initial_view;
+            object.views.forEach(function(obj_view){
+                let ov = new View(p5,obj_view.id,[obj_view.src],new Size(obj_view.size.x,obj_view.size.y), new Position(obj_view.position.x,obj_view.position.y),0,0)
+                o.add_view(ov);
+            })
+            er.add_object(o);
+        })
+    })
+}
 
 //Função que carrega a sala (cenas, objetos, estados...)
 function load_room(p5,map){
@@ -32,8 +57,8 @@ function load_room(p5,map){
                 let scene_state = scene.states[state_scene_id];
                 let ss_filenames = scene_state.filenames;
                 let ss_initial = scene_state.initial;
-                let ss = new State(p5,state_scene_id,ss_filenames,room_size,new Position(0,0),0,0); //inicializar o estado da cena.
-                s.add_state(ss,ss_initial);
+                let ss = new View(p5,state_scene_id,ss_filenames,room_size,new Position(0,0),0,0); //inicializar o estado da cena.
+                s.add_view(ss,ss_initial);
             }
             er.add_scene(s); //adicionar a cena à escape room
             //percorrer todos os objetos da cena
@@ -59,8 +84,8 @@ function load_room(p5,map){
                     }
 
 
-                    let os = new State(p5,object_state_id,object_state.filenames,size,pos,object_state.time_sprite,object_state.repeate); //inicializar o estado de objeto.
-                    o.add_state(os,object_state.initial); //adicionar estado ao objeto.
+                    let os = new View(p5,object_state_id,object_state.filenames,size,pos,object_state.time_sprite,object_state.repeate); //inicializar o estado de objeto.
+                    o.add_view(os,object_state.initial); //adicionar estado ao objeto.
                 }
                 er.add_object(o); //adicionar o objeto à escape room.
             }

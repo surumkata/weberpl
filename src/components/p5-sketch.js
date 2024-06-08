@@ -1,15 +1,12 @@
 import React from 'react';
 import Sketch from 'react-p5';
-import { EscapeRoom } from './model/escape_room.js';
 import { load } from './model/load.js';
-import test_json from "./test.json"
 
 function P5Sketch(json) {
-    console.log(test_json);
     var escape_room;
 
     const preload = (p5) => {
-        escape_room = load(p5,test_json);
+        escape_room = load(p5,json.json);
       }
 
     const setup = (p5, canvasParentRef) => {

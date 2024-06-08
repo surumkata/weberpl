@@ -13,7 +13,6 @@ function EscapeRoomPage() {
 
   try {
     var escape_room = JSON.parse(atob(data));
-    //console.log(escape_room)
   }
   catch {
     console.log("Não foi possivel dar parse no JSON.")

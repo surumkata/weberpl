@@ -106,7 +106,7 @@ Blockly.Blocks['image'] = {
     init: function() {
       this.appendDummyInput()
           .appendField("image")
-          .appendField(new Blockly.FieldDropdown([["safe","cofre"], ["open_safe","open_cofre"], ["door","door"], ["open_door","open_door"], ["key","key"], ["active_key","active_key"], ["note","nota"], ["note_zoom","nota_nova"], ["magnifying_glass","lupa"], ["active_magnifying glass","active_lupa"]]), "IMAGE");
+          .appendField(new Blockly.FieldDropdown([["room","room"],["safe","cofre"], ["open_safe","open_cofre"], ["door","door"], ["open_door","open_door"], ["key","key"], ["active_key","active_key"], ["note","nota"], ["note_zoom","nota_nova"], ["magnifying_glass","lupa"], ["active_magnifying glass","active_lupa"]]), "IMAGE");
       this.setInputsInline(false);
       this.setOutput(true, "url");
       this.setColour(20);
