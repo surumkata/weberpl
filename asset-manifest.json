@@ -1,13 +1,13 @@
 {
   "files": {
-    "main.css": "/weberpl/static/css/main.1b45c7ab.css",
-    "main.js": "/weberpl/static/js/main.27c5fbbe.js",
+    "main.css": "/weberpl/static/css/main.3a9deb26.css",
+    "main.js": "/weberpl/static/js/main.84591d31.js",
     "index.html": "/weberpl/index.html",
-    "main.1b45c7ab.css.map": "/weberpl/static/css/main.1b45c7ab.css.map",
-    "main.27c5fbbe.js.map": "/weberpl/static/js/main.27c5fbbe.js.map"
+    "main.3a9deb26.css.map": "/weberpl/static/css/main.3a9deb26.css.map",
+    "main.84591d31.js.map": "/weberpl/static/js/main.84591d31.js.map"
   },
   "entrypoints": [
-    "static/css/main.1b45c7ab.css",
-    "static/js/main.27c5fbbe.js"
+    "static/css/main.3a9deb26.css",
+    "static/js/main.84591d31.js"
   ]
 }
