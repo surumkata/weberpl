@@ -38,9 +38,6 @@ Blockly.Blocks['escape_room'] = {
         .appendField("Escape Room");
     this.appendDummyInput()
         .appendField(new Blockly.FieldTextInput("My Escape Room"), "TITLE");
-    this.appendValueInput("SIZE")
-        .setCheck("size")
-        .appendField("size : ");
     this.appendStatementInput("SCENARIOS")
         .setCheck("scenario")
         .appendField("scenarios : ");
@@ -155,22 +152,24 @@ Blockly.Blocks['scenario'] = {
 };
 
 Blockly.Blocks['event'] = {
-  init: function() {
-    this.appendDummyInput()
-        .appendField("Event");
-    this.appendValueInput("IF")
-        .setCheck("trigger")
-        .appendField("if");
-    this.appendValueInput("DO")
-        .setCheck("action")
-        .appendField("do");
-    this.setPreviousStatement(true, "event");
-    this.setNextStatement(true, "event");
-    this.setColour(60);
- this.setTooltip("");
- this.setHelpUrl("");
-  }
-};
+    init: function() {
+      this.appendDummyInput()
+          .appendField("Event");
+      this.appendDummyInput()
+          .appendField(new Blockly.FieldTextInput("My Event"), "ID");
+      this.appendValueInput("IF")
+          .setCheck("trigger")
+          .appendField("if");
+      this.appendValueInput("DO")
+          .setCheck("action")
+          .appendField("do");
+      this.setPreviousStatement(true, "event");
+      this.setNextStatement(true, "event");
+      this.setColour(60);
+   this.setTooltip("");
+   this.setHelpUrl("");
+    }
+  };
 
 Blockly.Blocks['event_do'] = {
   init: function() {

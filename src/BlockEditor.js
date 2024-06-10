@@ -4,13 +4,13 @@ import BlocklyComponent, {Category, Block, Value, Field, Shadow} from './Blockly
 
 import './blocks/customblocks';
 import './generator/generator';
+import './BlockEditor.css'
 
 function BlockEditor() {
 
   
 
   return (
-    <div className="App">
         <BlocklyComponent
           readOnly={false}
           trashcan={true}
@@ -21,7 +21,61 @@ function BlockEditor() {
             wheel: true,
           }}
           initialXml={`
-          <xml><block type="escape_room" x="10" y="10"></block></xml>
+<xml>
+  <block type="escape_room" x="10" y="10">
+    <statement name="SCENARIOS">
+      <block type="scenario">
+        <statement name="VIEWS">
+            <block type="view">
+              <field name="ID">initial_view</field>
+              <value name="SIZE">
+                <block type="size">
+                  <field name="x">0</field>
+                  <field name="y">0</field>
+                </block>
+              </value>
+              <value name="POSITION">
+                <block type="position">
+                  <field name="x">0</field>
+                  <field name="y">0</field>
+                </block>
+              </value>
+              <value name="IMAGE">
+                <block type="image">
+                </block>
+              </value>
+            </block>
+        </statement>
+        <statement name="OBJECTS">
+            <block type="object">
+              <statement name="VIEWS">
+                  <block type="view">
+                    <field name="ID">initial_view</field>
+                    <value name="SIZE">
+                      <block type="size">
+                        <field name="x">225</field>
+                        <field name="y">300</field>
+                      </block>
+                    </value>
+                    <value name="POSITION">
+                      <block type="position">
+                        <field name="x">600</field>
+                        <field name="y">342</field>
+                      </block>
+                    </value>
+                    <value name="IMAGE">
+                      <block type="image">
+                        <field name="IMAGE">door</field>
+                      </block>
+                    </value>
+                  </block>
+              </statement>
+            </block>
+        </statement>
+      </block>
+    </statement>
+  </block>
+</xml>
       `}>
         <Category name="Classes">
             <Block type="scenario"/>
@@ -73,7 +127,6 @@ function BlockEditor() {
             <Block type="challenge_sequence"/>
         </Category>
         </BlocklyComponent>
-    </div>
   );
 }
 

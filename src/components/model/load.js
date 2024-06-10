@@ -6,7 +6,7 @@ import {Scene} from './scene.js';
 
 const load = (p5,json) => {
     let scenarios = json.scenarios
-    var er = new EscapeRoom(json.title,new Size(json.size.x,json.size.y))
+    var er = new EscapeRoom(json.title,new Size(1300,700))
     load_scenarios(p5,er,scenarios);
     let events = json.events
     let transitions = json.transitions

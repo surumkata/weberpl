@@ -28,33 +28,42 @@ import {javascriptGenerator, Order} from 'blockly/javascript';
 
 javascriptGenerator.forBlock['escape_room'] = function(block, generator) {
   var text_title = block.getFieldValue('TITLE');
-  var sizeString = generator.valueToCode(block, 'SIZE', Order.ATOMIC);
   var scenariosString = generator.statementToCode(block, 'SCENARIOS');
   var eventsString = generator.statementToCode(block, 'EVENTS');
   var transitionString = generator.statementToCode(block, 'TRANSITIONS');
-  
-  // Remover os parênteses externos da string
-  sizeString = sizeString.slice(1, -1);
-  transitionString = transitionString.replaceAll("}{","},\n{");
-  transitionString = "[" + transitionString + "]";
-  scenariosString = scenariosString.replaceAll("}{","},\n{");
-  scenariosString = "[" + scenariosString + "]"
-  eventsString = eventsString.replaceAll("}{","},\n{");
-  eventsString = "[" + eventsString + "]"
 
-  // Converter a string para objeto JSON
-  var sizeObject = JSON.parse(sizeString);
+  
+  // Substituir delimitadores entre objetos JSON e envolver em um array
+  if (transitionString) {
+    transitionString = "[" + transitionString.replaceAll("}{", "},{") + "]";
+  } else {
+    transitionString = "[]";
+  }
+
+  if (scenariosString) {
+    scenariosString = "[" + scenariosString.replaceAll("}{", "},{") + "]";
+  } else {
+    scenariosString = "[]";
+  }
+
+  if (eventsString) {
+    eventsString = "[" + eventsString.replaceAll("}{", "},{") + "]";
+  } else {
+    eventsString = "[]";
+  }
+
+  // Converter as strings JSON para objetos
   var transitionObject = JSON.parse(transitionString);
   var scenariosObject = JSON.parse(scenariosString);
   var eventsObject = JSON.parse(eventsString);
 
   var code = {
     "title" : text_title,
-    "size" : sizeObject,
     "scenarios" : scenariosObject,
     "events" : eventsObject,
     "transitions" : transitionObject
   };
+
   return JSON.stringify(code, null, 2); // Retornar o JSON como string formatada
 };
 
@@ -127,21 +136,23 @@ javascriptGenerator.forBlock['scenario'] = function(block, generator) {
 
 
 javascriptGenerator.forBlock['event'] = function(block, generator) {
-var ifString = generator.valueToCode(block, 'IF', Order.ATOMIC);
-var doString = generator.valueToCode(block, 'DO', Order.ATOMIC);
+  var text_id = block.getFieldValue('ID');
+  var ifString = generator.valueToCode(block, 'IF', Order.ATOMIC);
+  var doString = generator.valueToCode(block, 'DO', Order.ATOMIC);
 
-ifString = ifString.slice(1, -1);
-var ifObject = JSON.parse(ifString);
+  ifString = ifString.slice(1, -1);
+  var ifObject = JSON.parse(ifString);
 
-doString = doString.slice(1,-1);
-doString = "[" + doString + "]";
-var doObject = JSON.parse(doString);
+  doString = doString.slice(1,-1);
+  doString = "[" + doString + "]";
+  var doObject = JSON.parse(doString);
 
-var code = {
-  "preconditions" : ifObject,
-  "posconditions" : doObject
-}
-return JSON.stringify(code, null, 2);
+  var code = {
+    "id" : text_id,
+    "preconditions" : ifObject,
+    "posconditions" : doObject
+  }
+  return JSON.stringify(code, null, 2);
 };
 
 javascriptGenerator.forBlock['event_do'] = function(block, generator) {

@@ -1,0 +1,11 @@
+/* P5Sketch.css */
+
+.sketch-container {
+    display: flex;
+    justify-content: center;
+    align-items: center;
+    height: 100vh; /* Faz com que o contêiner ocupe toda a altura da janela */
+    width: 100vw;  /* Faz com que o contêiner ocupe toda a largura da janela */
+    box-sizing: border-box; /* Garante que o padding e border são incluídos nas dimensões do contêiner */
+    background-color: #010105!important;
+}

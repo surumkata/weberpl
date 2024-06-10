@@ -1,6 +1,5 @@
 import React from 'react';
 
-
 import './blocks/customblocks';
 import './generator/generator';
 import { useParams } from 'react-router-dom';
@@ -19,11 +18,7 @@ function EscapeRoomPage() {
   }
 
   return (
-    <div className='container'>
-      <div className='sketch'>
         <P5Sketch json={escape_room} />
-      </div>
-    </div>
   );
 }
 

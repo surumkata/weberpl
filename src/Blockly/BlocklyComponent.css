@@ -1,6 +1,12 @@
 #blocklyDiv {
-  height: 50%;
-  width: 100%;
+  height: 100%;
+  width: 50%;
   position: absolute;
   bottom: 0;
+}
+
+.container-buttons {
+  position: absolute;
+  left: 60%;
+  top: 2%;
 }

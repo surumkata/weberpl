@@ -20,7 +20,64 @@ function BlocklyComponent(props) {
 
   function addEscapeRoomBlock(workspace) {
     // Cria um novo bloco "escape_room"
-    var xmlText = '<xml><block type="escape_room" x="10" y="10"></block></xml>';
+    var xmlText = ```
+<xml>
+  <block type="escape_room" x="10" y="10">
+    <statement name="SCENARIOS">
+      <block type="scenario">
+        <statement name="VIEWS">
+            <block type="view">
+              <field name="ID">initial_view</field>
+              <value name="SIZE">
+                <block type="size">
+                  <field name="x">0</field>
+                  <field name="y">0</field>
+                </block>
+              </value>
+              <value name="POSITION">
+                <block type="position">
+                  <field name="x">0</field>
+                  <field name="y">0</field>
+                </block>
+              </value>
+              <value name="IMAGE">
+                <block type="image">
+
+                </block>
+              </value>
+            </block>
+        </statement>
+        <statement name="OBJECTS">
+            <block type="object">
+              <statement name="VIEWS">
+                  <block type="view">
+                    <field name="ID">initial_view</field>
+                    <value name="SIZE">
+                      <block type="size">
+                        <field name="x">225</field>
+                        <field name="y">300</field>
+                      </block>
+                    </value>
+                    <value name="POSITION">
+                      <block type="position">
+                        <field name="x">600</field>
+                        <field name="y">342</field>
+                      </block>
+                    </value>
+                    <value name="IMAGE">
+                      <block type="image">
+                        <field name="IMAGE">door</field>
+                      </block>
+                    </value>
+                  </block>
+              </statement>
+            </block>
+        </statement>
+      </block>
+    </statement>
+  </block>
+</xml>
+```;
     var xml = Blockly.utils.xml.textToDom(xmlText);
     Blockly.Xml.domToWorkspace(xml, workspace.current);
 
@@ -127,17 +184,19 @@ function BlocklyComponent(props) {
 
   return (
     <React.Fragment>
-      <button onClick={generateCode}>Convert</button>
-      <button onClick={exportBlocks}>Exportar Blocos</button>
-      <input onChange={importBlocks} type="file" accept=".xml"/>
-      <div ref={blocklyDiv} id="blocklyDiv" />
-      <div style={{display: 'none'}} ref={toolbox}>
-        {props.children}
-      </div>
-      { haveData && (
-        <Link to={`/escape_room/${data.current}`} >EscapeRoom</Link>
-      )
-      }
+        <div ref={blocklyDiv} id="blocklyDiv" />
+        <div style={{display: 'none'}} ref={toolbox}>
+          {props.children}
+        </div>
+        <div className="container-buttons">
+          <button onClick={generateCode}>Convert</button>
+          <button onClick={exportBlocks}>Exportar Blocos</button>
+          <input onChange={importBlocks} type="file" accept=".xml"/>
+          { haveData && (
+            <Link to={`/escape_room/${data.current}`} >EscapeRoom</Link>
+          )
+          }
+        </div>
     </React.Fragment>
   );
 }
