@@ -23,7 +23,12 @@ export class EscapeRoom {
     draw(p5){
       //Desenhar cena atual
       let current_scene = this.er_state.current_scene;
-      this.scenes[current_scene].draw(p5);
+      if (current_scene in this.scenes){
+        this.scenes[current_scene].draw(p5);
+      }
+      else {
+        return;
+      }
       
       //Desenhar objetos dessa cena
       for (var object_id in this.objects){

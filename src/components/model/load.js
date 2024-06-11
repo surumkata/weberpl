@@ -5,7 +5,14 @@ import {Position,Size} from './utils.js';
 import {Scene} from './scene.js';
 
 const load = (p5,json) => {
+    if (!json) {
+        console.log("ola")
+        return undefined;
+    }
     let scenarios = json.scenarios
+    if (!scenarios) {
+        scenarios = []
+    }
     var er = new EscapeRoom(json.title,new Size(1300,700))
     load_scenarios(p5,er,scenarios);
     let events = json.events

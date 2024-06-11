@@ -10,3 +10,9 @@
   left: 60%;
   top: 2%;
 }
+
+.scene-container{
+  position: absolute;
+  left: 60%;
+  top: 8%;
+}

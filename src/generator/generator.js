@@ -113,16 +113,27 @@ javascriptGenerator.forBlock['scenario'] = function(block, generator) {
   var stringViews = generator.statementToCode(block, 'VIEWS');
   var stringObjects = generator.statementToCode(block, 'OBJECTS');
 
-  stringViews = stringViews.replaceAll("}{","},\n{");
-  stringViews = "[" + stringViews + "]"
-  var viewsObject = JSON.parse(stringViews);
-
+  if(stringViews) {
+    stringViews = stringViews.replaceAll("}{","},\n{");
+    stringViews = "[" + stringViews + "]"
+  }
+  else {
+    stringViews = "[]"
+  }
   
-  stringObjects = stringObjects.replaceAll("}{","},\n{");
-  stringObjects = "[" + stringObjects + "]"
-  console.log(stringObjects)
+  
+  if(stringObjects) {
+    stringObjects = stringObjects.replaceAll("}{","},\n{");
+    stringObjects = "[" + stringObjects + "]"
+  }
+  else {
+    stringObjects = "[]"
+  }
+  
+  
+  var viewsObject = JSON.parse(stringViews);
   var objectsObject = JSON.parse(stringObjects);
-
+  
   var code = {
     'id' : text_id,
     'initial_view' : text_initial_view,
@@ -140,11 +151,23 @@ javascriptGenerator.forBlock['event'] = function(block, generator) {
   var ifString = generator.valueToCode(block, 'IF', Order.ATOMIC);
   var doString = generator.valueToCode(block, 'DO', Order.ATOMIC);
 
-  ifString = ifString.slice(1, -1);
+  if (ifString) {
+    ifString = ifString.slice(1, -1);
+  } 
+  else {
+    ifString = "{}"
+  }
+  
+  if (doString) {
+    doString = doString.slice(1,-1);
+    doString = "[" + doString + "]";
+  }
+  else {
+    doString = "[]"
+  }
+  
+  
   var ifObject = JSON.parse(ifString);
-
-  doString = doString.slice(1,-1);
-  doString = "[" + doString + "]";
   var doObject = JSON.parse(doString);
 
   var code = {
@@ -156,17 +179,22 @@ javascriptGenerator.forBlock['event'] = function(block, generator) {
 };
 
 javascriptGenerator.forBlock['event_do'] = function(block, generator) {
-var doString = generator.valueToCode(block, 'DO', Order.ATOMIC);
+  var doString = generator.valueToCode(block, 'DO', Order.ATOMIC);
 
-doString = doString.slice(1,-1);
-doString = "[" + doString + "]";
-var doObject = JSON.parse(doString);
+  if (doString) {
+    doString = doString.slice(1,-1);
+    doString = "[" + doString + "]";
+  }
+  else {
+    doString = "[]"
+  }
+  var doObject = JSON.parse(doString);
 
-var code = {
-  "posconditions" : doObject
-}
+  var code = {
+    "posconditions" : doObject
+  }
 
-return [JSON.stringify(code, null, 2), javascriptGenerator.ORDER_NONE];
+  return [JSON.stringify(code, null, 2), javascriptGenerator.ORDER_NONE];
 };
 
 //Transitions Array Block
@@ -195,8 +223,14 @@ javascriptGenerator.forBlock['object'] = function(block, generator) {
   var text_initial_view = block.getFieldValue('initial_view');
   var stringViews = generator.statementToCode(block, 'VIEWS');
 
-  stringViews = stringViews.replaceAll("}{", "},\n{");
-  stringViews = "[" + stringViews + "]"
+  if (stringViews){
+    stringViews = stringViews.replaceAll("}{", "},\n{");
+    stringViews = "[" + stringViews + "]"
+  }
+  else {
+    stringViews = "[]"
+  }
+
   var viewsObject = JSON.parse(stringViews);
 
   var code = {
@@ -216,9 +250,24 @@ javascriptGenerator.forBlock['view'] = function(block, generator) {
   var posString = generator.valueToCode(block, 'POSITION', Order.ATOMIC);
   var sizeString = generator.valueToCode(block, 'SIZE', Order.ATOMIC);
 
-  sizeString = sizeString.slice(1, -1);
-  posString = posString.slice(1,-1);
-  value_image = value_image.slice(1,-1);
+  if (sizeString) {
+    sizeString = sizeString.slice(1, -1);
+  }
+  else {
+    sizeString = "{'x': 0,'y' : 0}"
+  }
+  if (posString) {
+    posString = posString.slice(1, -1);
+  }
+  else {
+    posString = "{'x': 0,'y' : 0}"
+  }
+  if (value_image) {
+    value_image = value_image.slice(1,-1);
+  }
+  else{
+    value_image = ""
+  }
   // Converter a string para objeto JSON
   var sizeObject = JSON.parse(sizeString);
   var posObject = JSON.parse(posString);
@@ -240,10 +289,25 @@ javascriptGenerator.forBlock['view2'] = function(block, generator) {
   var posString = generator.valueToCode(block, 'POSITION', Order.ATOMIC);
   var sizeString = generator.valueToCode(block, 'SIZE', Order.ATOMIC);
 
-  sizeString = sizeString.slice(1, -1);
-  posString = posString.slice(1,-1);
-  value_image = value_image.slice(1,-1);
-  // Converter a string para objeto JSON
+  if (sizeString) {
+    sizeString = sizeString.slice(1, -1);
+  }
+  else {
+    sizeString = "{'x': 0,'y' : 0}"
+  }
+  if (posString) {
+    posString = posString.slice(1, -1);
+  }
+  else {
+    posString = "{'x': 0,'y' : 0}"
+  }
+  if (value_image) {
+    value_image = value_image.slice(1,-1);
+  }
+  else{
+    value_image = ""
+  }
+
   var sizeObject = JSON.parse(sizeString);
   var posObject = JSON.parse(posString);
 
@@ -280,8 +344,19 @@ javascriptGenerator.forBlock['andpos'] = function(block, generator) {
 var action1String = generator.valueToCode(block, 'ACTION1', Order.ATOMIC);
 var action2String = generator.valueToCode(block, 'ACTION2', Order.ATOMIC);
 
-action1String = action1String.slice(1,-1);
-action2String = action2String.slice(1,-1);
+if (action1String) {
+  action1String = action1String.slice(1,-1);
+}
+else {
+  action1String = "{}"
+}
+if (action2String) {
+  action2String = action2String.slice(1,-1);
+}
+else {
+  action2String = "{}"
+}
+
 
 var code = action1String + "," + action2String;
 
@@ -293,8 +368,20 @@ javascriptGenerator.forBlock['andpre'] = function(block, generator) {
 var trigger1String = generator.valueToCode(block, 'TRIGGER1', Order.ATOMIC);
 var trigger2String = generator.valueToCode(block, 'TRIGGER2', Order.ATOMIC);
 
-trigger1String = trigger1String.slice(1,-1);
-trigger2String = trigger2String.slice(1,-1);
+if (trigger1String){
+  trigger1String = trigger1String.slice(1,-1);
+}
+else {
+  trigger1String = "{}"
+}
+
+if (trigger2String) {
+  trigger2String = trigger2String.slice(1,-1);
+}
+else {
+  trigger2String = "{}"
+}
+
 
 var trigger1Object = JSON.parse(trigger1String);
 var trigger2Object = JSON.parse(trigger2String);
@@ -313,8 +400,20 @@ javascriptGenerator.forBlock['or'] = function(block, generator) {
 var trigger1String = generator.valueToCode(block, 'TRIGGER1', Order.ATOMIC);
 var trigger2String = generator.valueToCode(block, 'TRIGGER2', Order.ATOMIC);
 
-trigger1String = trigger1String.slice(1,-1);
-trigger2String = trigger2String.slice(1,-1);
+if (trigger1String){
+  trigger1String = trigger1String.slice(1,-1);
+}
+else {
+  trigger1String = "{}"
+}
+
+if (trigger2String) {
+  trigger2String = trigger2String.slice(1,-1);
+}
+else {
+  trigger2String = "{}"
+}
+;
 
 var trigger1Object = JSON.parse(trigger1String);
 var trigger2Object = JSON.parse(trigger2String);
@@ -331,7 +430,16 @@ return [JSON.stringify(code, null, 2), javascriptGenerator.ORDER_NONE];
 
 javascriptGenerator.forBlock['parenteses'] = function(block, generator) {
 var triggerString = generator.valueToCode(block, 'TRIGGER', Order.ATOMIC);
-triggerString = triggerString.slice(1,-1);
+
+if (triggerString){
+  triggerString = triggerString.slice(1,-1);
+}
+else {
+  triggerString = "{}"
+}
+
+
+
 
 return [triggerString, javascriptGenerator.ORDER_NONE];
 };
@@ -451,7 +559,12 @@ return [JSON.stringify(code, null, 2), javascriptGenerator.ORDER_NONE];
 javascriptGenerator.forBlock['poscond_comeca_des'] = function(block, generator) {
 var challengeString = generator.valueToCode(block, 'CHALLENGE', Order.ATOMIC);
 
-challengeString = challengeString.slice(1,-1);
+if (challengeString) {
+  challengeString = challengeString.slice(1,-1);
+}
+else {
+  challengeString = "{}"
+}
 
 return [challengeString, javascriptGenerator.ORDER_NONE];
 };
@@ -568,8 +681,18 @@ var answer = block.getFieldValue('ANSWER');
 var sucessString = generator.valueToCode(block, 'SUCESS', Order.ATOMIC);
 var failString = generator.valueToCode(block, 'FAIL', Order.ATOMIC);
 
-sucessString = sucessString.slice(1,-1);
-failString = failString.slice(1,-1);
+if(sucessString){
+  sucessString = sucessString.slice(1,-1);
+}
+else {
+  sucessString = "{}"
+}
+if (failString){
+  failString = failString.slice(1,-1);
+}
+else {
+  failString = "{}"
+}
 
 var sucess = JSON.parse(sucessString);
 var fail = JSON.parse(failString);
@@ -591,8 +714,18 @@ var trigger_object = block.getFieldValue('TRIGGER_OBJECT');
 var sucessString = generator.valueToCode(block, 'SUCESS', Order.ATOMIC);
 var failString = generator.valueToCode(block, 'FAIL', Order.ATOMIC);
 
-sucessString = sucessString.slice(1,-1);
-failString = failString.slice(1,-1);
+if(sucessString){
+  sucessString = sucessString.slice(1,-1);
+}
+else {
+  sucessString = "{}"
+}
+if (failString){
+  failString = failString.slice(1,-1);
+}
+else {
+  failString = "{}"
+}
 
 var sucess = JSON.parse(sucessString);
 var fail = JSON.parse(failString);
@@ -616,8 +749,18 @@ var wrong_answer_3 = block.getFieldValue('WRONG_ANSWER_3');
 var sucessString = generator.valueToCode(block, 'SUCESS', Order.ATOMIC);
 var failString = generator.valueToCode(block, 'FAIL', Order.ATOMIC);
 
-sucessString = sucessString.slice(1,-1);
-failString = failString.slice(1,-1);
+if(sucessString){
+  sucessString = sucessString.slice(1,-1);
+}
+else {
+  sucessString = "{}"
+}
+if (failString){
+  failString = failString.slice(1,-1);
+}
+else {
+  failString = "{}"
+}
 
 var sucess = JSON.parse(sucessString);
 var fail = JSON.parse(failString);
@@ -646,8 +789,18 @@ var b4 = block.getFieldValue('B4');
 var sucessString = generator.valueToCode(block, 'SUCESS', Order.ATOMIC);
 var failString = generator.valueToCode(block, 'FAIL', Order.ATOMIC);
 
-sucessString = sucessString.slice(1,-1);
-failString = failString.slice(1,-1);
+if(sucessString){
+  sucessString = sucessString.slice(1,-1);
+}
+else {
+  sucessString = "{}"
+}
+if (failString){
+  failString = failString.slice(1,-1);
+}
+else {
+  failString = "{}"
+}
 
 var sucess = JSON.parse(sucessString);
 var fail = JSON.parse(failString);
@@ -672,8 +825,18 @@ var a4 = block.getFieldValue('A4');
 var sucessString = generator.valueToCode(block, 'SUCESS', Order.ATOMIC);
 var failString = generator.valueToCode(block, 'FAIL', Order.ATOMIC);
 
-sucessString = sucessString.slice(1,-1);
-failString = failString.slice(1,-1);
+if(sucessString){
+  sucessString = sucessString.slice(1,-1);
+}
+else {
+  sucessString = "{}"
+}
+if (failString){
+  failString = failString.slice(1,-1);
+}
+else {
+  failString = "{}"
+}
 
 var sucess = JSON.parse(sucessString);
 var fail = JSON.parse(failString);

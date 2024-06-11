@@ -7,6 +7,8 @@ import {javascriptGenerator} from 'blockly/javascript';
 import * as locale from 'blockly/msg/en';
 import 'blockly/blocks';
 import { Link } from 'react-router-dom';
+import Sketch from 'react-p5';
+import { load } from '../components/model/load';
 
 
 Blockly.setLocale(locale);
@@ -17,6 +19,8 @@ function BlocklyComponent(props) {
   let primaryWorkspace = useRef();
   let data = useRef(null);
   const [haveData, setHaveData] = useState(false);
+  const [loaded, setLoaded] = useState(false);
+  const [escape_room, setEscapeRoom] = useState(null);
 
   function addEscapeRoomBlock(workspace) {
     // Cria um novo bloco "escape_room"
@@ -158,6 +162,10 @@ function BlocklyComponent(props) {
     console.log(data.current);
   };
 
+  const update = () => {
+    setLoaded(false);
+  }
+
   useEffect(() => {
     const {initialXml, children, ...rest} = props;
     primaryWorkspace.current = Blockly.inject(blocklyDiv.current, {
@@ -176,11 +184,35 @@ function BlocklyComponent(props) {
         if (blocks[i].type === 'escape_room') {
           blocks[i].setDeletable(false);
         }
-    }
+      }
 
-      
     }
+    primaryWorkspace.current.addChangeListener(update);
   }, [primaryWorkspace, toolbox, blocklyDiv, props]);
+
+  const setup = (p5, canvasParentRef) => {
+      p5.createCanvas(1300, 700).parent(canvasParentRef);
+  }
+
+  const draw = (p5) => {
+      p5.background(0);
+
+      if(!loaded) {
+        let code = javascriptGenerator.workspaceToCode(primaryWorkspace.current);
+        try {
+          let json = JSON.parse(code);
+          console.log(json);
+          var room = load(p5,json);
+          setLoaded(true)
+          setEscapeRoom(room)
+        }
+        catch{}
+      }
+
+      if(escape_room != undefined){
+        escape_room.draw(p5);
+      }
+  }
 
   return (
     <React.Fragment>
@@ -197,6 +229,9 @@ function BlocklyComponent(props) {
           )
           }
         </div>
+        <div className="scene-container">
+            {<Sketch setup={setup} draw={draw}/>}
+        </div>  
     </React.Fragment>
   );
 }
