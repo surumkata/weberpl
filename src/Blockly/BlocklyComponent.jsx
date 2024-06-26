@@ -10,6 +10,7 @@ import { Link } from 'react-router-dom';
 import Sketch from 'react-p5';
 import { load } from '../components/model/load';
 
+import { WIDTH,HEIGHT,HEIGHT_INV } from '../components/model/utils';
 
 Blockly.setLocale(locale);
 
@@ -21,6 +22,7 @@ function BlocklyComponent(props) {
   const [haveData, setHaveData] = useState(false);
   const [loaded, setLoaded] = useState(false);
   const [escape_room, setEscapeRoom] = useState(null);
+  const [validated, setValidate] = useState(false);
 
   function addEscapeRoomBlock(workspace) {
     // Cria um novo bloco "escape_room"
@@ -156,11 +158,133 @@ function BlocklyComponent(props) {
 
   const generateCode = () => {
     var code = javascriptGenerator.workspaceToCode(primaryWorkspace.current);
-    console.log(code);
-    data.current = btoa(code);
-    setHaveData(true);
-    console.log(data.current);
+    var reasons = validate(code);
+    if (reasons.length == 0) {
+      console.log("entrei aqui=?")
+      console.log(reasons)
+      data.current = btoa(code);
+      setHaveData(true);
+    }
+    else {
+      console.log(reasons)
+    }  
   };
+
+  const validate = (code) => {
+    let er = JSON.parse(code);
+    console.log(er);
+    let scenarios = er.scenarios;
+    let events = er.events;
+    let transitions = er.transitions;
+    var reasons = []
+
+    var vars = {
+      scenarios : {},
+      objects : {},
+      events : {},
+      transitions : {}
+    }
+
+    //Verificar se existe pelo menos 1 cenario
+    if (scenarios.length == 0){
+      reasons.push("Escape Room tem de ter pelo menos 1 cenário.")
+    }
+    else {
+      // Validar cenarios
+      scenarios.forEach(scenario => {
+        //Verificar se existem cenarios com o mesmo id
+        if (scenario.id in vars.scenarios){
+          reasons.push("Não pode existir cenários com o mesmo id")
+        }
+        else {
+          vars.scenarios[scenario.id] = {
+            views : []
+          }
+          let views = scenario.views;
+          //Verificar se os cenarios tem pelo menos 1 view.
+          if (views.length == 0) {
+            reasons.push("Os cenários precisam ter pelo menos 1 view.")
+          }
+          //Validar views de um cenario 
+          views.forEach(view => {
+            //Verificar se existem ids duplicados nas views desse cenario
+            if (vars.scenarios[scenario.id].views.includes(view.id)){
+              reasons.push("Não pode existir views com o mesmo id no mesmo cenário")
+            }
+            else {
+              vars.scenarios[scenario.id].views.push(view.id)
+              //Verificar se view tem posiçao
+              if (!view.position) {
+                reasons.push("Views preicam ter uma posição")
+              }
+              //Verificar se view tem tamanho
+              if (!view.size) {
+                reasons.push("Views preicam ter um tamanho")
+              }
+              //Verificar se view tem source
+              if (!view.src) {
+                reasons.push("Views preicam ter uma source")
+              }
+            }
+          });
+          //Verificar se a initial view de uma cena existe
+          if (!(vars.scenarios[scenario.id].views.includes(scenario.initial_view))){
+            reasons.push(scenario.initial_view + " não é uma view de " + scenario.id)
+          }
+          let objects = scenario.objects
+          //Validar objetos de um cenario
+          objects.forEach(object => {
+            //Verificar se existem id ja existe entre os objetos
+            if (object.id in vars.objects){
+              reasons.push("Não pode existir objetos com o mesmo id")
+            }
+            else {
+              vars.objects[object.id] = {
+                views : []
+              }
+              let views = object.views;
+              //Verificar se os objetos tem pelo menos 1 view
+              if (views.length == 0) {
+                reasons.push("Os objetos precisam ter pelo menos 1 view.")
+              }
+              //Validar views do objeto
+              views.forEach(view => {
+                //Verificar se existem ids duplicados nas views desse cenario
+                if (vars.objects[object.id].views.includes(view.id)){
+                  reasons.push("Não pode existir views com o mesmo id no mesmo cenário")
+                }
+                else {
+                  vars.objects[object.id].views.push(view.id)
+                  //Verificar se view tem posiçao
+                  if (!view.position) {
+                    reasons.push("Views preicam ter uma posição")
+                  }
+                  //Verificar se view tem tamanho
+                  if (!view.size) {
+                    reasons.push("Views preicam ter um tamanho")
+                  }
+                  //Verificar se view tem source
+                  if (!view.src) {
+                    reasons.push("Views preicam ter uma source")
+                  }
+                }
+              });
+              //Verificar se a initial view de um objeto existe
+              if (!(vars.objects[object.id].views.includes(object.initial_view))){
+                reasons.push(object.initial_view + " não é uma view de " + object.id)
+              }
+            }
+          })
+        }  
+      });
+
+
+  
+      return reasons;
+    }
+  }
+
+
 
   const update = () => {
     setLoaded(false);
@@ -191,7 +315,7 @@ function BlocklyComponent(props) {
   }, [primaryWorkspace, toolbox, blocklyDiv, props]);
 
   const setup = (p5, canvasParentRef) => {
-      p5.createCanvas(1300, 700).parent(canvasParentRef);
+      p5.createCanvas(WIDTH, HEIGHT+HEIGHT_INV).parent(canvasParentRef);
   }
 
   const draw = (p5) => {
@@ -201,7 +325,6 @@ function BlocklyComponent(props) {
         let code = javascriptGenerator.workspaceToCode(primaryWorkspace.current);
         try {
           let json = JSON.parse(code);
-          console.log(json);
           var room = load(p5,json);
           setLoaded(true)
           setEscapeRoom(room)
@@ -210,7 +333,7 @@ function BlocklyComponent(props) {
       }
 
       if(escape_room != undefined){
-        escape_room.draw(p5);
+        escape_room.escapeRoom.draw(p5,escape_room.gameState.currentScenario);
       }
   }
 

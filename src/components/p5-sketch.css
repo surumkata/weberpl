@@ -8,4 +8,15 @@
     width: 100vw;  /* Faz com que o contêiner ocupe toda a largura da janela */
     box-sizing: border-box; /* Garante que o padding e border são incluídos nas dimensões do contêiner */
     background-color: #010105!important;
+    position: absolute;
+}
+
+textarea {
+    display: flex;
+    margin-left: auto;
+    margin-right: auto;
+    font-size: 20px;
+    height: 50%;
+    width: 50%;
+    margin-top: 10px;
 }

@@ -1,14 +1,13 @@
-import { PreConditionTree } from './precondition_tree';
-import { EventPosCondition } from './poscondition';
-
-class Event {
-  constructor(id, pre_conditions, pos_conditions, repeatable, linked = false) {
+export class Event {
+  constructor(id, preConditions, posConditions, repetitions) {
     this.id = id;
-    this.pre_conditions = pre_conditions;
-    this.pos_conditions = pos_conditions;
-    this.repeatable = repeatable;
+    this.preConditions = preConditions;
+    this.posConditions = posConditions;
+    this.repetitions = repetitions;
     this.happen = false;
-    this.linked = linked;
+    this.infinityRepetitions = false
+    if (this.repetitions == null){
+      this.infinityRepetitions = true
+    }
   }
-
 }

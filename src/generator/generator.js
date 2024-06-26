@@ -155,7 +155,7 @@ javascriptGenerator.forBlock['event'] = function(block, generator) {
     ifString = ifString.slice(1, -1);
   } 
   else {
-    ifString = "{}"
+    ifString = null
   }
   
   if (doString) {
@@ -191,7 +191,7 @@ javascriptGenerator.forBlock['event_do'] = function(block, generator) {
   var doObject = JSON.parse(doString);
 
   var code = {
-    "posconditions" : doObject
+    "posConditions" : doObject
   }
 
   return [JSON.stringify(code, null, 2), javascriptGenerator.ORDER_NONE];
@@ -254,13 +254,13 @@ javascriptGenerator.forBlock['view'] = function(block, generator) {
     sizeString = sizeString.slice(1, -1);
   }
   else {
-    sizeString = "{'x': 0,'y' : 0}"
+    sizeString = '{"x":0,"y":0}'
   }
   if (posString) {
     posString = posString.slice(1, -1);
   }
   else {
-    posString = "{'x': 0,'y' : 0}"
+    posString = '{"x":0,"y":0}'
   }
   if (value_image) {
     value_image = value_image.slice(1,-1);
@@ -293,13 +293,13 @@ javascriptGenerator.forBlock['view2'] = function(block, generator) {
     sizeString = sizeString.slice(1, -1);
   }
   else {
-    sizeString = "{'x': 0,'y' : 0}"
+    sizeString = '{"x":0,"y":0}'
   }
   if (posString) {
     posString = posString.slice(1, -1);
   }
   else {
-    posString = "{'x': 0,'y' : 0}"
+    posString = '{"x":0,"y":0}'
   }
   if (value_image) {
     value_image = value_image.slice(1,-1);

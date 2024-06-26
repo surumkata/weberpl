@@ -1,176 +1,162 @@
-import { Enum } from 'enum';
-import { ABC, abstractmethod } from 'abc';
-
-var _pj;
-
-function _pj_snippets(container) {
-  function set_decorators(cls, props) {
-    var deco, decos;
-    var _pj_a = props;
-
-    for (var p in _pj_a) {
-      if (_pj_a.hasOwnProperty(p)) {
-        decos = props[p];
-
-        function reducer(val, deco) {
-          return deco(val, cls, p);
-        }
-
-        deco = decos.reduce(reducer, cls.prototype[p]);
-
-        if (!(deco instanceof Function || deco instanceof Map || deco instanceof WeakMap) && deco instanceof Object && ("value" in deco || "get" in deco)) {
-          delete cls.prototype[p];
-          Object.defineProperty(cls.prototype, p, deco);
-        } else {
-          cls.prototype[p] = deco;
-        }
-      }
-    }
-  }
-
-  container["set_decorators"] = set_decorators;
-  return container;
-}
-
-_pj = {};
-
-_pj_snippets(_pj);
-
-class EventPreCondition extends ABC {
+// Classe abstrata EventPreCondition
+class EventPreCondition {
   constructor() {}
 
-  test(room, inventory) {
-    var tested;
-    tested = false;
-    return tested;
+  // Método abstrato test
+  test(room, inventory, state) {
+      return false; // Implementação deve ser sobrescrita nas subclasses
   }
-
 }
 
-_pj.set_decorators(EventPreCondition, {
-  "test": [abstractmethod]
-});
-
-class EventPreConditionClick extends EventPreCondition {
-  constructor(object_id) {
-    this.object_id = object_id;
+// Subclasse EventPreConditionClickedObject
+class EventPreConditionClickedObject extends EventPreCondition {
+  constructor(objectId) {
+      super();
+      this.objectId = objectId;
   }
 
-  test(room, inventory) {
-    return false;
+  test(room, inventory, state) {
+      let tested = false;
+      const objectId = this.objectId;
+      if (!room.objects.hasOwnProperty(objectId)) {
+          return tested;
+      }
+      const object = room.objects[objectId];
+      if (object.reference === state.currentScenario) {
+          for (const [mX,mY] of state.bufferClickEvents) {
+              tested = object.haveClicked(mX,mY);
+              if (tested) {
+                  break;
+              }
+          }
+      }
+      return tested;
   }
-
 }
 
-class EventPreConditionClickAfterEvent extends EventPreCondition {
-  constructor(object_id, event_id) {
-    this.object_id = object_id;
-    this.event_id = event_id;
+// Subclasse EventPreConditionClickedNotObject
+class EventPreConditionClickedNotObject extends EventPreCondition {
+  constructor(objectId) {
+      super();
+      this.objectId = objectId;
   }
 
-  test(room, inventory) {
-    return false;
+  test(room, inventory, state) {
+      let tested = false;
+      const objectId = this.objectId;
+      if (!room.objects.hasOwnProperty(objectId) || state.bufferClickEvents.length === 0) {
+          return tested;
+      }
+      const object = room.objects[objectId];
+      tested = true;
+      if (object.reference === state.currentScenario) {
+        for (const [mX,mY] of state.bufferClickEvents) {
+              tested = tested && !object.haveClicked(mX,mY);
+          }
+      }
+      return tested;
   }
-
 }
 
-class EventPreConditionActiveByEvent extends EventPreCondition {
-  constructor(event_id) {
-    this.event_id = event_id;
+// Subclasse EventPreConditionWhenObjectIsView
+class EventPreConditionWhenObjectIsView extends EventPreCondition {
+  constructor(objectId, viewId) {
+      super();
+      this.objectId = objectId;
+      this.viewId = viewId;
   }
 
-  test(room, inventory) {
-    return false;
+  test(room, inventory, state) {
+      const objectId = this.objectId;
+      const viewId = this.viewId;
+      return room.checkViewOfObject(objectId, viewId);
   }
-
 }
 
-class EventPreConditionActiveAfterEvent extends EventPreCondition {
-  constructor(event_id) {
-    this.event_id = event_id;
+// Subclasse EventPreConditionAfterEvent
+class EventPreConditionAfterEvent extends EventPreCondition {
+  constructor(eventId) {
+      super();
+      this.eventId = eventId;
   }
 
-  test(room, inventory) {
-    return false;
+  test(room, inventory, state) {
+      const eventId = this.eventId;
+      return room.checkIfEventOccurred(eventId);
   }
-
 }
 
-class EventPreConditionActiveAfterTime extends EventPreCondition {
+// Subclasse EventPreConditionItemIsInUse
+class EventPreConditionItemIsInUse extends EventPreCondition {
+  constructor(itemId) {
+      super();
+      this.itemId = itemId;
+  }
+
+  test(room, inventory, state) {
+      const itemId = this.itemId;
+      return inventory.checkItemInUse(itemId);
+  }
+}
+
+// Subclasse EventPreConditionItemNotInUse
+class EventPreConditionItemNotInUse extends EventPreCondition {
+  constructor(itemId) {
+      super();
+      this.itemId = itemId;
+  }
+
+  test(room, inventory, state) {
+      const itemId = this.itemId;
+      return inventory.existItem(itemId) && !inventory.checkItemInUse(itemId);
+  }
+}
+
+// Subclasse EventPreConditionClickedItem
+class EventPreConditionClickedItem extends EventPreCondition {
+  constructor(itemId) {
+      super();
+      this.itemId = itemId;
+  }
+
+  test(room, inventory, state) {
+      let tested = false;
+      const itemId = this.itemId;
+      const item = inventory.getItem(itemId);
+      if (item !== null) {
+          for (const [mX, mY] of state.bufferClickEvents) {
+              tested = item.haveClicked(mX, mY);
+              if (tested) {
+                  break;
+              }
+          }
+      }
+      return tested;
+  }
+}
+
+// Subclasse EventPreConditionAfterTime
+class EventPreConditionAfterTime extends EventPreCondition {
   constructor(time) {
-    this.time = time;
+      super();
+      this.time = time;
   }
 
-  test(room, inventory) {
-    return false;
+  test(room, inventory, state) {
+      const d = new Date();
+      let time = d.getTime();
+      return this.time <= (time - state.time);
   }
-
 }
 
-class EventPreConditionActiveWhenState extends EventPreCondition {
-  constructor(object_id, state_id) {
-    this.object_id = object_id;
-    this.state_id = state_id;
-  }
-
-  test(room, inventory) {
-    return false;
-  }
-
-}
-
-class EventPreConditionActiveWhenNotState extends EventPreCondition {
-  constructor(object_id, state_id) {
-    this.object_id = object_id;
-    this.state_id = state_id;
-  }
-
-  test(room, inventory) {
-    return false;
-  }
-
-}
-
-class EventPreConditionActiveWhenItemInUse extends EventPreCondition {
-  constructor(item_id) {
-    this.item_id = item_id;
-  }
-
-  test(room, inventory) {
-    return false;
-  }
-
-}
-
-class EventPreConditionActiveWhenItemNotInUse extends EventPreCondition {
-  constructor(item_id) {
-    this.item_id = item_id;
-  }
-
-  test(room, inventory) {
-    return false;
-  }
-
-}
-
-class EventPreConditionClickItem extends EventPreCondition {
-  constructor(item_id) {
-    this.item_id = item_id;
-  }
-
-  test(room, inventory) {
-    return false;
-  }
-
-}
-
-class EventPreConditionClickNot extends EventPreCondition {
-  constructor(object_id) {
-    this.object_id = object_id;
-  }
-
-  test(room, inventory) {
-    return false;
-  }
-
-}
+export {
+  EventPreCondition,
+  EventPreConditionAfterEvent,
+  EventPreConditionAfterTime,
+  EventPreConditionClickedItem,
+  EventPreConditionClickedNotObject,
+  EventPreConditionClickedObject,
+  EventPreConditionItemIsInUse,
+  EventPreConditionItemNotInUse,
+  EventPreConditionWhenObjectIsView,
+};

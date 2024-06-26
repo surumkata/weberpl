@@ -1,42 +1,105 @@
-import {EscapeRoomState} from './er_state.js';
+import { Event } from "./event";
 
 export class EscapeRoom {
-    constructor(title, size) {
-      this.title = title;
-      this.scenes = {};
+  // Construtor de escape room
+  constructor(title) {
+      this.title = title; // TITULO
+      this.scenarios = {};
       this.objects = {};
       this.events = {};
-      this.er_state = new EscapeRoomState();
-      this.sounds = {};
-      this.size = size;
+      this.eventsBuffer = {};
+      this.transitions = {};
+  }
+
+  // Função que add uma cena
+  addScenario(scenario) {
+      this.scenarios[scenario.id] = scenario;
+  }
+
+  // Função que add um objeto
+  addObject(object) {
+      this.objects[object.id] = object;
+  }
+
+  // Função que add um evento
+  addEvent(event) {
+      this.events[event.id] = event;
+  }
+
+  // Função que add uma transição
+  addTransition(transition) {
+      this.transitions[transition.id] = transition;
+  }
+
+  // Função que add um evento ao buffer
+  addEventBuffer(id, preConditions, postConditions, repetitions) {
+      this.eventsBuffer[id] = new Event(id, preConditions, postConditions, repetitions);
+  }
+
+  changeObjectCurrentView(objectId, viewId) {
+      if (objectId in this.objects) {
+          this.objects[objectId].changeCurrentView(viewId);
+      }
+  }
+
+  changeObjectPosition(objectId, position) {
+      if (objectId in this.objects) {
+          this.objects[objectId].changePosition(position);
+      }
+  }
+
+  changeObjectSize(objectId, size) {
+      if (objectId in this.objects) {
+          this.objects[objectId].changeSize(size);
+      }
+  }
+
+  updateEvent(event) {
+      if (event in this.events) {
+          this.events[event].happen = true;
+          if (!this.events[event].infinityRepetitions) {
+              this.events[event].repetitions -= 1;
+          }
+      }
+  }
+
+  updateEventsBuffer() {
+      for (let event of Object.values(this.eventsBuffer)) {
+          this.events[event.id] = event;
+      }
+      this.eventsBuffer = {};
+  }
+
+  // Função que verifica se um evento aconteceu
+  checkIfEventOccurred(eventId) {
+      if (eventId in this.events) {
+          return this.events[eventId].happen;
+      }
+      return false;
+  }
+
+  // Função que devolve a view atual de um objeto
+  checkViewOfObject(objectId, viewId) {
+      return objectId in this.objects ? this.objects[objectId].currentView === viewId : false;
+  }
+    
+  //Função que desenha a cena atual
+  draw(p5, currentScenario){
+    //Desenhar cena atual
+    if (currentScenario in this.scenarios){
+      this.scenarios[currentScenario].draw(p5);
+    }
+    else {
+      return;
     }
     
-    add_scene(scene){
-      this.scenes[scene.id] = scene;
-      this.er_state.first_scene(scene.id);
+    //Desenhar objetos dessa cena
+    for (var objectId in this.objects){
+      let object = this.objects[objectId];
+      //desenhar objeto se pertencer à cena
+      if (currentScenario == object.reference){
+        object.draw(p5);
+      } 
     }
-
-    add_object(object){
-      this.objects[object.id] = object;
-    }
-
-    draw(p5){
-      //Desenhar cena atual
-      let current_scene = this.er_state.current_scene;
-      if (current_scene in this.scenes){
-        this.scenes[current_scene].draw(p5);
-      }
-      else {
-        return;
-      }
-      
-      //Desenhar objetos dessa cena
-      for (var object_id in this.objects){
-        let object = this.objects[object_id];
-        //desenhar objeto se pertencer à cena
-        if (current_scene == object.reference){
-          object.draw(p5);
-        } 
-      }
-    }
+  }
 }

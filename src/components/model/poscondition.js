@@ -1,241 +1,248 @@
-import { Enum } from 'enum';
-import { ABC, abstractmethod } from 'abc';
-import { BalloonMessage, Position, debug } from './utils';
-import { EventPreConditionActiveWhenItemInUse, EventPreConditionActiveWhenItemNotInUse, EventPreConditionClickItem } from './precondition';
-import { PreConditionOperatorAnd, PreConditionTree, PreConditionVar } from './precondition_tree';
-import * as sys from 'sys';
+// Import statements and class declarations omitted for brevity
+import { debug, BalloonMessage } from "./utils";
+import { PreConditionTree,PreConditionVar,PreConditionOperatorAnd } from "./precondition_tree";
+import { EventPreConditionClickedItem, EventPreConditionItemIsInUse, EventPreConditionItemNotInUse } from "./precondition";
+import { ChallengeConnections, ChallengeQuestion, ChallengeMultipleChoice, ChallengeSequence } from "./challenge";
 
-var _pj;
-
-function _pj_snippets(container) {
-  function set_decorators(cls, props) {
-    var deco, decos;
-    var _pj_a = props;
-
-    for (var p in _pj_a) {
-      if (_pj_a.hasOwnProperty(p)) {
-        decos = props[p];
-
-        function reducer(val, deco) {
-          return deco(val, cls, p);
-        }
-
-        deco = decos.reduce(reducer, cls.prototype[p]);
-
-        if (!(deco instanceof Function || deco instanceof Map || deco instanceof WeakMap) && deco instanceof Object && ("value" in deco || "get" in deco)) {
-          delete cls.prototype[p];
-          Object.defineProperty(cls.prototype, p, deco);
-        } else {
-          cls.prototype[p] = deco;
-        }
-      }
-    }
+class EventPosCondition {
+  constructor(type) {
+      this.type = type;
   }
 
-  container["set_decorators"] = set_decorators;
-  return container;
+  do(room, inventory, state) {
+      // Abstract method to be implemented in subclasses
+  }
 }
-
-_pj = {};
-
-_pj_snippets(_pj);
-
-class EventPosCondition extends ABC {
-  constructor(type) {}
-
-  do(room, inventory) {}
-
-}
-
-_pj.set_decorators(EventPosCondition, {
-  "do": [abstractmethod]
-});
 
 class EventPosConditionEndGame extends EventPosCondition {
   constructor(message = "") {
-    this.message = message;
+      super("END_GAME");
+      this.message = message;
   }
 
-  do(room, inventory) {
-    room.er_state.finish_game = true;
-    debug("EVENT_ENDGAME.");
+  do(room, inventory, state) {
+      state.finishGame();
+      debug("EVENT_ENDGAME.");
   }
-
 }
 
-class EventPosConditionChangeState extends EventPosCondition {
-  constructor(object_id, state_id) {
-    this.object_id = object_id;
-    this.state_id = state_id;
+class EventPosConditionObjChangeState extends EventPosCondition {
+  constructor(objectId, viewId) {
+      super("OBJ_CHANGE_STATE");
+      this.objectId = objectId;
+      this.viewId = viewId;
   }
 
-  do(room, inventory) {
-    room.er_state.changed_objects_states[this.object_id] = this.state_id;
-    debug("EVENT_CHANGE_STATE: Mudando o estado do objeto " + this.object_id + " para " + this.state_id + ".");
+  do(room, inventory, state) {
+      state.bufferObjViews[this.objectId] = this.viewId;
+      debug("EVENT_CHANGE_STATE: Mudando o view do object " + this.objectId + " para " + this.viewId + ".");
   }
-
 }
 
-class EventPosConditionChangePosition extends EventPosCondition {
-  constructor(object_id, position) {
-    this.object_id = object_id;
-    this.position = position;
+class EventPosConditionObjChangePosition extends EventPosCondition {
+  constructor(objectId, position) {
+      super("OBJ_CHANGE_POSITION");
+      this.objectId = objectId;
+      this.position = position;
   }
 
-  do(room, inventory) {
-    room.objects[this.object_id].change_position(this.position);
-    debug("EVENT_CHANGE_POSITION: Mudando " + this.object_id + " para a posi\u00e7\u00e3o (" + this.position.x.toString() + "," + this.position.y.toString() + ").");
+  do(room, inventory, state) {
+      room.objects[this.objectId].changePosition(this.position);
+      debug("EVENT_CHANGE_POSITION: Mudando " + this.objectId + " para a position (" + this.position.x + "," + this.position.y + ").");
   }
-
 }
 
-class EventPosConditionChangeSize extends EventPosCondition {
-  constructor(object_id, size) {
-    this.object_id = object_id;
-    this.size = size;
+class EventPosConditionObjChangeSize extends EventPosCondition {
+  constructor(objectId, size) {
+      super("OBJ_CHANGE_SIZE");
+      this.objectId = objectId;
+      this.size = size;
   }
 
-  do(room, inventory) {
-    var object_id, size;
-    object_id = this.object_id;
-    size = this.size;
-    room.objects[object_id].change_size(size);
-    debug("EVENT_CHANGE_SIZE: Mudando " + object_id + " para o tamanho (" + size.x.toString() + "," + size.y.toString() + ").");
+  do(room, inventory, state) {
+      room.objects[this.objectId].changeSize(this.size);
+      debug("EVENT_CHANGE_SIZE: Mudando " + this.objectId + " para o size (" + this.size.x + "," + this.size.y + ").");
   }
-
 }
 
 class EventPosConditionShowMessage extends EventPosCondition {
-  constructor(position, message) {
-    this.position = position;
-    this.message = message;
+  constructor(message, position) {
+      super("SHOW_MESSAGE");
+      this.message = message;
+      this.position = position;
   }
 
-  do(room, inventory) {
-    room.er_state.messages.append(new BalloonMessage(this.message, this.position.x, this.position.y));
-    debug("EVENT_MESSAGE: Mostrando mensagem '" + this.message.toString() + "' na posi\u00e7\u00e3o (" + this.position.x.toString() + "," + this.position.y.toString() + ").");
+  do(room, inventory, state) {
+      state.bufferMessages.push(new BalloonMessage(this.message, this.position.x, this.position.y));
+      debug("EVENT_MESSAGE: Mostrando message '" + this.message + "'.");
   }
-
 }
 
-class EventPosConditionAskCode extends EventPosCondition {
-  constructor(code, message, sucess_event, fail_event, position) {
-    this.code = code;
-    this.message = message;
-    this.sucess_event = sucess_event;
-    this.fail_event = fail_event;
-    this.position = position;
+class EventPosConditionObjPutInventory extends EventPosCondition {
+  constructor(objectId) {
+      super("OBJ_PUT_INVENTORY");
+      this.objectId = objectId;
   }
 
-  do(room, inventory) {
-    room.er_state.input_active = true;
-    room.er_state.input_code = this.code;
-    room.er_state.messages.append(new BalloonMessage(this.message, this.position.x, this.position.y));
-    room.er_state.input_sucess = this.sucess_event;
-    room.er_state.input_fail = this.fail_event;
-    room.er_state.input_box.x = this.position.x;
-    room.er_state.input_box.y = this.position.y + 50;
-    debug("EVENT_ASKCODE: Pedindo c\u00f3digo " + this.code + ".");
+  do(room, inventory, state) {
+      const object = room.objects[this.objectId];
+      delete room.objects[this.objectId];
+      const slot = inventory.findEmptySlot();
+      inventory.updateAdd.push([object, slot]);
+      const deactivate = new PreConditionTree(new PreConditionOperatorAnd(new PreConditionVar(new EventPreConditionClickedItem(this.objectId)), new PreConditionVar(new EventPreConditionItemIsInUse(this.objectId))));
+      const activate = new PreConditionTree(new PreConditionOperatorAnd(new PreConditionVar(new EventPreConditionClickedItem(this.objectId)), new PreConditionVar(new EventPreConditionItemNotInUse(this.objectId))));
+      room.addEventBuffer("desativar_" + this.objectId, deactivate, [new EventPosConditionDesactiveItem(this.objectId)], Number.MAX_SAFE_INTEGER);
+      room.addEventBuffer("ativar_" + this.objectId, activate, [new EventPosConditionActiveItem(this.objectId)], Number.MAX_SAFE_INTEGER);
+      debug("EVENT_PUT_IN_INVENTORY: Colocando item " + this.objectId + " no slot " + slot + " do inventário.");
   }
-
 }
 
-class EventPosConditionPutInventory extends EventPosCondition {
-  constructor(object_id) {
-    this.object_id = object_id;
+class EventPosConditionChangeScenario extends EventPosCondition {
+  constructor(scenarioId) {
+      super("CHANGE_SCENARIO");
+      this.scenarioId = scenarioId;
   }
 
-  do(room, inventory) {
-    var ativar, desativar, object, object_id, slot;
-    object_id = this.object_id;
-    object = room.objects[object_id];
-    delete room.objects[object_id];
-    slot = inventory.find_empty_slot();
-    inventory.update_add.append([object, slot]);
-    desativar = new PreConditionTree(new PreConditionOperatorAnd(new PreConditionVar(new EventPreConditionClickItem(object_id)), new PreConditionVar(new EventPreConditionActiveWhenItemInUse(object_id))));
-    ativar = new PreConditionTree(new PreConditionOperatorAnd(new PreConditionVar(new EventPreConditionClickItem(object_id)), new PreConditionVar(new EventPreConditionActiveWhenItemNotInUse(object_id))));
-    room.add_event_buffer("desativar_" + object_id, desativar, [new EventPosConditionDesactiveItem(object_id)], sys.maxsize, false);
-    room.add_event_buffer("ativar" + object_id, ativar, [new EventPosConditionActiveItem(object_id)], sys.maxsize, false);
-    debug("EVENT_PUT_IN_INVENTORY: Colocando item " + object_id + " no slot " + slot.toString() + " do invent\u00e1rio.");
+  do(room, inventory, state) {
+      state.bufferCurrentScenario = this.scenarioId;
+      debug("EVENT_CHANGE_SCENE: Mudando para cena " + this.scenarioId + ".");
   }
-
-}
-
-class EventPosConditionChangeScene extends EventPosCondition {
-  constructor(scene_id) {
-    this.scene_id = scene_id;
-  }
-
-  do(room, inventory) {
-    room.er_state.current_scene_buffer = this.scene_id;
-    debug("EVENT_CHANGE_SCENE: Mudando para cena " + this.scene_id + ".");
-  }
-
 }
 
 class EventPosConditionActiveItem extends EventPosCondition {
-  constructor(item_id) {
-    this.item_id = item_id;
+  constructor(itemId) {
+      super("ACTIVE_ITEM");
+      this.itemId = itemId;
   }
 
-  do(room, inventory) {
-    inventory.active_item(this.item_id);
-    debug("EVENT_ACTIVE_ITEM: Ativando item " + this.item_id + ".");
+  do(room, inventory, state) {
+      inventory.activeItem(this.itemId);
+      debug("EVENT_ACTIVE_ITEM: Ativando item " + this.itemId + ".");
   }
-
 }
 
 class EventPosConditionDesactiveItem extends EventPosCondition {
-  constructor(item_id) {
-    this.item_id = item_id;
+  constructor(itemId) {
+      super("DESACTIVE_ITEM");
+      this.itemId = itemId;
   }
 
-  do(room, inventory) {
-    inventory.desactive_item(this.item_id);
-    debug("EVENT_DESACTIVE_ITEM: Desativando item " + this.item_id + ".");
+  do(room, inventory, state) {
+      inventory.desactiveItem(this.itemId);
+      debug("EVENT_DESACTIVE_ITEM: Desativando item " + this.itemId + ".");
   }
-
 }
 
 class EventPosConditionDeleteItem extends EventPosCondition {
-  constructor(item_id) {
-    this.item_id = item_id;
+  constructor(itemId) {
+      super("DELETE_ITEM");
+      this.itemId = itemId;
   }
 
-  do(room, inventory) {
-    inventory.update_remove.append(this.item_id);
-    debug("EVENT_DELETE_ITEM: Removendo item " + this.item_id + ".");
+  do(room, inventory, state) {
+      inventory.updateRemove.push(this.itemId);
+      debug("EVENT_DELETE_ITEM: Removendo item " + this.itemId + ".");
   }
-
 }
 
 class EventPosConditionPlaySound extends EventPosCondition {
-  constructor(sound_id) {
-    this.sound_id = sound_id;
+  constructor(soundId, sourceId, sourceType) {
+      super("PLAY_SOUND");
+      this.soundId = soundId;
+      this.sourceId = sourceId;
+      this.sourceType = sourceType;
   }
 
-  do(room, inventory) {
-    room.sounds[this.sound_id].play();
-    debug("EVENT_PLAY_SOUND: Tocando som " + this.sound_id + ".");
+  do(room, inventory, state) {
+      if (this.sourceType === 'Object') {
+          room.objects[this.sourceId].sounds[this.soundId].play();
+      } else if (this.sourceType === 'Scenario') {
+          room.scenarios[this.sourceId].sounds[this.soundId].play();
+      }
+      debug("EVENT_PLAY_SOUND: Tocando sound " + this.soundId + ".");
   }
-
 }
 
-class EventPosConditionMoveObject extends EventPosCondition {
-  constructor(object_id, object_trigger, sucess_event, fail_event) {
-    this.object_id = object_id;
-    this.object_trigger = object_trigger;
-    this.sucess_event = sucess_event;
-    this.fail_event = fail_event;
+class EventPosConditionQuestion extends EventPosCondition {
+  constructor(answer, question, sucessEvent, failEvent) {
+      super("QUESTION");
+      this.answer = answer;
+      this.question = question;
+      this.sucessEvent = sucessEvent;
+      this.failEvent = failEvent;
   }
 
-  do(room, inventory) {
-    room.er_state.motion_activated = true;
-    room.er_state.object_motion = this.object_id;
-    room.er_state.trigger_motion = this.object_trigger;
-    room.er_state.motion_sucess_event = this.sucess_event;
-    room.er_state.motion_fail_event = this.fail_event;
-    debug("EVENT_POSCONDITION_MOVE_OBJECT: Arrasta objeto " + this.object_id + ".");
+  do(room,inventory,state){
+    state.inputElem.show();
+    state.inputElem.value("");
+    state.activeChallengeMode(new ChallengeQuestion(this.question,this.answer, this.sucessEvent, this.failEvent));
+    debug("EVENT_QUESTION: Pergunta: "+this.question+" com resposta " +this.answer + ".");
   }
-
 }
+
+class EventPosConditionMultipleChoice extends EventPosCondition {
+  constructor(question, answer, multipleChoices, sucessEvent, failEvent) {
+      super("MULTIPLE_CHOICE");
+      this.answer = answer;
+      this.question = question;
+      this.multipleChoices = multipleChoices;
+      this.sucessEvent = sucessEvent;
+      this.failEvent = failEvent;
+  }
+
+  do(room,inventory,state){
+    state.activeChallengeMode(new ChallengeMultipleChoice(this.question,this.multipleChoices,this.answer, this.sucessEvent, this.failEvent));
+    debug("EVENT_POSCONDITION_MULTIPLE_CHOICE");
+  }
+}
+
+class EventPosConditionSequence extends EventPosCondition {
+  constructor(question, sequence, sucessEvent, failEvent) {
+      super("SEQUENCE");
+      this.question = question;
+      this.sequence = sequence;
+      this.sucessEvent = sucessEvent;
+      this.failEvent = failEvent;
+  }
+
+  do(room,inventory,state){
+    state.activeChallengeMode(new ChallengeSequence(this.question,this.sequence, this.sucessEvent, this.failEvent));
+    debug("EVENT_POSCONDITION_SEQUENCE");
+  }
+}
+
+class EventPosConditionConnections extends EventPosCondition {
+  constructor(question, list1, list2, sucessEvent, failEvent){
+    super("CONNECTIONS");
+    this.question = question;
+    this.list1 = list1;
+    this.list2 = list2;
+    this.sucessEvent = sucessEvent;
+      this.failEvent = failEvent;
+  }
+
+  do(room,inventory,state){
+    state.activeChallengeMode(new ChallengeConnections(this.question,this.list1,this.list2, this.sucessEvent, this.failEvent));
+    debug("EVENT_POSCONDITION_CONNECTIONS");
+  }
+}
+
+// Exporting the classes for use in other modules if needed
+export {
+  EventPosCondition,
+  EventPosConditionEndGame,
+  EventPosConditionObjChangeState,
+  EventPosConditionObjChangePosition,
+  EventPosConditionObjChangeSize,
+  EventPosConditionShowMessage,
+  EventPosConditionObjPutInventory,
+  EventPosConditionChangeScenario,
+  EventPosConditionActiveItem,
+  EventPosConditionDesactiveItem,
+  EventPosConditionDeleteItem,
+  EventPosConditionPlaySound,
+  EventPosConditionQuestion,
+  EventPosConditionMultipleChoice,
+  EventPosConditionSequence,
+  EventPosConditionConnections
+};

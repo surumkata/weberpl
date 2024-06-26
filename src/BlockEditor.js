@@ -93,6 +93,7 @@ function BlockEditor() {
             <Block type="url"/>
             <Block type="image"/>
             <Block type="story"/>
+            <Block type="custom_dropdown_block"/>
         </Category>
         <Category name="Triggers">
             <Block type="precond_click_obj"/>

@@ -711,3 +711,52 @@ this.setTooltip("");
 this.setHelpUrl("");
 }
 };
+
+Blockly.Blocks['custom_dropdown_block'] = {
+    init: function() {
+      this.appendDummyInput()
+          .appendField("Opção 1")
+          .appendField(new Blockly.FieldDropdown([
+            ["porta", "PORTA"],
+            ["chave", "CHAVE"],
+            ["cofre", "COFRE"]
+          ], this.updateOptions.bind(this)), 'OPCAO1')
+          .appendField("Opção 2")
+          .appendField(new Blockly.FieldDropdown(this.getSecondOptions.bind(this)), 'OPCAO2');
+      this.setColour(230);
+      this.setOutput(true, null);
+      this.setTooltip('');
+      this.setHelpUrl('');
+    },
+    // Função para atualizar as opções do segundo dropdown
+    updateOptions: function(newValue) {
+      const opcoes2 = this.getField('OPCAO2');
+      opcoes2.menuGenerator_ = this.getSecondOptions(newValue);
+      opcoes2.setValue(opcoes2.menuGenerator_[0][1]); // Define o valor padrão para a primeira opção
+    },
+    // Função para obter as opções do segundo dropdown com base na escolha do primeiro dropdown
+    getSecondOptions: function(option1) {
+      switch(option1) {
+        case 'PORTA':
+          return [
+            ["aberta", "ABERTA"],
+            ["fechada", "FECHADA"]
+          ];
+        case 'CHAVE':
+          return [
+            ["normal", "NORMAL"],
+            ["ativa", "ATIVA"]
+          ];
+        case 'COFRE':
+          return [
+            ["aberto", "ABERTO"],
+            ["fechado", "FECHADO"]
+          ];
+        default:
+          return [
+            ["aberta", "ABERTA"],
+            ["fechada", "FECHADA"]
+          ];
+      }
+    }
+  };

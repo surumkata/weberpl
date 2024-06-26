@@ -1,66 +1,66 @@
-class PreConditionTree {
+// Classe PreConditionTree
+export class PreConditionTree {
   constructor(root) {
-    this.root = root;
+      this.root = root;
   }
 
-  test_tree(room, inventory) {
-    return this.root.test_node(room, inventory);
+  testTree(room, inventory, state) {
+      return this.root.testNode(room, inventory, state);
   }
-
 }
 
-class PreConditionNode {
-  constructor(value, left, right, is_operator = false) {
-    this.value = value;
-    this.left = left;
-    this.right = right;
-    this.is_operator = is_operator;
+// Classe PreConditionNode
+export class PreConditionNode {
+  constructor(value, left = null, right = null, isOperator = false) {
+      this.value = value;
+      this.left = left;
+      this.right = right;
+      this.isOperator = isOperator;
   }
 
-  test_node(room, inventory) {
-    if (this.is_operator) {
-      if (this.value === "and") {
-        return this.left.test_node(room, inventory) && this.right.test_node(room, inventory);
-      } else {
-        if (this.value === "or") {
-          return this.left.test_node(room, inventory) || this.right.test_node(room, inventory);
-        } else {
-          if (this.value === "not") {
-            return !this.left.test_node(room, inventory);
+  testNode(room, inventory, state) {
+      if (this.isOperator) {
+          if (this.value === "and") {
+              return this.left.testNode(room, inventory, state) && this.right.testNode(room, inventory, state);
+          } else if (this.value === "or") {
+              return this.left.testNode(room, inventory, state) || this.right.testNode(room, inventory, state);
+          } else if (this.value === "not") {
+              return !this.left.testNode(room, inventory, state);
           }
-        }
+      } else {
+          return this.value.test(room, inventory, state);
       }
-    } else {
-      return this.value.test(room, inventory);
-    }
   }
-
 }
 
-class PreConditionOperatorAnd extends PreConditionNode {
+// Classes para Operadores Lógicos
+export class PreConditionOperatorAnd extends PreConditionNode {
   constructor(left, right) {
-    super("and", left, right);
+      super("and", left, right, true);
   }
-
 }
 
-class PreConditionOperatorOr extends PreConditionNode {
+export class PreConditionOperatorOr extends PreConditionNode {
   constructor(left, right) {
-    super("or", left, right);
+      super("or", left, right, true);
   }
-
 }
 
-class PreConditionOperatorNot extends PreConditionNode {
+export class PreConditionOperatorNot extends PreConditionNode {
   constructor(left) {
-    super("not", left, null);
+      super("not", left, null, true);
   }
-
 }
 
-class PreConditionVar extends PreConditionNode {
+// Classe PreConditionVar
+export class PreConditionVar extends PreConditionNode {
   constructor(value) {
-    super(value, null, null);
+      super(value);
   }
 
+  test(room, inventory, state) {
+      // Implemente a lógica específica para testar a variável em JavaScript
+      // Exemplo: return room.checkIfConditionSatisfied(this.value);
+      return true; // Exemplo simplificado
+  }
 }
