@@ -162,7 +162,6 @@ function BlocklyComponent(props) {
     var code = javascriptGenerator.workspaceToCode(primaryWorkspace.current);
     var reasons = validate(code);
     if (reasons.length == 0) {
-      console.log("entrei aqui=?")
       console.log(reasons)
       data.current = btoa(code);
       setHaveData(true);
@@ -339,6 +338,80 @@ function BlocklyComponent(props) {
       }
   }
 
+  const mouseMoved = (e) => {
+    if(escape_room != undefined){
+      for(var objectId in escape_room.escapeRoom.objects){
+        var obj = escape_room.escapeRoom.objects[objectId]
+        if (obj.currentView in obj.views){
+          obj.views[obj.currentView].mouseMoved(e)
+        }
+      }
+    }
+  }
+
+  const mousePressed = (e) => {
+    if(escape_room != undefined){
+      for(var objectId in escape_room.escapeRoom.objects){
+        var obj = escape_room.escapeRoom.objects[objectId]
+        if (obj.currentView in obj.views){
+          obj.views[obj.currentView].mousePressed(e)
+        }
+      }
+    }
+  }
+
+  const mouseDragged = (e) => {
+    if(escape_room != undefined){
+      for(var objectId in escape_room.escapeRoom.objects){
+        var obj = escape_room.escapeRoom.objects[objectId]
+        if (obj.currentView in obj.views){
+          obj.views[obj.currentView].mouseDragged(e)
+        }
+      }
+    }
+  }
+
+  const updateViewPosition = (objectId, viewId, newPosx, newPosy) => {
+    // 1. Encontrar todos os blocos do tipo 'object'
+    const objectBlocks = primaryWorkspace.current.getBlocksByType('object');
+  
+    objectBlocks.forEach(objectBlock => {
+      // 2. Verificar se este bloco 'object' tem o ID que estamos procurando
+      if (objectBlock.getFieldValue('ID') === objectId) {
+        // 3. Encontrar todos os sub-blocos do tipo 'view' dentro do bloco 'object'
+        const viewBlocks = objectBlock.getChildren(false).filter(childBlock => childBlock.type === 'view');
+  
+        viewBlocks.forEach(viewBlock => {
+          // 4. Verificar se este bloco 'view' tem o ID que estamos procurando
+          if (viewBlock.getFieldValue('ID') === viewId) {
+            // 5. Encontrar o sub-bloco 'position' dentro do bloco 'view'
+            const positionBlock = viewBlock.getChildren(false).find(childBlock => childBlock.type === 'position');
+            if (positionBlock) {
+              // 6. Alterar os valores dos campos 'x' e 'y'
+              positionBlock.setFieldValue(newPosx, 'x');
+              positionBlock.setFieldValue(newPosy, 'y');
+            }
+          }
+        });
+      }
+    });
+  };
+
+  const mouseReleased = (e) => {
+    if(escape_room != undefined){
+      for(var objectId in escape_room.escapeRoom.objects){
+        var obj = escape_room.escapeRoom.objects[objectId]
+        if (obj.currentView in obj.views){
+          var view = obj.views[obj.currentView]
+          let changes = view.mouseReleased(e);
+          if (changes) {
+            updateViewPosition(objectId,obj.currentView,view.position.x * 1/SCALE,(view.position.y* 1/SCALE-HEIGHT_INV));
+          }
+        }
+      }
+    }
+  }
+
   return (
     <React.Fragment>
         <div ref={blocklyDiv} id="blocklyDiv" />
@@ -355,7 +428,7 @@ function BlocklyComponent(props) {
           }
         </div>
         <div className="scene-container">
-            {<Sketch setup={setup} draw={draw}/>}
+            {<Sketch setup={setup} draw={draw} mouseMoved={mouseMoved} mousePressed={mousePressed} mouseDragged={mouseDragged} mouseReleased={mouseReleased}/>}
         </div>  
     </React.Fragment>
   );
