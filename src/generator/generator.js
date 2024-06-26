@@ -95,7 +95,7 @@ javascriptGenerator.forBlock['url'] = function(block, generator) {
 
 javascriptGenerator.forBlock['image'] = function(block, generator) {
   var dropdown_image = block.getFieldValue('IMAGE');
-  var code = '/assets/'+dropdown_image+'.png';
+  var code = process.env.PUBLIC_URL + '/assets/'+dropdown_image+'.png';
   return [code, javascriptGenerator.ORDER_NONE];
 };
 

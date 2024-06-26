@@ -14,7 +14,7 @@ import { EventPosConditionConnections, EventPosConditionSequence, EventPosCondit
 
 
 
-const load = (p5,json) => {
+const load = (p5,json,scale) => {
     if (!json) {
         return undefined;
     }
@@ -22,10 +22,10 @@ const load = (p5,json) => {
     if (!scenarios) {
         scenarios = []
     }
-    var gs = new GameState(new Size(WIDTH,HEIGHT))
+    var gs = new GameState(new Size(WIDTH*scale,HEIGHT*scale))
     var er = new EscapeRoom(json.title)
-    loadScenarios(p5,er,gs,scenarios);
-    let events = loadEvents(json.events);
+    loadScenarios(p5,er,gs,scenarios,scale);
+    let events = loadEvents(json.events,scale);
     events.forEach(function(event){
         er.addEvent(event);
     })
@@ -44,12 +44,12 @@ const load = (p5,json) => {
 
 export {load};
 
-function loadScenarios(p5,er,gs,scenarios){
+function loadScenarios(p5,er,gs,scenarios,scale){
     scenarios.forEach(function(scenario){
         let s = new Scenario(scenario.id);
         s.currentView = scenario['initial_view'];
         scenario.views.forEach(function(view){
-            let sv = new View(p5,view.id,[view.src],gs.size,new Position(0,HEIGHT_INV),0,0);
+            let sv = new View(p5,view.id,[view.src],gs.size,new Position(0,HEIGHT_INV*scale),0,0);
             s.addView(sv);
         })
         er.addScenario(s);
@@ -58,7 +58,7 @@ function loadScenarios(p5,er,gs,scenarios){
             let o = new Object(object.id,scenario.id,new Position(0,0),new Size(0,0));
             o.currentView = object['initial_view'];
             object.views.forEach(function(objView){
-                let ov = new View(p5,objView.id,[objView.src],new Size(objView.size.x,objView.size.y), new Position(objView.position.x,objView.position.y+HEIGHT_INV),0,0)
+                let ov = new View(p5,objView.id,[objView.src],new Size(objView.size.x*scale,objView.size.y*scale), new Position(objView.position.x*scale,(objView.position.y+HEIGHT_INV)*scale),0,0)
                 o.addView(ov);
             })
             er.addObject(o);
@@ -125,7 +125,7 @@ function loadPreconditions(preconditions) {
     }
 }
 
-function loadPosconditions(dataPosconditions) {
+function loadPosconditions(dataPosconditions,scale) {
     const posConditions = [];
 
     dataPosconditions.forEach(dataAction => {
@@ -144,17 +144,17 @@ function loadPosconditions(dataPosconditions) {
             case "OBJ_CHANGE_POSITION":
                 const objPositionObjectId = dataAction.object;
                 const pos = dataAction.position;
-                eventPoscondition = new EventPosConditionObjChangePosition(objPositionObjectId, new Position(pos.x,pos.y+HEIGHT_INV));
+                eventPoscondition = new EventPosConditionObjChangePosition(objPositionObjectId, new Position(pos.x*scale,(pos.y+HEIGHT_INV)*scale));
                 break;
             case "OBJ_CHANGE_SIZE":
                 const objSizeObjectId = dataAction.object;
                 const size = dataAction.size;
-                eventPoscondition = new EventPosConditionObjChangeSize(objSizeObjectId, new Size(size.x, size.y));
+                eventPoscondition = new EventPosConditionObjChangeSize(objSizeObjectId, new Size(size.x*scale, size.y*scale));
                 break;
             case "SHOW_MESSAGE":
                 const message = dataAction.message;
                 const msgpos = dataAction.position;
-                eventPoscondition = new EventPosConditionShowMessage(message, new Position(msgpos.x, msgpos.y+HEIGHT_INV));
+                eventPoscondition = new EventPosConditionShowMessage(message, new Position(msgpos.x*scale, (msgpos.y+HEIGHT_INV)*scale));
                 break;
             case "OBJ_PUT_INVENTORY":
                 const objInventoryObjectId = dataAction.object;
@@ -217,7 +217,7 @@ function loadPosconditions(dataPosconditions) {
     return posConditions;
 }
 
-function loadEvents(dataEvents) {
+function loadEvents(dataEvents,scale) {
     const events = [];
 
     dataEvents.forEach(dataEvent => {
@@ -226,7 +226,7 @@ function loadEvents(dataEvents) {
         const dataPosconditions = dataEvent.posconditions;
         const repetitions = dataEvent.repetitions || null;
         const preConditions = new PreConditionTree(loadPreconditions(dataPreconditions));
-        const posConditions = loadPosconditions(dataPosconditions);
+        const posConditions = loadPosconditions(dataPosconditions,scale);
 
         events.push(new Event(id, preConditions, posConditions, repetitions));
     });

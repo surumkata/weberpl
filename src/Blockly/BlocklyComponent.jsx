@@ -14,6 +14,8 @@ import { WIDTH,HEIGHT,HEIGHT_INV } from '../components/model/utils';
 
 Blockly.setLocale(locale);
 
+let SCALE = 0.5
+
 function BlocklyComponent(props) {
   const blocklyDiv = useRef();
   const toolbox = useRef();
@@ -315,17 +317,17 @@ function BlocklyComponent(props) {
   }, [primaryWorkspace, toolbox, blocklyDiv, props]);
 
   const setup = (p5, canvasParentRef) => {
-      p5.createCanvas(WIDTH, HEIGHT+HEIGHT_INV).parent(canvasParentRef);
+      p5.createCanvas(WIDTH * SCALE, (HEIGHT+HEIGHT_INV) * SCALE).parent(canvasParentRef);
   }
 
   const draw = (p5) => {
-      p5.background(0);
+      p5.background(255);
 
       if(!loaded) {
         let code = javascriptGenerator.workspaceToCode(primaryWorkspace.current);
         try {
           let json = JSON.parse(code);
-          var room = load(p5,json);
+          var room = load(p5,json,SCALE);
           setLoaded(true)
           setEscapeRoom(room)
         }

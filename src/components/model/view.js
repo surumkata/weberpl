@@ -14,8 +14,8 @@ export class View {
 
     for (let i in this.srcImages){
       //TODO: colocar assets para funcionar :)
-      this.images[i] = p5.loadImage(process.env.PUBLIC_URL + this.srcImages[i]);
-      //console.log(this.srcImages[i])
+      this.images[i] = p5.loadImage(this.srcImages[i]);
+      console.log(this.srcImages[i])
     }
   }
 

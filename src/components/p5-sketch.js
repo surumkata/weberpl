@@ -4,11 +4,13 @@ import { load } from './model/load.js';
 import "./p5-sketch.css"
 import { WIDTH, HEIGHT, HEIGHT_INV } from './model/utils.js';
 
+let SCALE = 1
+
 function P5Sketch(json) {
     var gameData;
 
     const preload = (p5) => {
-        gameData = load(p5,json.json);
+        gameData = load(p5,json.json,SCALE);
       }
 
     const setup = (p5, canvasParentRef) => {
