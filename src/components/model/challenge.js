@@ -184,7 +184,7 @@ class ChallengeMultipleChoice extends Challenge {
 
         let i = 0
         this.choiceBoxes.forEach(box => {
-            if(this.choiceHover !== undefined && this.choiceHover === i){  
+            if(this.choiceHover != undefined && this.choiceHover === i){  
                 p5.fill(255,0,0);
             }
             else {
@@ -253,7 +253,7 @@ class ChallengeMultipleChoice extends Challenge {
             i+=1;
         })
         this.choiceHover = choiceHover;
-        if (choiceHover === undefined){
+        if (choiceHover == undefined){
             document.documentElement.style.cursor = 'default';
         }
     }
@@ -307,7 +307,7 @@ class ChallengeSequence extends Challenge {
             if (this.dones.includes(this.shuffledSequence[i])) {
                 p5.fill (0,255,0);
             }
-            else if(this.choiceHover !== undefined && this.choiceHover === i){  
+            else if(this.choiceHover != undefined && this.choiceHover === i){  
                 p5.fill(255,0,0);
             }
             else {
@@ -381,7 +381,7 @@ class ChallengeSequence extends Challenge {
             i+=1;
         })
         this.choiceHover = choiceHover;
-        if (choiceHover === undefined){
+        if (choiceHover == undefined){
             document.documentElement.style.cursor = 'default';
         }
     }
@@ -453,7 +453,7 @@ class ChallengeConnections extends Challenge{
             else if(this.leftChoice === this.list1[i]){
                 p5.fill (0,0,255);
             }
-            else if(this.choiceHover !== undefined && this.choiceHover === i){  
+            else if(this.choiceHover != undefined && this.choiceHover === i){  
                 p5.fill(255,0,0);
             }
             else {
@@ -479,7 +479,7 @@ class ChallengeConnections extends Challenge{
             else if(this.rightChoice === this.list2[i]){
                 p5.fill (0,0,255);
             }
-            else if(this.choiceHover !== undefined && this.choiceHover === i+4){  
+            else if(this.choiceHover != undefined && this.choiceHover === i+4){  
                 p5.fill(255,0,0);
             }
             else {
@@ -517,7 +517,7 @@ class ChallengeConnections extends Challenge{
                     if(super.rectCollision(mX,mY,box)){
                         if(!this.dones.includes(this.connections[this.list1[i]])) {
                             this.leftChoice = this.list1[i]
-                            if (this.rightChoice !== undefined){
+                            if (this.rightChoice != undefined){
                                 console.log(this.rightChoice);
                                 console.log(this.leftChoice);
                                 if(this.rightChoice === this.connections[this.leftChoice]){
@@ -541,7 +541,7 @@ class ChallengeConnections extends Challenge{
                     if(super.rectCollision(mX,mY,box)){
                         if(!this.dones.includes(this.list2[i])) {
                             this.rightChoice = this.list2[i]
-                            if (this.leftChoice !== undefined){
+                            if (this.leftChoice != undefined){
                                 if(this.rightChoice === this.connections[this.leftChoice]){
                                     this.dones.push(this.rightChoice);
                                     this.rightChoice = undefined;
@@ -580,7 +580,7 @@ class ChallengeConnections extends Challenge{
             }
             i+=1;
         })
-        if (choiceHover === undefined){
+        if (choiceHover == undefined){
             i = 0;
             this.rightBoxes.forEach(box => {
                 if(!this.dones.includes(this.list2[i]) && super.rectCollision(mX,mY,box)){
@@ -592,7 +592,7 @@ class ChallengeConnections extends Challenge{
         }
         this.choiceHover = choiceHover;
 
-        if (choiceHover === undefined){
+        if (choiceHover == undefined){
             document.documentElement.style.cursor = 'default';
         }
     }

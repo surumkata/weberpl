@@ -343,7 +343,10 @@ function BlocklyComponent(props) {
       for(var objectId in escape_room.escapeRoom.objects){
         var obj = escape_room.escapeRoom.objects[objectId]
         if (obj.currentView in obj.views){
-          obj.views[obj.currentView].mouseMoved(e)
+          var hover = obj.views[obj.currentView].mouseMoved(e)
+          if(hover){
+            break;
+          }
         }
       }
     }
@@ -354,7 +357,10 @@ function BlocklyComponent(props) {
       for(var objectId in escape_room.escapeRoom.objects){
         var obj = escape_room.escapeRoom.objects[objectId]
         if (obj.currentView in obj.views){
-          obj.views[obj.currentView].mousePressed(e)
+          var pressed = obj.views[obj.currentView].mousePressed(e)
+          if (pressed){
+            break;
+          }
         }
       }
     }
@@ -371,7 +377,7 @@ function BlocklyComponent(props) {
     }
   }
 
-  const updateViewPosition = (objectId, viewId, newPosx, newPosy) => {
+  const updateViewPositionAndSize = (objectId, viewId, newPosx, newPosy, newSizex, newSizey) => {
     // 1. Encontrar todos os blocos do tipo 'object'
     const objectBlocks = primaryWorkspace.current.getBlocksByType('object');
   
@@ -391,6 +397,11 @@ function BlocklyComponent(props) {
               positionBlock.setFieldValue(newPosx, 'x');
               positionBlock.setFieldValue(newPosy, 'y');
             }
+            const sizeBlock = viewBlock.getChildren(false).find(childBlock => childBlock.type === 'size');
+            if (sizeBlock) {
+              sizeBlock.setFieldValue(newSizex, 'x');
+              sizeBlock.setFieldValue(newSizey, 'y')
+            }
           }
         });
       }
@@ -405,7 +416,11 @@ function BlocklyComponent(props) {
           var view = obj.views[obj.currentView]
           let changes = view.mouseReleased(e);
           if (changes) {
-            updateViewPosition(objectId,obj.currentView,view.position.x * 1/SCALE,(view.position.y* 1/SCALE-HEIGHT_INV));
+            let newPosx = view.position.x * 1/SCALE;
+            let newPosy = (view.position.y* 1/SCALE-HEIGHT_INV);
+            let newSizex = view.size.x * 1/SCALE;
+            let newSizey = view.size.y * 1/SCALE;
+            updateViewPositionAndSize(objectId,obj.currentView,newPosx,newPosy,newSizex,newSizey);
           }
         }
       }
