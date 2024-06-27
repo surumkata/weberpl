@@ -1,4 +1,4 @@
-import { Position } from "./utils";
+import { Position, WIDTH } from "./utils";
 
 export class View {
   constructor(p5,id, srcImages, size, position, timeSprite, repeate) {
@@ -46,7 +46,21 @@ export class View {
   }
 
   viewCollision(mx,my){
-    if(this.position.x <= mx && mx <= this.position.x + this.size.x && this.position.y <= my && my <= this.position.y  + this.size.y){
+    let width = this.size.x;
+    let height = this.size.y;
+    let posX = this.position.x;
+    let posY = this.position.y;
+    if (width < 0){
+      posX += width;
+      width = -width;
+    }
+    if (height < 0){
+      posY += height;
+      height = -height;
+    }
+    console.log(posX,posY);
+    console.log(width,height);
+    if(posX <= mx && mx <= posX + width && posY <= my && my <= posY  + height){
         return true;
     }
     return false;
@@ -71,11 +85,30 @@ export class View {
 
     // Verifica se a soma das distâncias do ponto ao início e ao fim da linha
     // é igual ao comprimento da linha (com uma pequena margem de erro)
-    return Math.abs((d1 + d2) - lineLength) < 1;
+    return Math.abs((d1 + d2) - lineLength) < 1e-2;
   }
 
   draw(p5){
-    p5.image(this.images[this.currentSprite],this.position.x,this.position.y,this.size.x,this.size.y);
+    let width = this.size.x;
+    let height = this.size.y;
+    let posX = this.position.x;
+    let posY = this.position.y;
+    let scaleX = 1;
+    let scaleY = 1;
+    if (width < 0){
+      scaleX = -1;
+      width = -width;
+      posX = -posX;
+    }
+    if (height < 0){
+      scaleY = -1;
+      height = -height;
+      posY = -posY;
+    }
+    p5.push();
+    p5.scale(scaleX,scaleY);
+    p5.image(this.images[this.currentSprite],posX,posY,width,height);
+    p5.pop();
     if(this.hover){
       p5.stroke(255,0,0);
       p5.strokeWeight(2);
@@ -95,41 +128,53 @@ export class View {
   mouseMoved(e) {
     let mX = e.mouseX;
     let mY = e.mouseY;
-    if (this.viewCollision(mX,mY)){
+    let width = this.size.x;
+    let height = this.size.y;
+    let posX = this.position.x;
+    let posY = this.position.y;
+    if (width < 0){
+      posX += width;
+      width = -width;
+    }
+    if (height < 0){
+      posY += height;
+      height = -height;
+    }
+    if(this.circleCollision(mX,mY,posX,posY,11)){
+      this.hover = true
+      document.documentElement.style.cursor = 'nwse-resize';
+    }
+    else if(this.circleCollision(mX,mY,posX+width,posY,11)){
+      this.hover = true
+      document.documentElement.style.cursor = 'nesw-resize';
+    }
+    else if(this.circleCollision(mX,mY,posX,posY+height,11)){
+      this.hover = true
+      document.documentElement.style.cursor = 'nesw-resize';
+    }
+    else if(this.circleCollision(mX,mY,posX+width,posY+height,11)){
+      this.hover = true
+      document.documentElement.style.cursor = 'nwse-resize';
+    }
+    else if(this.lineCollision(mX,mY,posX,posY,posX+width,posY)){
+      this.hover = true
+      document.documentElement.style.cursor = 'ns-resize';
+    }
+    else if(this.lineCollision(mX,mY,posX,posY+height,posX+width,posY+height)){
+      this.hover = true
+      document.documentElement.style.cursor = 'ns-resize';
+    }
+    else if(this.lineCollision(mX,mY,posX,posY,posX,posY+height)){
+      this.hover = true
+      document.documentElement.style.cursor = 'ew-resize';
+    }
+    else if(this.lineCollision(mX,mY,posX+width,posY,posX+width,posY+height)){
+      this.hover = true
+      document.documentElement.style.cursor = 'ew-resize';
+    }
+    else if (this.viewCollision(mX,mY)){
       this.hover = true
       document.documentElement.style.cursor = 'move';
-    }
-    else if(this.circleCollision(mX,mY,this.position.x,this.position.y,11)){
-      this.hover = true
-      document.documentElement.style.cursor = 'nwse-resize';
-    }
-    else if(this.circleCollision(mX,mY,this.position.x+this.size.x,this.position.y,11)){
-      this.hover = true
-      document.documentElement.style.cursor = 'nesw-resize';
-    }
-    else if(this.circleCollision(mX,mY,this.position.x,this.position.y+this.size.y,11)){
-      this.hover = true
-      document.documentElement.style.cursor = 'nesw-resize';
-    }
-    else if(this.circleCollision(mX,mY,this.position.x+this.size.x,this.position.y+this.size.y,11)){
-      this.hover = true
-      document.documentElement.style.cursor = 'nwse-resize';
-    }
-    else if(this.lineCollision(mX,mY,this.position.x,this.position.y,this.position.x+this.size.x,this.position.y)){
-      this.hover = true
-      document.documentElement.style.cursor = 'ns-resize';
-    }
-    else if(this.lineCollision(mX,mY,this.position.x,this.position.y+this.size.y,this.position.x+this.size.x,this.position.y+this.size.y)){
-      this.hover = true
-      document.documentElement.style.cursor = 'ns-resize';
-    }
-    else if(this.lineCollision(mX,mY,this.position.x,this.position.y,this.position.x,this.position.y+this.size.y)){
-      this.hover = true
-      document.documentElement.style.cursor = 'ew-resize';
-    }
-    else if(this.lineCollision(mX,mY,this.position.x+this.size.x,this.position.y,this.position.x+this.size.x,this.position.y+this.size.y)){
-      this.hover = true
-      document.documentElement.style.cursor = 'ew-resize';
     }
     else {
       this.hover = false
@@ -141,11 +186,7 @@ export class View {
   mousePressed(e) {
     let mX = e.mouseX;
     let mY = e.mouseY;
-    if (this.viewCollision(mX,mY)){
-      this.isDragging = true
-      this.lastPosition = new Position(mX,mY);
-    }
-    else if(this.circleCollision(mX,mY,this.position.x,this.position.y,11)){ //CIRCULO ESQUERDO CIMA
+    if(this.circleCollision(mX,mY,this.position.x,this.position.y,11)){ //CIRCULO ESQUERDO CIMA
       this.isResizing = true
       this.lastPosition = new Position(mX,mY);
       this.typeResizing = "CIRCULO_ESQUERDA_CIMA"
@@ -184,6 +225,10 @@ export class View {
       this.isResizing = true
       this.lastPosition = new Position(mX,mY);
       this.typeResizing = "RETA_DIREITA"
+    }
+    else if (this.viewCollision(mX,mY)){
+      this.isDragging = true
+      this.lastPosition = new Position(mX,mY);
     }
     return this.isDragging || this.isResizing;
   }

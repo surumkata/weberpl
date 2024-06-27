@@ -57,9 +57,9 @@ Blockly.Blocks['size'] = {
   init: function() {
     this.appendDummyInput()
         .appendField("Size (")
-        .appendField(new Blockly.FieldNumber(0, 0), "x")
+        .appendField(new Blockly.FieldNumber(0, -10000), "x")
         .appendField(",")
-        .appendField(new Blockly.FieldNumber(0, 0), "y")
+        .appendField(new Blockly.FieldNumber(0, -10000), "y")
         .appendField(")");
     this.setInputsInline(false);
     this.setOutput(true, "size");
