@@ -1,4 +1,4 @@
-import { Position, WIDTH } from "./utils";
+import { HEIGHT, HEIGHT_INV, Position, WIDTH } from "./utils";
 
 export class View {
   constructor(p5,id, srcImages, size, position, timeSprite, repeate) {
@@ -58,8 +58,6 @@ export class View {
       posY += height;
       height = -height;
     }
-    console.log(posX,posY);
-    console.log(width,height);
     if(posX <= mx && mx <= posX + width && posY <= my && my <= posY  + height){
         return true;
     }
@@ -233,13 +231,50 @@ export class View {
     return this.isDragging || this.isResizing;
   }
 
-  mouseDragged(e) {
+  fixPosition(scale){
+    if(this.size.x >= 0){
+      if (this.position.x + this.size.x >= WIDTH*scale){
+        this.position.x = WIDTH*scale - this.size.x;
+      }
+      if (this.position.x <= 0){
+        this.position.x = 0;
+      }
+    }
+    else {
+      if (this.position.x >= WIDTH*scale){
+        this.position.x = WIDTH*scale;
+      }
+      if (this.position.x + this.size.x <= 0){
+        this.position.x = -this.size.x;
+      }
+    }
+    
+    if(this.size.y >= 0){
+      if (this.position.y + this.size.y >= (HEIGHT+HEIGHT_INV)*scale){
+        this.position.y = (HEIGHT+HEIGHT_INV)*scale - this.size.y;
+      }
+      if (this.position.y <= HEIGHT_INV*scale){
+        this.position.y = HEIGHT_INV*scale;
+      }
+    }
+    else {
+      if (this.position.y >= (HEIGHT+HEIGHT_INV)*scale){
+        this.position.y = (HEIGHT+HEIGHT_INV)*scale;
+      }
+      if (this.position.y + this.size.y <= HEIGHT_INV*scale){
+        this.position.y = -this.size.y + HEIGHT_INV*scale;
+      }
+    }
+  }
+
+  mouseDragged(e,scale) {
     let mX = e.mouseX;
     let mY = e.mouseY;
     if (this.isDragging) {
       this.position.x += mX-this.lastPosition.x;
       this.position.y += mY-this.lastPosition.y;
       this.lastPosition = new Position(mX,mY);
+      this.fixPosition(scale)
     }
     else if(this.isResizing) {
       if(this.typeResizing === "RETA_DIREITA"){

@@ -371,7 +371,7 @@ function BlocklyComponent(props) {
       for(var objectId in escape_room.escapeRoom.objects){
         var obj = escape_room.escapeRoom.objects[objectId]
         if (obj.currentView in obj.views){
-          obj.views[obj.currentView].mouseDragged(e)
+          obj.views[obj.currentView].mouseDragged(e,SCALE)
         }
       }
     }
