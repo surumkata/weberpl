@@ -197,7 +197,6 @@ function loadPosconditions(dataPosconditions,scale) {
                 eventPoscondition = new EventPosConditionSequence(s_question,sequence,s_sucess,s_fail);
                 break;
             case "CONNECTIONS":
-                console.log(dataAction)
                 const c_question = dataAction.question;
                 const list1 = dataAction.list1;
                 const list2 = dataAction.list2;

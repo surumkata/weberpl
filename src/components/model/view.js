@@ -18,6 +18,9 @@ export class View {
     this.lastPosition = new Position(0,0);
     this.typeResizing = ""
     this.hover = false
+    this.shift = false
+    this.scaleX = 1
+    this.scaleY = 1
 
     for (let i in this.srcImages){
       //TODO: colocar assets para funcionar :)
@@ -87,25 +90,12 @@ export class View {
   }
 
   draw(p5){
-    let width = this.size.x;
-    let height = this.size.y;
-    let posX = this.position.x;
-    let posY = this.position.y;
-    let scaleX = 1;
-    let scaleY = 1;
-    if (width < 0){
-      scaleX = -1;
-      width = -width;
-      posX = -posX;
-    }
-    if (height < 0){
-      scaleY = -1;
-      height = -height;
-      posY = -posY;
+    if(this.size.x === 0 || this.size.y === 0){
+      return
     }
     p5.push();
-    p5.scale(scaleX,scaleY);
-    p5.image(this.images[this.currentSprite],posX,posY,width,height);
+    p5.scale(this.scaleX,this.scaleY);
+    p5.image(this.images[this.currentSprite],this.position.x*this.scaleX,this.position.y*this.scaleY,this.size.x,this.size.y);
     p5.pop();
     if(this.hover){
       p5.stroke(255,0,0);
@@ -121,6 +111,14 @@ export class View {
     }
     
 
+  }
+
+  shiftPressed(){
+    this.shift = true;
+  }
+
+  shiftReleased(){
+    this.shift = false;
   }
 
   mouseMoved(e) {
@@ -186,57 +184,74 @@ export class View {
     let mY = e.mouseY;
     if(this.circleCollision(mX,mY,this.position.x,this.position.y,11)){ //CIRCULO ESQUERDO CIMA
       this.isResizing = true
-      this.lastPosition = new Position(mX,mY);
+      this.setLastPosition(mX,mY);
       this.typeResizing = "CIRCULO_ESQUERDA_CIMA"
     }
     else if(this.circleCollision(mX,mY,this.position.x+this.size.x,this.position.y,11)){ //CIRCULO DIREITA CIMA
       this.isResizing = true
-      this.lastPosition = new Position(mX,mY);
+      this.setLastPosition(mX,mY);
       this.typeResizing = "CIRCULO_DIREITA_CIMA"
     }
     else if(this.circleCollision(mX,mY,this.position.x,this.position.y+this.size.y,11)){ //CIRCULO ESQUERDA BAIXO
       this.isResizing = true
-      this.lastPosition = new Position(mX,mY);
+      this.setLastPosition(mX,mY);
       this.typeResizing = "CIRCULO_ESQUERDA_BAIXO"
     }
     else if(this.circleCollision(mX,mY,this.position.x+this.size.x,this.position.y+this.size.y,11)){ //CIRCULO DIREITA BAIXO
       this.isResizing = true
-      this.lastPosition = new Position(mX,mY);
+      this.setLastPosition(mX,mY);
       this.typeResizing = "CIRCULO_DIREITA_BAIXO"
     }
     else if(this.lineCollision(mX,mY,this.position.x,this.position.y,this.position.x+this.size.x,this.position.y)){ //RETA CIMA
       this.isResizing = true
-      this.lastPosition = new Position(mX,mY);
+      this.setLastPosition(mX,mY);
       this.typeResizing = "RETA_CIMA"
     }
     else if(this.lineCollision(mX,mY,this.position.x,this.position.y+this.size.y,this.position.x+this.size.x,this.position.y+this.size.y)){ //RETA BAIXO
       this.isResizing = true
-      this.lastPosition = new Position(mX,mY);
+      this.setLastPosition(mX,mY);
       this.typeResizing = "RETA_BAIXO"
     }
     else if(this.lineCollision(mX,mY,this.position.x,this.position.y,this.position.x,this.position.y+this.size.y)){ //RETA ESQUERDA
       this.isResizing = true
-      this.lastPosition = new Position(mX,mY);
+      this.setLastPosition(mX,mY);
       this.typeResizing = "RETA_ESQUERDA"
     }
     else if(this.lineCollision(mX,mY,this.position.x+this.size.x,this.position.y,this.position.x+this.size.x,this.position.y+this.size.y)){ //RETA DIREITA
       this.isResizing = true
-      this.lastPosition = new Position(mX,mY);
+      this.setLastPosition(mX,mY);
       this.typeResizing = "RETA_DIREITA"
     }
     else if (this.viewCollision(mX,mY)){
       this.isDragging = true
-      this.lastPosition = new Position(mX,mY);
+      this.setLastPosition(mX,mY);
     }
+    console.log(this.typeResizing)
     return this.isDragging || this.isResizing;
+  }
+
+  leaningRight(scale){
+    return this.position.x + this.size.x >= WIDTH*scale;
+  }
+
+  leaningLeft(){
+    return this.position.x <= 0;
+  }
+
+  leaningDown(scale){
+    return this.position.y + this.size.y >= (HEIGHT+HEIGHT_INV)*scale;
+  }
+
+  leaningTop(scale){
+    return this.position.y <= HEIGHT_INV*scale;
   }
 
   fixPosition(scale){
     if(this.size.x >= 0){
-      if (this.position.x + this.size.x >= WIDTH*scale){
+      if (this.leaningRight(scale)){
         this.position.x = WIDTH*scale - this.size.x;
       }
-      if (this.position.x <= 0){
+      if (this.leaningLeft()){
         this.position.x = 0;
       }
     }
@@ -250,10 +265,10 @@ export class View {
     }
     
     if(this.size.y >= 0){
-      if (this.position.y + this.size.y >= (HEIGHT+HEIGHT_INV)*scale){
+      if (this.leaningDown(scale)){
         this.position.y = (HEIGHT+HEIGHT_INV)*scale - this.size.y;
       }
-      if (this.position.y <= HEIGHT_INV*scale){
+      if (this.leaningTop(scale)){
         this.position.y = HEIGHT_INV*scale;
       }
     }
@@ -267,57 +282,356 @@ export class View {
     }
   }
 
+  setLastPosition(x,y){
+    this.lastPosition = new Position(x,y);
+  }
+
+  setX(x){
+    this.position.x = x;
+  }
+
+  setY(y){
+    this.position.y = y;
+  }
+
+  dragViewX(x){
+    this.position.x += x;
+  }
+
+  dragViewY(y){
+    this.position.y += y;
+  }
+
+  resizeX(x){
+    this.size.x = x;
+  }
+
+  resizeY(y){
+    this.size.y = y;
+  }
+
+  resizeRight(mX,mY,changeX,scale){
+    if(!(this.leaningRight(scale) && changeX > 0)){ //Não dou resize se tiver a tocar a borda da direita e o movimento for para a direita (changeX positivo)
+      let touched_limits = false;
+      
+      this.resizeX(Math.max(0,this.size.x + changeX));
+      if(this.leaningRight(scale)){
+        this.resizeX(WIDTH*scale - this.position.x);
+        touched_limits = true;
+      }
+      if (this.size.x != 0 && !touched_limits) {
+        this.setLastPosition(mX,mY);
+      }
+    }
+  }
+
+  resizeDown(mX,mY,changeY,scale){
+    if(!(this.leaningDown(scale) && changeY > 0)){ //Não dou resize se tiver a tocar a borda de baixo e o movimento for para baixo (changeY positivo)
+      let touched_limits = false;
+      this.resizeY(Math.max(0,this.size.y + changeY));
+      if(this.leaningDown(scale)){ //Se tiver passado da borda de baixo ajusta-se para ficar em encostado a ela.
+        this.resizeY((HEIGHT+HEIGHT_INV)*scale - this.position.y);
+        touched_limits = true;
+      }
+      if (this.size.y != 0 && !touched_limits) {
+        this.setLastPosition(mX,mY);
+      }
+    }
+  }
+
+  resizeLeft(mX,mY,changeX){
+    if(!(this.leaningLeft() && changeX < 0)){ //Não dou resize se tiver a tocar a borda da esquerda e o movimento for para a esquerda (changeX negativo)
+      let touched_limits = false;
+      this.dragViewX(changeX);
+      this.resizeX(this.size.x - changeX);
+      if(this.leaningLeft()){ //Se tiver passado da borda da esquerda ajusta-se para ficar em encostado a ela.
+        this.resizeX(this.size.x + this.position.x);
+        this.setX(0);
+        touched_limits = true;
+      }
+      if(this.size.x < 0){
+        this.dragViewX(this.size.x);
+        this.resizeX(0);
+      }
+      
+      if (this.size.x != 0 && !touched_limits) {
+        this.setLastPosition(mX,mY);
+      }
+    }
+  }
+
+  resizeTop(mX,mY,changeY,scale){
+    if(!(this.leaningTop(scale) && changeY < 0)){ //Não dou resize se tiver a tocar a borda de cima e o movimento for para cima (changeY negativo).
+      let touched_limits = false;
+      this.dragViewY(changeY);
+      this.resizeY(this.size.y - changeY);
+      if (this.leaningTop(scale)){ //Se tiver passado da borda de cima ajusta-se para ficar em encostado a ela.
+        this.resizeY(this.size.y - (HEIGHT_INV*scale - this.position.y));
+        this.setY(HEIGHT_INV*scale);
+        touched_limits = true;
+      }
+      
+      if(this.size.y < 0){
+        this.dragViewY(this.size.y);
+        this.resizeY(0);
+      }
+
+      if (this.size.y != 0 && !touched_limits) {
+        this.setLastPosition(mX,mY);
+      }
+    }
+  }
+
+  resizeDownRight(mX,mY,changeX, changeY, scale,relXY,relYX){
+    if(!((this.leaningDown(scale) && changeY > 0) || (this.leaningRight(scale) && changeX > 0))){
+      let touched_limits = false;
+      if(relXY > relYX){
+        //right
+        this.resizeX(Math.max(0.1,this.size.x + changeY*relXY));
+        //down
+        this.resizeY(Math.max(0.1,this.size.y + changeY));
+      }
+      else{
+        //right
+        this.resizeX(Math.max(0.1,this.size.x + changeX));
+        //down
+        this.resizeY(Math.max(0.1,this.size.y + changeX*relYX));
+      }
+
+      if(this.leaningDown(scale)){ //Se tiver passado da borda de baixo ajusta-se para ficar em encostado a ela.
+        this.resizeY((HEIGHT+HEIGHT_INV)*scale - this.position.y);
+        this.resizeX(this.size.y*relXY);
+        touched_limits = true;
+      }
+      if(this.leaningRight(scale)){
+        this.resizeX(WIDTH*scale - this.position.x);
+        this.resizeY(this.size.x*relYX);
+        touched_limits = true;
+      }
+
+      if (this.size.x != 0.1 && this.size.y != 0.1 && !touched_limits) {
+        this.setLastPosition(mX,mY);
+      }
+    }
+  }
+
+  resizeTopRight(mX,mY,changeX, changeY, scale,relXY,relYX){
+    if(!((this.leaningTop(scale) && changeY < 0) || (this.leaningRight() && changeX > 0))){
+      let touched_limits = false;
+      if(relXY > relYX){
+        //right
+        this.resizeX(Math.max(0.1,this.size.x - changeY*relXY));
+        //top
+        this.dragViewY(changeY);
+        this.resizeY(this.size.y - changeY);
+      }
+      else{
+        //right
+        this.resizeX(Math.max(0.1,this.size.x + changeX));
+        //top
+        this.dragViewY(-changeX*relYX);
+        this.resizeY(this.size.y + changeX*relYX);
+      }
+
+
+      if (this.leaningTop(scale)){ //Se tiver passado da borda de cima ajusta-se para ficar em encostado a ela.
+        let dif = (HEIGHT_INV*scale - this.position.y);
+        this.resizeY(this.size.y - dif);
+        this.setY(HEIGHT_INV*scale);
+
+        this.resizeX(this.size.x - dif*relXY);
+        touched_limits = true;
+      }
+
+      if(this.size.y < 0.1){
+        this.dragViewY(this.size.y-0.1);
+        this.resizeY(0.1);
+      }
+
+      if(this.leaningRight(scale)){
+        let dif = this.size.x - (WIDTH*scale - this.position.x)
+        this.resizeX(WIDTH*scale - this.position.x);
+
+        this.dragViewY(dif*relYX);
+        this.resizeY(this.size.y - dif*relYX);
+        touched_limits = true;
+      }
+
+      if (this.size.x != 0.1 && this.size.y != 0.1 && !touched_limits) {
+        this.setLastPosition(mX,mY);
+      }
+    }
+  }
+
+  resizeDownLeft(mX,mY,changeX, changeY, scale,relXY,relYX){
+    if(!((this.leaningDown(scale) && changeY > 0) || (this.leaningLeft(scale) && changeX < 0))){
+      let touched_limits = false;
+      if(relXY > relYX){
+        //left
+        this.dragViewX(-changeY*relXY);
+        this.resizeX(this.size.x + changeY*relXY);
+        //down
+        this.resizeY(Math.max(0.1,this.size.y + changeY));
+      }
+      else{
+        //left
+        this.dragViewX(changeX);
+        this.resizeX(this.size.x - changeX);
+        //down
+        this.resizeY(Math.max(0.1,this.size.y - changeX*relYX));
+      }
+
+
+      if(this.leaningDown(scale)){ //Se tiver passado da borda de baixo ajusta-se para ficar em encostado a ela.
+        let dif = this.size.y - ((HEIGHT+HEIGHT_INV)*scale - this.position.y)
+        this.resizeY((HEIGHT+HEIGHT_INV)*scale - this.position.y);
+
+        
+        this.dragViewX(dif*relXY);
+        this.resizeX(this.size.x - dif*relXY);
+        touched_limits = true;
+      }
+      if(this.leaningLeft()){ //Se tiver passado da borda da esquerda ajusta-se para ficar em encostado a ela.
+        let dif = -this.position.x
+        this.resizeX(this.size.x - dif);
+        this.setX(0);
+
+        //TODO:
+        this.resizeY(this.size.y - dif*relYX);
+        touched_limits = true;
+      }
+
+      
+
+      if(this.size.x < 0.1){
+        this.dragViewX(this.size.x-0.1);
+        this.resizeX(0.1);
+      }
+
+      if (this.size.x != 0.1 && this.size.y != 0.1 && !touched_limits) {
+        this.setLastPosition(mX,mY);
+      }
+    }
+  }
+
+  resizeTopLeft(mX,mY,changeX, changeY, scale,relXY,relYX){
+    if(!((this.leaningTop(scale) && changeY < 0) || (this.leaningLeft() && changeX < 0))){
+      let touched_limits = false;
+      if(relXY > relYX){
+        //left
+        this.dragViewX(changeY*relXY);
+        this.resizeX(this.size.x - changeY*relXY);
+        //top
+        this.dragViewY(changeY);
+        this.resizeY(this.size.y - changeY);
+      }
+      else{
+        //left
+        this.dragViewX(changeX);
+        this.resizeX(this.size.x - changeX);
+        //top
+        this.dragViewY(changeX*relYX);
+        this.resizeY(this.size.y - changeX*relYX);
+      }
+
+      if (this.leaningTop(scale)){ //Se tiver passado da borda de cima ajusta-se para ficar em encostado a ela.
+        let dif = (HEIGHT_INV*scale - this.position.y);
+        this.resizeY(this.size.y - dif);
+        this.setY(HEIGHT_INV*scale);
+
+        this.dragViewX(dif*relXY);
+        this.resizeX(this.size.x - dif*relXY);
+        touched_limits = true;
+      }
+      
+      if(this.size.y < 0.1){
+        this.dragViewY(this.size.y-0.1);
+        this.resizeY(0.1);
+      }
+
+      if(this.leaningLeft()){ //Se tiver passado da borda da esquerda ajusta-se para ficar em encostado a ela.
+        let dif = -this.position.x
+        this.resizeX(this.size.x - dif);
+        this.setX(0);
+
+        this.dragViewY(dif*relYX);
+        this.resizeY(this.size.y - dif*relYX);
+        touched_limits = true;
+      }
+      if(this.size.x < 0.1){
+        this.dragViewX(this.size.x-0.1);
+        this.resizeX(0.1);
+      }
+
+      if (this.size.x != 0.1 && this.size.y != 0.1 && !touched_limits) {
+        this.setLastPosition(mX,mY);
+      }
+    }
+  }
+
   mouseDragged(e,scale) {
     let mX = e.mouseX;
     let mY = e.mouseY;
+    let changeX = mX-this.lastPosition.x;
+    let changeY = mY-this.lastPosition.y;
+    let relXY = this.size.x / this.size.y;
+    let relYX = this.size.y / this.size.x;
+
     if (this.isDragging) {
-      this.position.x += mX-this.lastPosition.x;
-      this.position.y += mY-this.lastPosition.y;
-      this.lastPosition = new Position(mX,mY);
+      this.dragViewX(changeX);
+      this.dragViewY(changeY);
+      this.setLastPosition(mX,mY);
       this.fixPosition(scale)
     }
     else if(this.isResizing) {
       if(this.typeResizing === "RETA_DIREITA"){
-        this.size.x += mX-this.lastPosition.x;
-        this.lastPosition = new Position(mX,mY);
+        this.resizeRight(mX,mY,changeX,scale);
       }
       else if(this.typeResizing === "RETA_BAIXO"){
-        this.size.y += mY-this.lastPosition.y;
-        this.lastPosition = new Position(mX,mY);
+        this.resizeDown(mX,mY,changeY,scale);
       }
       else if(this.typeResizing === "RETA_ESQUERDA"){
-        this.position.x += mX-this.lastPosition.x;
-        this.size.x -= mX-this.lastPosition.x;
-        this.lastPosition = new Position(mX,mY);
+        this.resizeLeft(mX,mY,changeX);
       }
       else if(this.typeResizing === "RETA_CIMA"){
-        this.position.y += mY-this.lastPosition.y;
-        this.size.y -= mY-this.lastPosition.y;
-        this.lastPosition = new Position(mX,mY);
+        this.resizeTop(mX,mY,changeY,scale);
       }
-      else if(this.typeResizing === "CIRCULO_DIREITA_BAIXO"){
-        this.size.x += mX-this.lastPosition.x;
-        this.size.y += mY-this.lastPosition.y;
-        this.lastPosition = new Position(mX,mY);
+      else if(this.typeResizing === "CIRCULO_DIREITA_BAIXO"){ //RETA_BAIXO + RETA_DIREITA
+        if(this.shift){
+          this.resizeDownRight(mX,mY,changeX, changeY, scale,relXY,relYX);
+        }
+        else{
+          this.resizeRight(mX,mY,changeX,scale);
+          this.resizeDown(mX,mY,changeY,scale);
+        }
       }
-      else if(this.typeResizing === "CIRCULO_DIREITA_CIMA"){
-        this.size.x += mX-this.lastPosition.x;
-        this.position.y += mY-this.lastPosition.y;
-        this.size.y -= mY-this.lastPosition.y;
-        this.lastPosition = new Position(mX,mY);
+      else if(this.typeResizing === "CIRCULO_DIREITA_CIMA"){ //RETA_CIMA + RETA_DIREITA
+        if(this.shift){
+          this.resizeTopRight(mX,mY,changeX,changeY,scale,relXY,relYX);
+        }
+        else{
+          this.resizeRight(mX,mY,changeX,scale);
+          this.resizeTop(mX,mY,changeY,scale);
+        }
       }
-      else if(this.typeResizing === "CIRCULO_ESQUERDA_BAIXO"){
-        this.position.x += mX-this.lastPosition.x;
-        this.size.x -= mX-this.lastPosition.x;
-        this.size.y += mY-this.lastPosition.y;
-        this.lastPosition = new Position(mX,mY);
+      else if(this.typeResizing === "CIRCULO_ESQUERDA_BAIXO"){ //RETA_BAIXO + RETA_ESQUERDA
+        if(this.shift){
+          this.resizeDownLeft(mX,mY,changeX,changeY,scale,relXY,relYX);
+        }
+        else{
+          this.resizeLeft(mX,mY,changeX);
+          this.resizeDown(mX,mY,changeY,scale);
+        }
+        
       }
-      else if(this.typeResizing === "CIRCULO_ESQUERDA_CIMA"){
-        this.position.x += mX-this.lastPosition.x;
-        this.size.x -= mX-this.lastPosition.x;
-        this.position.y += mY-this.lastPosition.y;
-        this.size.y -= mY-this.lastPosition.y;
-        this.lastPosition = new Position(mX,mY);
+      else if(this.typeResizing === "CIRCULO_ESQUERDA_CIMA"){ //RETA_CIMA + RETA_ESQUERDA
+        if(this.shift){
+          this.resizeTopLeft(mX,mY,changeX,changeY,scale,relXY,relYX);
+        }
+        else{
+          this.resizeLeft(mX,mY,changeX);
+          this.resizeTop(mX,mY,changeY,scale);
+        }
       }
     }
   }

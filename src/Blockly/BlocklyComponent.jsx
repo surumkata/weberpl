@@ -418,10 +418,40 @@ function BlocklyComponent(props) {
           if (changes) {
             let newPosx = view.position.x * 1/SCALE;
             let newPosy = (view.position.y* 1/SCALE-HEIGHT_INV);
-            let newSizex = view.size.x * 1/SCALE;
-            let newSizey = view.size.y * 1/SCALE;
+            let newSizex = 0;
+            let newSizey = 0;
+            if(view.size.x !== 0){
+              newSizex = view.size.x * 1/SCALE;
+            }
+            if(view.size.y !== 0){
+              newSizey = view.size.y * 1/SCALE;
+            }
             updateViewPositionAndSize(objectId,obj.currentView,newPosx,newPosy,newSizex,newSizey);
           }
+        }
+      }
+    }
+  }
+
+  const keyPressed = (e) => {
+    if (e.keyCode == 16){
+      if(escape_room != undefined){
+        for(var objectId in escape_room.escapeRoom.objects){
+          var obj = escape_room.escapeRoom.objects[objectId]
+          for (var viewId in obj.views)
+            obj.views[viewId].shiftPressed();
+        }
+      }
+    }
+  }
+  
+  const keyReleased = (e) => {
+    if (e.keyCode == 16){
+      if(escape_room != undefined){
+        for(var objectId in escape_room.escapeRoom.objects){
+          var obj = escape_room.escapeRoom.objects[objectId]
+          for (var viewId in obj.views)
+            obj.views[viewId].shiftReleased();
         }
       }
     }
@@ -443,7 +473,7 @@ function BlocklyComponent(props) {
           }
         </div>
         <div className="scene-container">
-            {<Sketch setup={setup} draw={draw} mouseMoved={mouseMoved} mousePressed={mousePressed} mouseDragged={mouseDragged} mouseReleased={mouseReleased}/>}
+            {<Sketch setup={setup} draw={draw} mouseMoved={mouseMoved} mousePressed={mousePressed} mouseDragged={mouseDragged} mouseReleased={mouseReleased} keyPressed={keyPressed} keyReleased={keyReleased}/>}
         </div>  
     </React.Fragment>
   );
