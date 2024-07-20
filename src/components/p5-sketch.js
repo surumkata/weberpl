@@ -4,13 +4,11 @@ import { load } from './model/load.js';
 import "./p5-sketch.css"
 import { WIDTH, HEIGHT, HEIGHT_INV } from './model/utils.js';
 
-let SCALE = 1
-
 function P5Sketch(json) {
     var gameData;
 
     const preload = (p5) => {
-        gameData = load(p5,json.json,SCALE);
+        gameData = load(p5,json.json);
       }
 
     const setup = (p5, canvasParentRef) => {
@@ -22,6 +20,7 @@ function P5Sketch(json) {
     
 
     const draw = (p5) => {
+        p5.background(0);
         tryDoEvents(gameData);
         //Atualiza os buffers depois dos events
         gameData.gameState.updateBuffers(gameData.escapeRoom)
@@ -62,8 +61,9 @@ function P5Sketch(json) {
             }
         }
         else if (gameData.gameState.isTransition()) {
-            gameData.gameState.transition.stopMusic()
-            if (gameData.gameState.transition.nextScenario !== undefined) {
+            //gameData.gameState.transition.stopMusic()
+            console.log(gameData.gameState.transition)
+            if (gameData.gameState.transition.nextScenario !== null) {
                 gameData.gameState.desactivateTransitionMode()
             }
             else {

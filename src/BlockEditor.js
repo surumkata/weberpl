@@ -24,6 +24,8 @@ function BlockEditor() {
           initialXml={`
 <xml>
   <block type="escape_room" x="10" y="10">
+    <field name="TYPE">SCENARIO</field>
+    <field name="START">My Scene</field>
     <statement name="SCENARIOS">
       <block type="scenario">
         <statement name="VIEWS">
@@ -94,6 +96,7 @@ function BlockEditor() {
             <Block type="image"/>
             <Block type="story"/>
             <Block type="custom_dropdown_block"/>
+            <Block type="turn"/>
         </Category>
         <Category name="Triggers">
             <Block type="precond_click_obj"/>

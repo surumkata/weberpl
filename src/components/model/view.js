@@ -1,7 +1,7 @@
-import { HEIGHT, HEIGHT_INV, Position, WIDTH } from "./utils";
+import { HEIGHT, HEIGHT_INV, Position, WIDTH, SCALE_EDIT } from "./utils";
 
 export class View {
-  constructor(p5,id, srcImages, size, position, timeSprite, repeate) {
+  constructor(p5,id, srcImages, size, position, timeSprite, repeate,turn) {
     this.id = id;
     this.position = position;
     this.size = size;
@@ -19,8 +19,8 @@ export class View {
     this.typeResizing = ""
     this.hover = false
     this.shift = false
-    this.scaleX = 1
-    this.scaleY = 1
+    this.turnX = turn.x
+    this.turnY = turn.y
 
     for (let i in this.srcImages){
       //TODO: colocar assets para funcionar :)
@@ -93,9 +93,28 @@ export class View {
     if(this.size.x === 0 || this.size.y === 0){
       return
     }
+
+    var posX = this.position.x
+    var posY = this.position.y
+    var width = this.size.x
+    var height = this.size.y
+    var scaleX = 1;
+    var scaleY = 1;
+
+    if(this.turnX){
+      posX *= -1;
+      posX -= width;
+      scaleX = -1;
+    }
+    if(this.turnY){
+      posY *= -1
+      posY -= height
+      scaleY = -1;
+    }
+
     p5.push();
-    p5.scale(this.scaleX,this.scaleY);
-    p5.image(this.images[this.currentSprite],this.position.x*this.scaleX,this.position.y*this.scaleY,this.size.x,this.size.y);
+    p5.scale(scaleX,scaleY);
+    p5.image(this.images[this.currentSprite],posX,posY,width,height);
     p5.pop();
     if(this.hover){
       p5.stroke(255,0,0);
@@ -226,38 +245,37 @@ export class View {
       this.isDragging = true
       this.setLastPosition(mX,mY);
     }
-    console.log(this.typeResizing)
     return this.isDragging || this.isResizing;
   }
 
-  leaningRight(scale){
-    return this.position.x + this.size.x >= WIDTH*scale;
+  leaningRight(){
+    return this.position.x + this.size.x >= WIDTH*SCALE_EDIT;
   }
 
   leaningLeft(){
     return this.position.x <= 0;
   }
 
-  leaningDown(scale){
-    return this.position.y + this.size.y >= (HEIGHT+HEIGHT_INV)*scale;
+  leaningDown(){
+    return this.position.y + this.size.y >= (HEIGHT+HEIGHT_INV)*SCALE_EDIT;
   }
 
-  leaningTop(scale){
-    return this.position.y <= HEIGHT_INV*scale;
+  leaningTop(){
+    return this.position.y <= HEIGHT_INV*SCALE_EDIT;
   }
 
-  fixPosition(scale){
+  fixPosition(){
     if(this.size.x >= 0){
-      if (this.leaningRight(scale)){
-        this.position.x = WIDTH*scale - this.size.x;
+      if (this.leaningRight()){
+        this.position.x = WIDTH*SCALE_EDIT - this.size.x;
       }
       if (this.leaningLeft()){
         this.position.x = 0;
       }
     }
     else {
-      if (this.position.x >= WIDTH*scale){
-        this.position.x = WIDTH*scale;
+      if (this.position.x >= WIDTH*SCALE_EDIT){
+        this.position.x = WIDTH*SCALE_EDIT;
       }
       if (this.position.x + this.size.x <= 0){
         this.position.x = -this.size.x;
@@ -265,19 +283,19 @@ export class View {
     }
     
     if(this.size.y >= 0){
-      if (this.leaningDown(scale)){
-        this.position.y = (HEIGHT+HEIGHT_INV)*scale - this.size.y;
+      if (this.leaningDown()){
+        this.position.y = (HEIGHT+HEIGHT_INV)*SCALE_EDIT - this.size.y;
       }
-      if (this.leaningTop(scale)){
-        this.position.y = HEIGHT_INV*scale;
+      if (this.leaningTop()){
+        this.position.y = HEIGHT_INV*SCALE_EDIT;
       }
     }
     else {
-      if (this.position.y >= (HEIGHT+HEIGHT_INV)*scale){
-        this.position.y = (HEIGHT+HEIGHT_INV)*scale;
+      if (this.position.y >= (HEIGHT+HEIGHT_INV)*SCALE_EDIT){
+        this.position.y = (HEIGHT+HEIGHT_INV)*SCALE_EDIT;
       }
-      if (this.position.y + this.size.y <= HEIGHT_INV*scale){
-        this.position.y = -this.size.y + HEIGHT_INV*scale;
+      if (this.position.y + this.size.y <= HEIGHT_INV*SCALE_EDIT){
+        this.position.y = -this.size.y + HEIGHT_INV*SCALE_EDIT;
       }
     }
   }
@@ -310,13 +328,13 @@ export class View {
     this.size.y = y;
   }
 
-  resizeRight(mX,mY,changeX,scale){
-    if(!(this.leaningRight(scale) && changeX > 0)){ //Não dou resize se tiver a tocar a borda da direita e o movimento for para a direita (changeX positivo)
+  resizeRight(mX,mY,changeX){
+    if(!(this.leaningRight() && changeX > 0)){ //Não dou resize se tiver a tocar a borda da direita e o movimento for para a direita (changeX positivo)
       let touched_limits = false;
       
       this.resizeX(Math.max(0,this.size.x + changeX));
-      if(this.leaningRight(scale)){
-        this.resizeX(WIDTH*scale - this.position.x);
+      if(this.leaningRight()){
+        this.resizeX(WIDTH*SCALE_EDIT - this.position.x);
         touched_limits = true;
       }
       if (this.size.x != 0 && !touched_limits) {
@@ -325,12 +343,12 @@ export class View {
     }
   }
 
-  resizeDown(mX,mY,changeY,scale){
-    if(!(this.leaningDown(scale) && changeY > 0)){ //Não dou resize se tiver a tocar a borda de baixo e o movimento for para baixo (changeY positivo)
+  resizeDown(mX,mY,changeY){
+    if(!(this.leaningDown() && changeY > 0)){ //Não dou resize se tiver a tocar a borda de baixo e o movimento for para baixo (changeY positivo)
       let touched_limits = false;
       this.resizeY(Math.max(0,this.size.y + changeY));
-      if(this.leaningDown(scale)){ //Se tiver passado da borda de baixo ajusta-se para ficar em encostado a ela.
-        this.resizeY((HEIGHT+HEIGHT_INV)*scale - this.position.y);
+      if(this.leaningDown()){ //Se tiver passado da borda de baixo ajusta-se para ficar em encostado a ela.
+        this.resizeY((HEIGHT+HEIGHT_INV)*SCALE_EDIT - this.position.y);
         touched_limits = true;
       }
       if (this.size.y != 0 && !touched_limits) {
@@ -360,14 +378,14 @@ export class View {
     }
   }
 
-  resizeTop(mX,mY,changeY,scale){
-    if(!(this.leaningTop(scale) && changeY < 0)){ //Não dou resize se tiver a tocar a borda de cima e o movimento for para cima (changeY negativo).
+  resizeTop(mX,mY,changeY){
+    if(!(this.leaningTop() && changeY < 0)){ //Não dou resize se tiver a tocar a borda de cima e o movimento for para cima (changeY negativo).
       let touched_limits = false;
       this.dragViewY(changeY);
       this.resizeY(this.size.y - changeY);
-      if (this.leaningTop(scale)){ //Se tiver passado da borda de cima ajusta-se para ficar em encostado a ela.
-        this.resizeY(this.size.y - (HEIGHT_INV*scale - this.position.y));
-        this.setY(HEIGHT_INV*scale);
+      if (this.leaningTop()){ //Se tiver passado da borda de cima ajusta-se para ficar em encostado a ela.
+        this.resizeY(this.size.y - (HEIGHT_INV*SCALE_EDIT - this.position.y));
+        this.setY(HEIGHT_INV*SCALE_EDIT);
         touched_limits = true;
       }
       
@@ -382,8 +400,8 @@ export class View {
     }
   }
 
-  resizeDownRight(mX,mY,changeX, changeY, scale,relXY,relYX){
-    if(!((this.leaningDown(scale) && changeY > 0) || (this.leaningRight(scale) && changeX > 0))){
+  resizeDownRight(mX,mY,changeX, changeY,relXY,relYX){
+    if(!((this.leaningDown() && changeY > 0) || (this.leaningRight() && changeX > 0))){
       let touched_limits = false;
       if(relXY > relYX){
         //right
@@ -398,13 +416,13 @@ export class View {
         this.resizeY(Math.max(0.1,this.size.y + changeX*relYX));
       }
 
-      if(this.leaningDown(scale)){ //Se tiver passado da borda de baixo ajusta-se para ficar em encostado a ela.
-        this.resizeY((HEIGHT+HEIGHT_INV)*scale - this.position.y);
+      if(this.leaningDown()){ //Se tiver passado da borda de baixo ajusta-se para ficar em encostado a ela.
+        this.resizeY((HEIGHT+HEIGHT_INV)*SCALE_EDIT - this.position.y);
         this.resizeX(this.size.y*relXY);
         touched_limits = true;
       }
-      if(this.leaningRight(scale)){
-        this.resizeX(WIDTH*scale - this.position.x);
+      if(this.leaningRight()){
+        this.resizeX(WIDTH*SCALE_EDIT - this.position.x);
         this.resizeY(this.size.x*relYX);
         touched_limits = true;
       }
@@ -415,8 +433,8 @@ export class View {
     }
   }
 
-  resizeTopRight(mX,mY,changeX, changeY, scale,relXY,relYX){
-    if(!((this.leaningTop(scale) && changeY < 0) || (this.leaningRight() && changeX > 0))){
+  resizeTopRight(mX,mY,changeX, changeY,relXY,relYX){
+    if(!((this.leaningTop() && changeY < 0) || (this.leaningRight() && changeX > 0))){
       let touched_limits = false;
       if(relXY > relYX){
         //right
@@ -434,10 +452,10 @@ export class View {
       }
 
 
-      if (this.leaningTop(scale)){ //Se tiver passado da borda de cima ajusta-se para ficar em encostado a ela.
-        let dif = (HEIGHT_INV*scale - this.position.y);
+      if (this.leaningTop()){ //Se tiver passado da borda de cima ajusta-se para ficar em encostado a ela.
+        let dif = (HEIGHT_INV*SCALE_EDIT - this.position.y);
         this.resizeY(this.size.y - dif);
-        this.setY(HEIGHT_INV*scale);
+        this.setY(HEIGHT_INV*SCALE_EDIT);
 
         this.resizeX(this.size.x - dif*relXY);
         touched_limits = true;
@@ -448,9 +466,9 @@ export class View {
         this.resizeY(0.1);
       }
 
-      if(this.leaningRight(scale)){
-        let dif = this.size.x - (WIDTH*scale - this.position.x)
-        this.resizeX(WIDTH*scale - this.position.x);
+      if(this.leaningRight()){
+        let dif = this.size.x - (WIDTH*SCALE_EDIT - this.position.x)
+        this.resizeX(WIDTH*SCALE_EDIT - this.position.x);
 
         this.dragViewY(dif*relYX);
         this.resizeY(this.size.y - dif*relYX);
@@ -463,8 +481,8 @@ export class View {
     }
   }
 
-  resizeDownLeft(mX,mY,changeX, changeY, scale,relXY,relYX){
-    if(!((this.leaningDown(scale) && changeY > 0) || (this.leaningLeft(scale) && changeX < 0))){
+  resizeDownLeft(mX,mY,changeX, changeY,relXY,relYX){
+    if(!((this.leaningDown() && changeY > 0) || (this.leaningLeft() && changeX < 0))){
       let touched_limits = false;
       if(relXY > relYX){
         //left
@@ -482,9 +500,9 @@ export class View {
       }
 
 
-      if(this.leaningDown(scale)){ //Se tiver passado da borda de baixo ajusta-se para ficar em encostado a ela.
-        let dif = this.size.y - ((HEIGHT+HEIGHT_INV)*scale - this.position.y)
-        this.resizeY((HEIGHT+HEIGHT_INV)*scale - this.position.y);
+      if(this.leaningDown()){ //Se tiver passado da borda de baixo ajusta-se para ficar em encostado a ela.
+        let dif = this.size.y - ((HEIGHT+HEIGHT_INV)*SCALE_EDIT - this.position.y)
+        this.resizeY((HEIGHT+HEIGHT_INV)*SCALE_EDIT - this.position.y);
 
         
         this.dragViewX(dif*relXY);
@@ -496,7 +514,6 @@ export class View {
         this.resizeX(this.size.x - dif);
         this.setX(0);
 
-        //TODO:
         this.resizeY(this.size.y - dif*relYX);
         touched_limits = true;
       }
@@ -514,8 +531,8 @@ export class View {
     }
   }
 
-  resizeTopLeft(mX,mY,changeX, changeY, scale,relXY,relYX){
-    if(!((this.leaningTop(scale) && changeY < 0) || (this.leaningLeft() && changeX < 0))){
+  resizeTopLeft(mX,mY,changeX, changeY,relXY,relYX){
+    if(!((this.leaningTop() && changeY < 0) || (this.leaningLeft() && changeX < 0))){
       let touched_limits = false;
       if(relXY > relYX){
         //left
@@ -534,10 +551,10 @@ export class View {
         this.resizeY(this.size.y - changeX*relYX);
       }
 
-      if (this.leaningTop(scale)){ //Se tiver passado da borda de cima ajusta-se para ficar em encostado a ela.
-        let dif = (HEIGHT_INV*scale - this.position.y);
+      if (this.leaningTop()){ //Se tiver passado da borda de cima ajusta-se para ficar em encostado a ela.
+        let dif = (HEIGHT_INV*SCALE_EDIT - this.position.y);
         this.resizeY(this.size.y - dif);
-        this.setY(HEIGHT_INV*scale);
+        this.setY(HEIGHT_INV*SCALE_EDIT);
 
         this.dragViewX(dif*relXY);
         this.resizeX(this.size.x - dif*relXY);
@@ -569,7 +586,7 @@ export class View {
     }
   }
 
-  mouseDragged(e,scale) {
+  mouseDragged(e) {
     let mX = e.mouseX;
     let mY = e.mouseY;
     let changeX = mX-this.lastPosition.x;
@@ -581,56 +598,56 @@ export class View {
       this.dragViewX(changeX);
       this.dragViewY(changeY);
       this.setLastPosition(mX,mY);
-      this.fixPosition(scale)
+      this.fixPosition()
     }
     else if(this.isResizing) {
       if(this.typeResizing === "RETA_DIREITA"){
-        this.resizeRight(mX,mY,changeX,scale);
+        this.resizeRight(mX,mY,changeX);
       }
       else if(this.typeResizing === "RETA_BAIXO"){
-        this.resizeDown(mX,mY,changeY,scale);
+        this.resizeDown(mX,mY,changeY);
       }
       else if(this.typeResizing === "RETA_ESQUERDA"){
         this.resizeLeft(mX,mY,changeX);
       }
       else if(this.typeResizing === "RETA_CIMA"){
-        this.resizeTop(mX,mY,changeY,scale);
+        this.resizeTop(mX,mY,changeY);
       }
       else if(this.typeResizing === "CIRCULO_DIREITA_BAIXO"){ //RETA_BAIXO + RETA_DIREITA
         if(this.shift){
-          this.resizeDownRight(mX,mY,changeX, changeY, scale,relXY,relYX);
+          this.resizeDownRight(mX,mY,changeX, changeY,relXY,relYX);
         }
         else{
-          this.resizeRight(mX,mY,changeX,scale);
-          this.resizeDown(mX,mY,changeY,scale);
+          this.resizeRight(mX,mY,changeX);
+          this.resizeDown(mX,mY,changeY);
         }
       }
       else if(this.typeResizing === "CIRCULO_DIREITA_CIMA"){ //RETA_CIMA + RETA_DIREITA
         if(this.shift){
-          this.resizeTopRight(mX,mY,changeX,changeY,scale,relXY,relYX);
+          this.resizeTopRight(mX,mY,changeX,changeY,relXY,relYX);
         }
         else{
-          this.resizeRight(mX,mY,changeX,scale);
-          this.resizeTop(mX,mY,changeY,scale);
+          this.resizeRight(mX,mY,changeX);
+          this.resizeTop(mX,mY,changeY);
         }
       }
       else if(this.typeResizing === "CIRCULO_ESQUERDA_BAIXO"){ //RETA_BAIXO + RETA_ESQUERDA
         if(this.shift){
-          this.resizeDownLeft(mX,mY,changeX,changeY,scale,relXY,relYX);
+          this.resizeDownLeft(mX,mY,changeX,changeY,relXY,relYX);
         }
         else{
           this.resizeLeft(mX,mY,changeX);
-          this.resizeDown(mX,mY,changeY,scale);
+          this.resizeDown(mX,mY,changeY);
         }
         
       }
       else if(this.typeResizing === "CIRCULO_ESQUERDA_CIMA"){ //RETA_CIMA + RETA_ESQUERDA
         if(this.shift){
-          this.resizeTopLeft(mX,mY,changeX,changeY,scale,relXY,relYX);
+          this.resizeTopLeft(mX,mY,changeX,changeY,relXY,relYX);
         }
         else{
           this.resizeLeft(mX,mY,changeX);
-          this.resizeTop(mX,mY,changeY,scale);
+          this.resizeTop(mX,mY,changeY);
         }
       }
     }

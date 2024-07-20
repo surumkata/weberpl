@@ -10,11 +10,9 @@ import { Link } from 'react-router-dom';
 import Sketch from 'react-p5';
 import { load } from '../components/model/load';
 
-import { WIDTH,HEIGHT,HEIGHT_INV } from '../components/model/utils';
+import { WIDTH,HEIGHT,HEIGHT_INV, SCALE_EDIT } from '../components/model/utils';
 
 Blockly.setLocale(locale);
-
-let SCALE = 0.5
 
 function BlocklyComponent(props) {
   const blocklyDiv = useRef();
@@ -31,6 +29,8 @@ function BlocklyComponent(props) {
     var xmlText = ```
 <xml>
   <block type="escape_room" x="10" y="10">
+    <field name="TYPE">SCENARIO</field>
+    <field name="START">My Scene</field>
     <statement name="SCENARIOS">
       <block type="scenario">
         <statement name="VIEWS">
@@ -316,7 +316,20 @@ function BlocklyComponent(props) {
   }, [primaryWorkspace, toolbox, blocklyDiv, props]);
 
   const setup = (p5, canvasParentRef) => {
-      p5.createCanvas(WIDTH * SCALE, (HEIGHT+HEIGHT_INV) * SCALE).parent(canvasParentRef);
+      p5.createCanvas(WIDTH * SCALE_EDIT, (HEIGHT+HEIGHT_INV) * SCALE_EDIT).parent(canvasParentRef);
+  }
+
+  const scaleToEdit = (json) => {
+    json.scenarios.forEach(scenario => {
+      scenario.objects.forEach(object => {
+        object.views.forEach(view => {
+          view.position.x *= SCALE_EDIT;
+          view.position.y *= SCALE_EDIT;
+          view.size.x *= SCALE_EDIT;
+          view.size.y *= SCALE_EDIT;
+        })
+      })
+    })
   }
 
   const draw = (p5) => {
@@ -326,7 +339,8 @@ function BlocklyComponent(props) {
         let code = javascriptGenerator.workspaceToCode(primaryWorkspace.current);
         try {
           let json = JSON.parse(code);
-          var room = load(p5,json,SCALE);
+          scaleToEdit(json);
+          var room = load(p5,json,true);
           setLoaded(true)
           setEscapeRoom(room)
         }
@@ -371,7 +385,7 @@ function BlocklyComponent(props) {
       for(var objectId in escape_room.escapeRoom.objects){
         var obj = escape_room.escapeRoom.objects[objectId]
         if (obj.currentView in obj.views){
-          obj.views[obj.currentView].mouseDragged(e,SCALE)
+          obj.views[obj.currentView].mouseDragged(e)
         }
       }
     }
@@ -385,8 +399,15 @@ function BlocklyComponent(props) {
       // 2. Verificar se este bloco 'object' tem o ID que estamos procurando
       if (objectBlock.getFieldValue('ID') === objectId) {
         // 3. Encontrar todos os sub-blocos do tipo 'view' dentro do bloco 'object'
-        const viewBlocks = objectBlock.getChildren(false).filter(childBlock => childBlock.type === 'view');
-  
+        var viewBlocks = objectBlock.getChildren(false).filter(childBlock => childBlock.type === 'view');
+        const turnBlocks = objectBlock.getChildren(false).filter(childBlock => childBlock.type === 'turn');
+
+
+        turnBlocks.forEach(turnBlock => {
+          const turnViewBlocks = turnBlock.getChildren(false).filter(childBlock => childBlock.type === 'view');
+          viewBlocks = viewBlocks.concat(turnViewBlocks);
+        });
+
         viewBlocks.forEach(viewBlock => {
           // 4. Verificar se este bloco 'view' tem o ID que estamos procurando
           if (viewBlock.getFieldValue('ID') === viewId) {
@@ -404,6 +425,7 @@ function BlocklyComponent(props) {
             }
           }
         });
+
       }
     });
   };
@@ -416,15 +438,15 @@ function BlocklyComponent(props) {
           var view = obj.views[obj.currentView]
           let changes = view.mouseReleased(e);
           if (changes) {
-            let newPosx = view.position.x * 1/SCALE;
-            let newPosy = (view.position.y* 1/SCALE-HEIGHT_INV);
+            let newPosx = view.position.x * 1/SCALE_EDIT;
+            let newPosy = (view.position.y* 1/SCALE_EDIT-HEIGHT_INV);
             let newSizex = 0;
             let newSizey = 0;
             if(view.size.x !== 0){
-              newSizex = view.size.x * 1/SCALE;
+              newSizex = view.size.x * 1/SCALE_EDIT;
             }
             if(view.size.y !== 0){
-              newSizey = view.size.y * 1/SCALE;
+              newSizey = view.size.y * 1/SCALE_EDIT;
             }
             updateViewPositionAndSize(objectId,obj.currentView,newPosx,newPosy,newSizex,newSizey);
           }

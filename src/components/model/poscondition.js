@@ -227,6 +227,20 @@ class EventPosConditionConnections extends EventPosCondition {
   }
 }
 
+class EventPosConditionTransition extends EventPosCondition {
+  constructor(transition_id){
+    super("TRANSITION");
+    this.transition_id = transition_id;
+  }
+
+  do(room,inventory,state){
+    console.log(room.transitions)
+    let transition = room.transitions[this.transition_id]
+    state.activeTransitionMode(transition)
+    debug("EVENT_POSCONDITION_TRANSITION")
+  }
+}
+
 // Exporting the classes for use in other modules if needed
 export {
   EventPosCondition,
@@ -244,5 +258,6 @@ export {
   EventPosConditionQuestion,
   EventPosConditionMultipleChoice,
   EventPosConditionSequence,
-  EventPosConditionConnections
+  EventPosConditionConnections,
+  EventPosConditionTransition
 };

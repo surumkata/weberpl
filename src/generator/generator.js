@@ -25,12 +25,15 @@
 // https://developers.google.com/blockly/guides/create-custom-blocks/generating-code
 
 import {javascriptGenerator, Order} from 'blockly/javascript';
+import * as Blockly from 'blockly/core';
 
 javascriptGenerator.forBlock['escape_room'] = function(block, generator) {
   var text_title = block.getFieldValue('TITLE');
   var scenariosString = generator.statementToCode(block, 'SCENARIOS');
   var eventsString = generator.statementToCode(block, 'EVENTS');
   var transitionString = generator.statementToCode(block, 'TRANSITIONS');
+  var start_type = block.getFieldValue('TYPE');
+  var start_id = block.getFieldValue('START');
 
   
   // Substituir delimitadores entre objetos JSON e envolver em um array
@@ -61,7 +64,9 @@ javascriptGenerator.forBlock['escape_room'] = function(block, generator) {
     "title" : text_title,
     "scenarios" : scenariosObject,
     "events" : eventsObject,
-    "transitions" : transitionObject
+    "transitions" : transitionObject,
+    "start_type" : start_type,
+    "start" : start_id
   };
 
   return JSON.stringify(code, null, 2); // Retornar o JSON como string formatada
@@ -73,16 +78,6 @@ javascriptGenerator.forBlock['size'] = function(block, generator) {
   // Criar um objeto JSON com os valores x e y
   var sizeObject = { "x": parseInt(x), "y": parseInt(y) };
   var jsonString = JSON.stringify(sizeObject);
-  // Retornar o objeto JSON e a ordem (ORDER_NONE neste caso)
-  return [jsonString, javascriptGenerator.ORDER_NONE];
-};
-
-javascriptGenerator.forBlock['position'] = function(block, generator) {
-  var x = block.getFieldValue('x');
-  var y = block.getFieldValue('y');
-  // Criar um objeto JSON com os valores x e y
-  var posObject = { "x": parseInt(x), "y": parseInt(y) };
-  var jsonString = JSON.stringify(posObject);
   // Retornar o objeto JSON e a ordem (ORDER_NONE neste caso)
   return [jsonString, javascriptGenerator.ORDER_NONE];
 };
@@ -102,7 +97,7 @@ javascriptGenerator.forBlock['image'] = function(block, generator) {
 
 javascriptGenerator.forBlock['story'] = function(block, generator) {
   var text_story = block.getFieldValue('STORY');
-  return text_story + "\n";
+  return text_story + "@!@!@";
 };
 
 //Scenarios block
@@ -203,14 +198,30 @@ javascriptGenerator.forBlock['transition'] = function(block, generator) {
   var text_id = block.getFieldValue('ID');
   var statements_story = generator.statementToCode(block, 'STORY');
   var stringView = generator.valueToCode(block, 'VIEW', Order.ATOMIC);
+  var dropdown_type = block.getFieldValue('TYPE');
+  var text_next = block.getFieldValue('NEXT');
 
-  stringView = stringView.slice(1,-1);
-  var viewObject = JSON.parse(stringView);
+  var viewObject;
+  if(stringView){
+    stringView = stringView.slice(1,-1);
+    viewObject = JSON.parse(stringView);
+  }
+  else{
+    viewObject = null;
+  }
+
+  statements_story = statements_story.split("@!@!@");
+  statements_story.pop()
+  if(statements_story.length > 0){
+    statements_story[0] = statements_story[0].slice(2);
+  }
 
   var code = {
     'id' : text_id,
     'story' : statements_story,
-    'view' : viewObject
+    'view' : viewObject,
+    'next_type' : dropdown_type,
+    'next' : text_next
   }
 
   return JSON.stringify(code, null, 2);
@@ -224,7 +235,7 @@ javascriptGenerator.forBlock['object'] = function(block, generator) {
   var stringViews = generator.statementToCode(block, 'VIEWS');
 
   if (stringViews){
-    stringViews = stringViews.replaceAll("}{", "},\n{");
+    stringViews = stringViews.replaceAll(/}\s*{/g, "},{");
     stringViews = "[" + stringViews + "]"
   }
   else {
@@ -276,7 +287,8 @@ javascriptGenerator.forBlock['view'] = function(block, generator) {
     "id" : text_id,
     "src" : value_image,
     "position" : posObject,
-    "size" : sizeObject
+    "size" : sizeObject,
+    "turn" : {"x" : false, "y" : false}
   }
 
   return JSON.stringify(code, null, 2); // Retornar o JSON como string formatada
@@ -315,7 +327,8 @@ javascriptGenerator.forBlock['view2'] = function(block, generator) {
     "id" : text_id,
     "src" : value_image,
     "position" : posObject,
-    "size" : sizeObject
+    "size" : sizeObject,
+    "turn" : {"x" : false, "y" : false}
   }
 
   return [JSON.stringify(code, null, 2), javascriptGenerator.ORDER_NONE]; // Retornar o JSON como string formatada
@@ -777,76 +790,118 @@ return [JSON.stringify(code, null, 2), javascriptGenerator.ORDER_NONE];
 };
 
 javascriptGenerator.forBlock['challenge_connection'] = function(block, generator) {
-var question = block.getFieldValue('QUESTION');
-var a1 = block.getFieldValue('A1');
-var b1 = block.getFieldValue('B1');
-var a2 = block.getFieldValue('A2');
-var b2 = block.getFieldValue('B2');
-var a3 = block.getFieldValue('A3');
-var b3 = block.getFieldValue('B3');
-var a4 = block.getFieldValue('A4');
-var b4 = block.getFieldValue('B4');
-var sucessString = generator.valueToCode(block, 'SUCESS', Order.ATOMIC);
-var failString = generator.valueToCode(block, 'FAIL', Order.ATOMIC);
+  var question = block.getFieldValue('QUESTION');
+  var a1 = block.getFieldValue('A1');
+  var b1 = block.getFieldValue('B1');
+  var a2 = block.getFieldValue('A2');
+  var b2 = block.getFieldValue('B2');
+  var a3 = block.getFieldValue('A3');
+  var b3 = block.getFieldValue('B3');
+  var a4 = block.getFieldValue('A4');
+  var b4 = block.getFieldValue('B4');
+  var sucessString = generator.valueToCode(block, 'SUCESS', Order.ATOMIC);
+  var failString = generator.valueToCode(block, 'FAIL', Order.ATOMIC);
 
-if(sucessString){
-  sucessString = sucessString.slice(1,-1);
-}
-else {
-  sucessString = "{}"
-}
-if (failString){
-  failString = failString.slice(1,-1);
-}
-else {
-  failString = "{}"
-}
+  if(sucessString){
+    sucessString = sucessString.slice(1,-1);
+  }
+  else {
+    sucessString = "{}"
+  }
+  if (failString){
+    failString = failString.slice(1,-1);
+  }
+  else {
+    failString = "{}"
+  }
 
-var sucess = JSON.parse(sucessString);
-var fail = JSON.parse(failString);
+  var sucess = JSON.parse(sucessString);
+  var fail = JSON.parse(failString);
 
-var code = {
-  'type' : 'CONNECTIONS',
-  'question' : question,
-  'list1' : [a1,a2,a3,a4],
-  'list2' : [b1,b2,b3,b4],
-  'sucess' : sucess,
-  'fail' : fail
+  var code = {
+    'type' : 'CONNECTIONS',
+    'question' : question,
+    'list1' : [a1,a2,a3,a4],
+    'list2' : [b1,b2,b3,b4],
+    'sucess' : sucess,
+    'fail' : fail
+  };
+  return [JSON.stringify(code, null, 2), javascriptGenerator.ORDER_NONE];
+  };
+
+  javascriptGenerator.forBlock['challenge_sequence'] = function(block, generator) {
+  var question = block.getFieldValue('QUESTION');
+  var a1 = block.getFieldValue('A1');
+  var a2 = block.getFieldValue('A2');
+  var a3 = block.getFieldValue('A3');
+  var a4 = block.getFieldValue('A4');
+  var sucessString = generator.valueToCode(block, 'SUCESS', Order.ATOMIC);
+  var failString = generator.valueToCode(block, 'FAIL', Order.ATOMIC);
+
+  if(sucessString){
+    sucessString = sucessString.slice(1,-1);
+  }
+  else {
+    sucessString = "{}"
+  }
+  if (failString){
+    failString = failString.slice(1,-1);
+  }
+  else {
+    failString = "{}"
+  }
+
+  var sucess = JSON.parse(sucessString);
+  var fail = JSON.parse(failString);
+
+  var code = {
+    'type' : 'SEQUENCE',
+    'question' : question,
+    'sequence' : [a1,a2,a3,a4],
+    'sucess' : sucess,
+    'fail' : fail
+  };
+  return [JSON.stringify(code, null, 2), javascriptGenerator.ORDER_NONE];
 };
-return [JSON.stringify(code, null, 2), javascriptGenerator.ORDER_NONE];
+
+
+
+//UTILS
+
+javascriptGenerator.forBlock['turn'] = function(block, generator) {
+  var direction = block.getFieldValue('direction');
+  var stringViews = generator.statementToCode(block, 'VIEWS');
+  
+  if (stringViews){
+    stringViews = stringViews.replaceAll("}{", "},\n{");
+    stringViews = "[" + stringViews + "]"
+  }
+  else {
+    stringViews = "[]"
+  }
+
+  var viewsObject = JSON.parse(stringViews);
+
+  for(var view in viewsObject){
+    if(direction.includes("VERTICALLY")) {
+     viewsObject[view].turn.x = !viewsObject[view].turn.x;
+    }
+    if(direction.includes("HORIZONTALLY")){
+      viewsObject[view].turn.y = !viewsObject[view].turn.y;
+    }
+  }
+
+  var code = JSON.stringify(viewsObject, null, 2);
+
+  return code.slice(1, -1);
 };
 
-javascriptGenerator.forBlock['challenge_sequence'] = function(block, generator) {
-var question = block.getFieldValue('QUESTION');
-var a1 = block.getFieldValue('A1');
-var a2 = block.getFieldValue('A2');
-var a3 = block.getFieldValue('A3');
-var a4 = block.getFieldValue('A4');
-var sucessString = generator.valueToCode(block, 'SUCESS', Order.ATOMIC);
-var failString = generator.valueToCode(block, 'FAIL', Order.ATOMIC);
-
-if(sucessString){
-  sucessString = sucessString.slice(1,-1);
-}
-else {
-  sucessString = "{}"
-}
-if (failString){
-  failString = failString.slice(1,-1);
-}
-else {
-  failString = "{}"
-}
-
-var sucess = JSON.parse(sucessString);
-var fail = JSON.parse(failString);
-
-var code = {
-  'type' : 'SEQUENCE',
-  'question' : question,
-  'sequence' : [a1,a2,a3,a4],
-  'sucess' : sucess,
-  'fail' : fail
-};
-return [JSON.stringify(code, null, 2), javascriptGenerator.ORDER_NONE];
+javascriptGenerator.forBlock['position'] = function(block, generator) {
+  var x = block.getFieldValue('x');
+  var y = block.getFieldValue('y');
+  // Criar um objeto JSON com os valores x e y
+  var posObject = { "x": parseInt(x), "y": parseInt(y) };
+  var jsonString = JSON.stringify(posObject);
+  // Retornar o objeto JSON e a ordem (ORDER_NONE neste caso)
+  return [jsonString, javascriptGenerator.ORDER_NONE];
 };

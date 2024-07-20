@@ -186,7 +186,6 @@ export class Inventory {
   draw(p5) {
     // Fundo colorido
     
-
     p5.fill(255);
     p5.stroke(0);
     p5.strokeWeight(2);

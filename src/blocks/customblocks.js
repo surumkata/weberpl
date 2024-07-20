@@ -38,6 +38,9 @@ Blockly.Blocks['escape_room'] = {
         .appendField("Escape Room");
     this.appendDummyInput()
         .appendField(new Blockly.FieldTextInput("My Escape Room"), "TITLE");
+    this.appendValueInput("SIZE")
+        .setCheck("size")
+        .appendField("size : ");
     this.appendStatementInput("SCENARIOS")
         .setCheck("scenario")
         .appendField("scenarios : ");
@@ -47,6 +50,10 @@ Blockly.Blocks['escape_room'] = {
     this.appendStatementInput("TRANSITIONS")
         .setCheck("transition")
         .appendField("transitions :");
+    this.appendDummyInput()
+        .appendField("start with")
+        .appendField(new Blockly.FieldDropdown([["transition","TRANSITION"], ["scenario","SCENARIO"]]), "TYPE")
+        .appendField(new Blockly.FieldTextInput("id"), "START");
     this.setColour(60);
  this.setTooltip("");
  this.setHelpUrl("");
@@ -197,6 +204,11 @@ Blockly.Blocks['transition'] = {
     this.appendValueInput("VIEW")
         .setCheck("view")
         .appendField("view :");
+    this.appendDummyInput()
+        .appendField("next ")
+        .appendField(new Blockly.FieldDropdown([["transition","TRANSITION"], ["scenario","SCENARIO"]]), "TYPE")
+        .appendField(":")
+        .appendField(new Blockly.FieldTextInput("id"), "NEXT");
     this.setPreviousStatement(true, "transition");
     this.setNextStatement(true, "transition");
     this.setColour(60);
@@ -760,3 +772,21 @@ Blockly.Blocks['custom_dropdown_block'] = {
       }
     }
   };
+
+//UTILS
+
+Blockly.Blocks['turn'] = {
+  init: function() {
+    this.appendDummyInput()
+        .appendField("turn")
+        .appendField(new Blockly.FieldDropdown([["horizontally","HORIZONTALLY"], ["vertically","VERTICALLY"], ["vertically and horizontally","VERTICALLY_HORIZONTALLY"]]), "direction");
+    this.appendStatementInput("VIEWS")
+        .setCheck("view")
+        .appendField("view:");
+    this.setPreviousStatement(true, "view");
+    this.setNextStatement(true, "view");
+    this.setColour(330);
+ this.setTooltip("");
+ this.setHelpUrl("");
+  }
+};

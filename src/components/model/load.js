@@ -5,16 +5,22 @@ import { Position, Size } from './utils.js';
 import { Scenario } from './scenario.js';
 import { GameState } from './game_state.js';
 import { Inventory } from './inventory.js';
-import { WIDTH, HEIGHT, HEIGHT_INV } from './utils.js';
+import { WIDTH, HEIGHT, HEIGHT_INV, SCALE_EDIT, setHEIGHT, setHEIGHT_INV, setSCALE_EDIT, setWIDTH } from './utils.js';
+import {Transition } from './transition.js';
 
 import { Event } from './event.js';
 import { PreConditionOperatorAnd, PreConditionOperatorNot, PreConditionOperatorOr, PreConditionTree, PreConditionVar } from './precondition_tree.js';
 import { EventPreConditionAfterEvent,EventPreConditionAfterTime,EventPreConditionClickedNotObject,EventPreConditionClickedObject,EventPreConditionItemIsInUse,EventPreConditionWhenObjectIsView } from './precondition.js';
-import { EventPosConditionConnections, EventPosConditionSequence, EventPosConditionQuestion, EventPosConditionChangeScenario,EventPosConditionDeleteItem,EventPosConditionEndGame,EventPosConditionMultipleChoice,EventPosConditionObjChangePosition,EventPosConditionObjChangeSize,EventPosConditionObjChangeState,EventPosConditionObjPutInventory,EventPosConditionPlaySound,EventPosConditionShowMessage } from './poscondition.js';
+import { EventPosConditionTransition, EventPosConditionConnections, EventPosConditionSequence, EventPosConditionQuestion, EventPosConditionChangeScenario,EventPosConditionDeleteItem,EventPosConditionEndGame,EventPosConditionMultipleChoice,EventPosConditionObjChangePosition,EventPosConditionObjChangeSize,EventPosConditionObjChangeState,EventPosConditionObjPutInventory,EventPosConditionPlaySound,EventPosConditionShowMessage } from './poscondition.js';
 
 
 
-const load = (p5,json,scale) => {
+const load = (p5,json,edit=false) => {
+    if(edit){
+        setWIDTH(WIDTH*SCALE_EDIT);
+        setHEIGHT(HEIGHT*SCALE_EDIT);
+        setHEIGHT_INV(HEIGHT_INV*SCALE_EDIT);
+    }
     if (!json) {
         return undefined;
     }
@@ -22,19 +28,35 @@ const load = (p5,json,scale) => {
     if (!scenarios) {
         scenarios = []
     }
-    var gs = new GameState(new Size(WIDTH*scale,HEIGHT*scale))
+    var gs = new GameState(new Size(WIDTH,HEIGHT))
     var er = new EscapeRoom(json.title)
-    loadScenarios(p5,er,gs,scenarios,scale);
-    let events = loadEvents(json.events,scale);
+    loadScenarios(p5,er,gs,scenarios);
+    let events = loadEvents(json.events);
     events.forEach(function(event){
         er.addEvent(event);
     })
 
-    //let transitions = json.transitions
+    let transitions = json.transitions
+    loadTransitions(p5,er,gs,transitions)
     //let map = json.map
     //let events = json.events
     //let sounds = json.sounds
     ////Load the room
+
+    if (json.start_type == 'TRANSITION'){
+        gs.activeTransitionMode(er.transitions[json.start])
+    }
+    else{
+        gs.currentScenario = json.start
+    }
+
+    if(edit){
+        setWIDTH(WIDTH*1/SCALE_EDIT);
+        setHEIGHT(HEIGHT*1/SCALE_EDIT);
+        setHEIGHT_INV(HEIGHT_INV*1/SCALE_EDIT);
+    }
+    
+
     return {
         'escapeRoom' : er,
         'gameState' : gs,
@@ -44,21 +66,38 @@ const load = (p5,json,scale) => {
 
 export {load};
 
-function loadScenarios(p5,er,gs,scenarios,scale){
+function loadTransitions(p5,er,gs,transitions){
+    transitions.forEach(function(transition){
+        let view = transition.view;
+        let tv = new View(p5,view.id,[view.src],gs.size,new Position(0,HEIGHT_INV),0,0,view.turn);
+        var next_scenario = null;
+        var next_transition = null;
+        console.log(transition)
+        if (transition.next_type == "TRANSITION") {
+            next_transition = transition.next;
+        }
+        else {
+            next_scenario = transition.next;
+        }
+        let t = new Transition(transition.id,tv,transition.story,next_scenario,next_transition);
+        er.addTransition(t);
+    })
+}
+
+function loadScenarios(p5,er,gs,scenarios){
     scenarios.forEach(function(scenario){
         let s = new Scenario(scenario.id);
         s.currentView = scenario['initial_view'];
         scenario.views.forEach(function(view){
-            let sv = new View(p5,view.id,[view.src],gs.size,new Position(0,HEIGHT_INV*scale),0,0);
+            let sv = new View(p5,view.id,[view.src],gs.size,new Position(0,HEIGHT_INV),0,0,view.turn);
             s.addView(sv);
         })
         er.addScenario(s);
-        gs.firstScenario(scenario.id);
         scenario.objects.forEach(function(object){
             let o = new Object(object.id,scenario.id,new Position(0,0),new Size(0,0));
             o.currentView = object['initial_view'];
             object.views.forEach(function(objView){
-                let ov = new View(p5,objView.id,[objView.src],new Size(objView.size.x*scale,objView.size.y*scale), new Position(objView.position.x*scale,(objView.position.y+HEIGHT_INV)*scale),0,0)
+                let ov = new View(p5,objView.id,[objView.src],new Size(objView.size.x,objView.size.y), new Position(objView.position.x,(objView.position.y+HEIGHT_INV)),0,0,objView.turn)
                 o.addView(ov);
             })
             er.addObject(o);
@@ -125,7 +164,7 @@ function loadPreconditions(preconditions) {
     }
 }
 
-function loadPosconditions(dataPosconditions,scale) {
+function loadPosconditions(dataPosconditions) {
     const posConditions = [];
 
     dataPosconditions.forEach(dataAction => {
@@ -144,17 +183,17 @@ function loadPosconditions(dataPosconditions,scale) {
             case "OBJ_CHANGE_POSITION":
                 const objPositionObjectId = dataAction.object;
                 const pos = dataAction.position;
-                eventPoscondition = new EventPosConditionObjChangePosition(objPositionObjectId, new Position(pos.x*scale,(pos.y+HEIGHT_INV)*scale));
+                eventPoscondition = new EventPosConditionObjChangePosition(objPositionObjectId, new Position(pos.x,(pos.y+HEIGHT_INV)));
                 break;
             case "OBJ_CHANGE_SIZE":
                 const objSizeObjectId = dataAction.object;
                 const size = dataAction.size;
-                eventPoscondition = new EventPosConditionObjChangeSize(objSizeObjectId, new Size(size.x*scale, size.y*scale));
+                eventPoscondition = new EventPosConditionObjChangeSize(objSizeObjectId, new Size(size.x, size.y));
                 break;
             case "SHOW_MESSAGE":
                 const message = dataAction.message;
                 const msgpos = dataAction.position;
-                eventPoscondition = new EventPosConditionShowMessage(message, new Position(msgpos.x*scale, (msgpos.y+HEIGHT_INV)*scale));
+                eventPoscondition = new EventPosConditionShowMessage(message, new Position(msgpos.x, (msgpos.y+HEIGHT_INV)));
                 break;
             case "OBJ_PUT_INVENTORY":
                 const objInventoryObjectId = dataAction.object;
@@ -204,6 +243,9 @@ function loadPosconditions(dataPosconditions,scale) {
                 const c_fail = new Event("fail",{},loadPosconditions(dataAction.fail.posConditions),null);
                 eventPoscondition = new EventPosConditionConnections(c_question,list1,list2,c_sucess,c_fail);
                 break;
+            case "TRANSITION":
+                const transition_id = dataAction.transition;
+                eventPoscondition = new EventPosConditionTransition(transition_id);
             default:
                 break;
         }
@@ -216,7 +258,7 @@ function loadPosconditions(dataPosconditions,scale) {
     return posConditions;
 }
 
-function loadEvents(dataEvents,scale) {
+function loadEvents(dataEvents) {
     const events = [];
 
     dataEvents.forEach(dataEvent => {
@@ -225,7 +267,7 @@ function loadEvents(dataEvents,scale) {
         const dataPosconditions = dataEvent.posconditions;
         const repetitions = dataEvent.repetitions || null;
         const preConditions = new PreConditionTree(loadPreconditions(dataPreconditions));
-        const posConditions = loadPosconditions(dataPosconditions,scale);
+        const posConditions = loadPosconditions(dataPosconditions);
 
         events.push(new Event(id, preConditions, posConditions, repetitions));
     });

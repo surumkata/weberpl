@@ -116,8 +116,9 @@ export class GameState {
 
   activeTransitionMode(transition) {
       this.transition = transition;
-      this.transition.defineSize(this.size);
-      this.transition.playMusic();
+      console.log(this.transition)
+      //this.transition.defineSize(this.size);
+      //this.transition.playMusic();
       this.state = State.TRANSITION_MODE;
   }
 

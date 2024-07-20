@@ -1,7 +1,25 @@
 export const debugMode = true;
-export const WIDTH = 1280;
-export const HEIGHT = 720;
-export const HEIGHT_INV = HEIGHT * 0.15;
+export let WIDTH = 1280;
+export let HEIGHT = 720;
+export let HEIGHT_INV = HEIGHT * 0.15;
+export let SCALE_EDIT = 0.5;
+
+export function setWIDTH(value) {
+    WIDTH = value;
+}
+
+export function setHEIGHT(value) {
+    HEIGHT = value;
+}
+
+export function setHEIGHT_INV(value) {
+    HEIGHT_INV = value;
+}
+
+export function setSCALE_EDIT(value){
+    SCALE_EDIT = value;
+}
+
 
 export const Color = {
     WHITE: [255, 255, 255],
