@@ -23,6 +23,8 @@ function BlocklyComponent(props) {
   const [loaded, setLoaded] = useState(false);
   const [escape_room, setEscapeRoom] = useState(null);
   const [validated, setValidate] = useState(false);
+  const [transitionsIds, setTransitionsIds] = useState([]);
+  const [scenariosIds, setScenariosIds] = useState(["SCENARIO_1"]);
 
   function addEscapeRoomBlock(workspace) {
     // Cria um novo bloco "escape_room"
@@ -30,12 +32,12 @@ function BlocklyComponent(props) {
 <xml>
   <block type="escape_room" x="10" y="10">
     <field name="TYPE">SCENARIO</field>
-    <field name="START">My Scene</field>
+    <field name="START">SCENARIO_1</field>
     <statement name="SCENARIOS">
       <block type="scenario">
         <statement name="VIEWS">
             <block type="view">
-              <field name="ID">initial_view</field>
+              <field name="ID">VIEW_1</field>
               <value name="SIZE">
                 <block type="size">
                   <field name="x">0</field>
@@ -59,7 +61,7 @@ function BlocklyComponent(props) {
             <block type="object">
               <statement name="VIEWS">
                   <block type="view">
-                    <field name="ID">initial_view</field>
+                    <field name="ID">VIEW_1</field>
                     <value name="SIZE">
                       <block type="size">
                         <field name="x">225</field>
@@ -286,10 +288,41 @@ function BlocklyComponent(props) {
   }
 
 
+  const updateTypes = ['block_field_intermediate_change', 'change','delete']
 
-  const update = () => {
-    setLoaded(false);
+  const update = (e) => {
+    console.log(e.type)
+    if(updateTypes.includes(e.type)){
+        setLoaded(false);
+        makeScenariosTransitionsList();
+    }
   }
+
+  const makeScenariosTransitionsList = () => {
+    const scenariosBlocks = primaryWorkspace.current.getBlocksByType('scenario');
+    const transitionsBlocks = primaryWorkspace.current.getBlocksByType('transition');
+
+    var scenarios = []
+    var transitions = []
+
+    scenariosBlocks.forEach(scenarioBlock => {
+      scenarios.push(scenarioBlock.getFieldValue('ID'));
+    })
+    transitionsBlocks.forEach(transitionBlock => {
+      transitions.push(transitionBlock.getFieldValue('ID'));
+    })
+
+    
+    console.log("NOVO ARRAY");
+    console.log(scenarios);
+
+    setTransitionsIds(transitions);
+    setScenariosIds(scenarios);
+     
+    console.log(scenariosIds);
+    console.log(transitionsIds);
+
+   }; 
 
   useEffect(() => {
     const {initialXml, children, ...rest} = props;
@@ -348,6 +381,7 @@ function BlocklyComponent(props) {
       }
 
       if(escape_room != undefined){
+        console.log(escape_room.gameState.currentScenario)
         escape_room.escapeRoom.draw(p5,escape_room.gameState.currentScenario);
       }
   }
@@ -478,6 +512,9 @@ function BlocklyComponent(props) {
       }
     }
   }
+  
+  console.log(scenariosIds)
+
 
   return (
     <React.Fragment>
@@ -489,6 +526,10 @@ function BlocklyComponent(props) {
           <button onClick={generateCode}>Convert</button>
           <button onClick={exportBlocks}>Exportar Blocos</button>
           <input onChange={importBlocks} type="file" accept=".xml"/>
+          <select>
+            {scenariosIds?.map((id) => <option value={id} >{id}</option>)}
+            {transitionsIds?.map((id) => <option value={id} >{id}</option>)}
+          </select>
           { haveData && (
             <Link to={`/escape_room/${data.current}`} >EscapeRoom</Link>
           )

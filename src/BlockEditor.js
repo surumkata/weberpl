@@ -25,12 +25,12 @@ function BlockEditor() {
 <xml>
   <block type="escape_room" x="10" y="10">
     <field name="TYPE">SCENARIO</field>
-    <field name="START">My Scene</field>
+    <field name="START">SCENARIO_1</field>
     <statement name="SCENARIOS">
       <block type="scenario">
         <statement name="VIEWS">
             <block type="view">
-              <field name="ID">initial_view</field>
+              <field name="ID">VIEW_1</field>
               <value name="SIZE">
                 <block type="size">
                   <field name="x">0</field>
@@ -53,7 +53,7 @@ function BlockEditor() {
             <block type="object">
               <statement name="VIEWS">
                   <block type="view">
-                    <field name="ID">initial_view</field>
+                    <field name="ID">VIEW_1</field>
                     <value name="SIZE">
                       <block type="size">
                         <field name="x">225</field>

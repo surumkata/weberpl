@@ -69,6 +69,8 @@ javascriptGenerator.forBlock['escape_room'] = function(block, generator) {
     "start" : start_id
   };
 
+  console.log(code)
+
   return JSON.stringify(code, null, 2); // Retornar o JSON como string formatada
 };
 

@@ -1,29 +1,3 @@
-/**
- * @license
- *
- * Copyright 2019 Google LLC
- *
- * Licensed under the Apache License, Version 2.0 (the "License");
- * you may not use this file except in compliance with the License.
- * You may obtain a copy of the License at
- *
- *   http://www.apache.org/licenses/LICENSE-2.0
- *
- * Unless required by applicable law or agreed to in writing, software
- * distributed under the License is distributed on an "AS IS" BASIS,
- * WITHOUT WARRANTIES OR CONDITIONS OF ANY KIND, either express or implied.
- * See the License for the specific language governing permissions and
- * limitations under the License.
- */
-
-/**
- * @fileoverview Define custom blocks.
- * @author samelh@google.com (Sam El-Husseini)
- */
-
-// More on defining blocks:
-// https://developers.google.com/blockly/guides/create-custom-blocks/define-blocks
-
 import * as Blockly from 'blockly/core';
 
 // Since we're using json to initialize the field, we'll need to import it.
@@ -32,29 +6,34 @@ import '../fields/DateField';
 
 import '@blockly/field-date';
 
+const ALIGN_CENTRE = 0
+
 Blockly.Blocks['escape_room'] = {
   init: function() {
     this.appendDummyInput()
-        .appendField("Escape Room");
-    this.appendDummyInput()
+        .setAlign(ALIGN_CENTRE)
+        .appendField("ESCAPE ROOM")
         .appendField(new Blockly.FieldTextInput("My Escape Room"), "TITLE");
-    this.appendValueInput("SIZE")
-        .setCheck("size")
-        .appendField("size : ");
-    this.appendStatementInput("SCENARIOS")
-        .setCheck("scenario")
-        .appendField("scenarios : ");
-    this.appendStatementInput("EVENTS")
-        .setCheck("event")
-        .appendField("events : ");
-    this.appendStatementInput("TRANSITIONS")
-        .setCheck("transition")
-        .appendField("transitions :");
     this.appendDummyInput()
-        .appendField("start with")
-        .appendField(new Blockly.FieldDropdown([["transition","TRANSITION"], ["scenario","SCENARIO"]]), "TYPE")
-        .appendField(new Blockly.FieldTextInput("id"), "START");
-    this.setColour(60);
+        .setAlign(ALIGN_CENTRE)
+        .appendField("SCENARIOS:");
+    this.appendStatementInput("SCENARIOS")
+        .setCheck("scenario");
+    this.appendDummyInput()
+        .setAlign(ALIGN_CENTRE)
+        .appendField("EVENTS");
+    this.appendStatementInput("EVENTS")
+        .setCheck("event");
+    this.appendDummyInput()
+        .setAlign(ALIGN_CENTRE)
+        .appendField("TRANSITIONS");
+    this.appendStatementInput("TRANSITIONS")
+        .setCheck("transition");
+    this.appendDummyInput()
+        .appendField("STARTS WITH")
+        .appendField(new Blockly.FieldDropdown([["TRANSITION","TRANSITION"], ["SCENARIO","SCENARIO"]]), "TYPE")
+        .appendField(new Blockly.FieldTextInput("ID"), "START");
+    this.setColour(250);
  this.setTooltip("");
  this.setHelpUrl("");
   }
@@ -137,22 +116,26 @@ Blockly.Blocks['story'] = {
 Blockly.Blocks['scenario'] = {
   init: function() {
     this.appendDummyInput()
-        .appendField("Scenario");
+        .setAlign(ALIGN_CENTRE)
+        .appendField("SCENARIO")
+        .appendField(new Blockly.FieldTextInput("SCENARIO_1"), "ID");
     this.appendDummyInput()
-        .appendField(new Blockly.FieldTextInput("My Scene"), "ID");
+        .setAlign(ALIGN_CENTRE)
+        .appendField("INITIAL_VIEW:")
+        .appendField(new Blockly.FieldTextInput("VIEW_1"), "initial_view");
     this.appendDummyInput()
-        .setAlign(Blockly.inputs.Align.RIGHT)
-        .appendField("Initial view :")
-        .appendField(new Blockly.FieldTextInput("initial_view"), "initial_view");
+        .setAlign(ALIGN_CENTRE)
+        .appendField("VIEWS:");
     this.appendStatementInput("VIEWS")
-        .setCheck("view")
-        .appendField("views :");
+        .setCheck("view");
+    this.appendDummyInput()
+        .setAlign(ALIGN_CENTRE)
+        .appendField("OBJECTS:");
     this.appendStatementInput("OBJECTS")
-        .setCheck("object")
-        .appendField("objects :");
+        .setCheck("object");
     this.setPreviousStatement(true, "scenario");
     this.setNextStatement(true, "scenario");
-    this.setColour(60);
+    this.setColour(200);
  this.setTooltip("");
  this.setHelpUrl("");
   }
@@ -220,19 +203,21 @@ Blockly.Blocks['transition'] = {
 Blockly.Blocks['object'] = {
   init: function() {
     this.appendDummyInput()
-        .appendField("Object");
+        .setAlign(ALIGN_CENTRE)
+        .appendField("OBJECT")
+        .appendField(new Blockly.FieldTextInput("OBJECT_1"), "ID");
     this.appendDummyInput()
-        .appendField(new Blockly.FieldTextInput("My Object"), "ID");
+        .setAlign(ALIGN_CENTRE)
+        .appendField("INITIAL_VIEW:")
+        .appendField(new Blockly.FieldTextInput("VIEW_1"), "initial_view");
     this.appendDummyInput()
-        .setAlign(Blockly.inputs.Align.RIGHT)
-        .appendField("Initial view :")
-        .appendField(new Blockly.FieldTextInput("initial_view"), "initial_view");
+        .setAlign(ALIGN_CENTRE)
+        .appendField("VIEWS:");
     this.appendStatementInput("VIEWS")
-        .setCheck("view")
-        .appendField("views :");
+        .setCheck("view");
     this.setPreviousStatement(true, "object");
     this.setNextStatement(true, "object");
-    this.setColour(60);
+    this.setColour(270);
  this.setTooltip("");
  this.setHelpUrl("");
   }
@@ -240,22 +225,21 @@ Blockly.Blocks['object'] = {
 
 Blockly.Blocks['view'] = {
   init: function() {
-    this.appendDummyInput()
-        .appendField("View");
-    this.appendDummyInput()
-        .appendField(new Blockly.FieldTextInput("My View"), "ID");
+    this.appendEndRowInput()
+        .setAlign(ALIGN_CENTRE)
+        .appendField("VIEW")
+        .appendField(new Blockly.FieldTextInput("VIEW_1"), "ID");
     this.appendValueInput("IMAGE")
         .setCheck("url")
-        .setAlign(Blockly.inputs.Align.RIGHT)
-        .appendField("image :");
+        .appendField("IMAGE:");
+    this.appendEndRowInput();
     this.appendValueInput("POSITION")
         .setCheck("position")
-        .setAlign(Blockly.inputs.Align.RIGHT)
-        .appendField("position :");
+        .appendField("POSITION:");
+    this.appendEndRowInput();
     this.appendValueInput("SIZE")
         .setCheck("size")
-        .setAlign(Blockly.inputs.Align.RIGHT)
-        .appendField("size :");
+        .appendField("SIZE:");
     this.setPreviousStatement(true, "view");
     this.setNextStatement(true, "view");
     this.setColour(60);
@@ -263,7 +247,6 @@ Blockly.Blocks['view'] = {
  this.setHelpUrl("");
   }
 };
-
 
 Blockly.Blocks['view2'] = {
   init: function() {
