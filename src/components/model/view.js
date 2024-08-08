@@ -661,6 +661,276 @@ export class View {
     }
     return false;
   }
+}
+
+export class ViewSketch {
+  constructor(id){
+    this.id = id;
+    this.draws = [];
+  }
+
+  draw(p5){
+    p5.push();
+    this.draws.forEach(draw => {
+      draw.draw(p5);
+    })
+    p5.pop()
+  }
+
+  addDraw(draw){
+    this.draws.push(draw);
+  }
+
+  mouseMoved(e) {}
+  mousePressed(e) {}
+  mouseDragged(e) {}
+  mouseReleased(e) {}
+}
 
 
+export class DrawP5 {
+  constructor(id){
+    this.id = id;
+  }
+
+  draw(p5){
+    // Abstract method to be implemented in subclasses
+  }
+}
+
+export class Rect extends DrawP5 {
+  constructor(id,x,y,w,h,tl,tr,br,bl){
+    super(id);
+    this.x = x;
+    this.y = y;
+    this.w = w;
+    this.h = h;
+    this.tl = tl;
+    this.tr = tr;
+    this.br = br;
+    this.bl = bl;
+  }
+
+  draw(p5){
+    p5.rect(this.x,this.y,this.w, this.h, this.tl,this.tr,this.br, this.bl);
+  }
+}
+
+
+export class Quad extends DrawP5 {
+  constructor(id,x1,y1,x2,y2,x3,y3,x4,y4){
+    super(id);
+    this.x1 = x1;
+    this.y1 = y1;
+    this.x2 = x2;
+    this.y2 = y2;
+    this.x3 = x3;
+    this.y3 = y3;
+    this.x4 = x4;
+    this.y4 = y4;
+  }
+
+  draw(p5){
+    p5.quad(this.x1, this.y1, this.x2, this.y2, this.x3, this.y3, this.x4, this.y4);
+  }
+}
+
+export class Square extends DrawP5 {
+  constructor(id,x,y,s,tl,tr,br,bl){
+    super(id);
+    this.x = x;
+    this.y = y;
+    this.s = s;
+    this.tl = tl;
+    this.tr = tr;
+    this.br = br;
+    this.bl = bl;
+  }
+
+  draw(p5){
+    p5.square(this.x, this.y, this.s, this.tl, this.tr, this.br, this.bl)
+  }
+}
+
+export class Triangle extends DrawP5 {
+  constructor(id,x1,y1,x2,y2,x3,y3){
+    super(id);
+    this.x1 = x1;
+    this.y1 = y1;
+    this.x2 = x2;
+    this.y2 = y2;
+    this.x3 = x3;
+    this.y3 = y3; 
+  }
+
+  draw(p5){
+    p5.triangle(this.x1, this.y1, this.x2, this.y2, this.x3, this.y3);
+  }
+}
+
+export class Arc extends DrawP5 {
+  constructor(id,x,y,w,h,start,stop,mode){
+    super(id);
+    this.x = x;
+    this.y = y;
+    this.w = w;
+    this.h = h;
+    this.start = start * (Math.PI/180);
+    this.stop = stop * (Math.PI/180);
+    this.mode = mode;
+  }
+
+  draw(p5){
+    console.log(this.mode);
+    if(this.mode !== 'default') {
+      p5.arc(this.x, this.y, this.w, this.h, this.start, this.stop, this.mode);
+    }
+    else {
+      p5.arc(this.x, this.y, this.w, this.h, this.start, this.stop);
+    }
+  }
+}
+
+export class Circle extends DrawP5 {
+  constructor(id,x,y,d){
+    super(id);
+    this.x = x;
+    this.y = y;
+    this.d = d;
+  }
+
+  draw(p5){
+    p5.circle(this.x, this.y, this.d);
+  }
+}
+
+export class Ellipse extends DrawP5 {
+  constructor(id,x,y,w,h){
+    super(id);
+    this.x = x;
+    this.y = y;
+    this.w = w;
+    this.h = h;
+  }
+
+  draw(p5){
+    p5.ellipse(this.x, this.y, this.w, this.h);
+  }
+}
+
+export class Line extends DrawP5 {
+  constructor(id,x1,y1,x2,y2){
+    super(id);
+    this.x1 = x1;
+    this.y1 = y1;
+    this.x2 = x2;
+    this.y2 = y2;
+  }
+
+  draw(p5){
+    p5.line(this.x1, this.y1, this.x2, this.y2);
+  }
+}
+
+export class Point extends DrawP5 {
+  constructor(id,x,y){
+    super(id);
+    this.x = x;
+    this.y = y;
+  }
+
+  draw(p5){
+    p5.point(this.x, this.y);
+  }
+}
+
+export class BeginClip extends DrawP5 {
+  constructor(){
+    super("BeginClip")
+  }
+
+  draw(p5){
+    p5.beginClip();
+  }
+}
+
+export class EndClip extends DrawP5 {
+  constructor(){
+    super("EndClip")
+  }
+
+  draw(p5){
+    p5.endClip();
+  }
+}
+
+export class Fill extends DrawP5 {
+  constructor(hexcode, alpha){
+    super("Fill");
+    this.color = hexcode;
+    this.alpha = alpha;
+  }
+
+  draw(p5){
+    let color = p5.color(this.color);
+    color.setAlpha(this.alpha);
+    p5.fill(color);
+  }
+}
+
+export class NoFill extends DrawP5 {
+  constructor(){
+    super("NoFill")
+  }
+
+  draw(p5){
+    p5.noFill();
+  }
+}
+
+export class Stroke extends DrawP5 {
+  constructor(hexcode,w, alpha){
+    super("Stroke");
+    this.color = hexcode;
+    this.w = w;
+    this.alpha = alpha;
+
+  }
+
+  draw(p5){
+    let color = p5.color(this.color);
+    color.setAlpha(this.alpha);
+    p5.stroke(color);
+    p5.strokeWeight(this.w);
+  }
+}
+
+export class NoStroke extends DrawP5 {
+  constructor(){
+    super("NoStroke")
+  }
+
+  draw(p5){
+    p5.noStroke();
+  }
+}
+
+export class Erase extends DrawP5 {
+  constructor(){
+    super("Erase")
+  }
+
+  draw(p5){
+    p5.erase();
+  }
+}
+
+export class NoErase extends DrawP5 {
+  constructor(){
+    super("NoErase")
+  }
+
+  draw(p5){
+    p5.noErase();
+  }
 }

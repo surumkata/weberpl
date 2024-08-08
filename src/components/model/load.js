@@ -1,4 +1,4 @@
-import { View } from './view.js';
+import { Arc, BeginClip, Circle, Ellipse, EndClip, Erase, Fill, Line, NoErase, NoFill, NoStroke, Point, Quad, Rect, Square, Stroke, Triangle, View, ViewSketch } from './view.js';
 import { Object } from './object.js';
 import { EscapeRoom } from './escape_room.js';
 import { Position, Size } from './utils.js';
@@ -12,8 +12,6 @@ import { Event } from './event.js';
 import { PreConditionOperatorAnd, PreConditionOperatorNot, PreConditionOperatorOr, PreConditionTree, PreConditionVar } from './precondition_tree.js';
 import { EventPreConditionAfterEvent,EventPreConditionAfterTime,EventPreConditionClickedNotObject,EventPreConditionClickedObject,EventPreConditionItemIsInUse,EventPreConditionWhenObjectIsView } from './precondition.js';
 import { EventPosConditionTransition, EventPosConditionConnections, EventPosConditionSequence, EventPosConditionQuestion, EventPosConditionChangeScenario,EventPosConditionDeleteItem,EventPosConditionEndGame,EventPosConditionMultipleChoice,EventPosConditionObjChangePosition,EventPosConditionObjChangeSize,EventPosConditionObjChangeState,EventPosConditionObjPutInventory,EventPosConditionPlaySound,EventPosConditionShowMessage } from './poscondition.js';
-
-
 
 const load = (p5,json,edit=false) => {
     if(edit){
@@ -72,7 +70,6 @@ function loadTransitions(p5,er,gs,transitions){
         let tv = new View(p5,view.id,[view.src],gs.size,new Position(0,HEIGHT_INV),0,0,view.turn);
         var next_scenario = null;
         var next_transition = null;
-        console.log(transition)
         if (transition.next_type == "TRANSITION") {
             next_transition = transition.next;
         }
@@ -84,12 +81,87 @@ function loadTransitions(p5,er,gs,transitions){
     })
 }
 
+function loadSketch(id,draws){
+    var sketch = new ViewSketch(id);
+    draws.forEach(draw => {
+        const type = draw.type;
+        let drawView;
+        switch(type) {
+            case "RECT":
+                drawView = new Rect(draw.id,draw.x,draw.y+HEIGHT_INV,draw.w,draw.h,draw.tl,draw.tr,draw.br,draw.bl);
+                break;
+            case "QUAD":
+                drawView = new Quad(draw.id,draw.x1,draw.y1+HEIGHT_INV,draw.x2,draw.y2+HEIGHT_INV,draw.x3,draw.y3+HEIGHT_INV,draw.x4,draw.y4+HEIGHT_INV);
+                break;
+            case "SQUARE":
+                drawView = new Square(draw.id,draw.x,draw.y+HEIGHT_INV,draw.s,draw.tl,draw.tr,draw.br,draw.bl);
+                break;
+            case "TRIANGLE":
+                drawView = new Triangle(draw.id,draw.x1,draw.y1+HEIGHT_INV,draw.x2,draw.y2+HEIGHT_INV,draw.x3,draw.y3+HEIGHT_INV);
+                break;
+            case "LINE":
+                drawView = new Line(draw.id,draw.x1,draw.y1+HEIGHT_INV,draw.x2,draw.y2+HEIGHT_INV);
+                break;
+            case "POINT":
+                drawView = new Point(draw.id,draw.x,draw.y+HEIGHT_INV);
+                break;
+            case "ARC":
+                drawView = new Arc(draw.id,draw.x,draw.y+HEIGHT_INV,draw.w,draw.h,draw.start,draw.stop,draw.mode);
+                break;
+            case "CIRCLE":
+                drawView = new Circle(draw.id,draw.x,draw.y+HEIGHT_INV,draw.d);
+                break;
+            case "ELLIPSE":
+                drawView = new Ellipse(draw.id, draw.x, draw.y+HEIGHT_INV, draw.w, draw.h);
+                break;
+            case "BEGIN_CLIP":
+                drawView = new BeginClip();
+                break;
+            case "END_CLIP":
+                drawView = new EndClip();
+                break;   
+            case "ERASE":
+                drawView = new Erase();
+                break;
+            case "NO_ERASE":
+                drawView = new NoErase();
+                break;
+            case "FILL":
+                drawView = new Fill(draw.color, draw.alpha);
+                break;
+            case "NO_FILL":
+                drawView = new NoFill();
+                break;
+            case "STROKE":
+                drawView = new Stroke(draw.color,draw.w, draw.alpha);
+                break;
+            case "NO_STROKE":
+                drawView = new NoStroke();
+                break; 
+            default:
+                drawView = null;
+                break;
+        }
+
+        if(drawView !== null){
+            sketch.addDraw(drawView);
+        }
+    })
+    return sketch;
+}
+
 function loadScenarios(p5,er,gs,scenarios){
     scenarios.forEach(function(scenario){
         let s = new Scenario(scenario.id);
         s.currentView = scenario['initial_view'];
         scenario.views.forEach(function(view){
-            let sv = new View(p5,view.id,[view.src],gs.size,new Position(0,HEIGHT_INV),0,0,view.turn);
+            var sv;
+            if(view.type == "VIEW_IMAGE"){
+                sv = new View(p5,view.id,[view.src],gs.size,new Position(0,HEIGHT_INV),0,0,view.turn);
+            }
+            else if (view.type == "VIEW_SKETCH"){
+                sv = loadSketch(view.id,view.draws);
+            }
             s.addView(sv);
         })
         er.addScenario(s);
@@ -97,7 +169,13 @@ function loadScenarios(p5,er,gs,scenarios){
             let o = new Object(object.id,scenario.id,new Position(0,0),new Size(0,0));
             o.currentView = object['initial_view'];
             object.views.forEach(function(objView){
-                let ov = new View(p5,objView.id,[objView.src],new Size(objView.size.x,objView.size.y), new Position(objView.position.x,(objView.position.y+HEIGHT_INV)),0,0,objView.turn)
+                var ov;
+                if (objView.type == "VIEW_IMAGE"){
+                    ov = new View(p5,objView.id,[objView.src],new Size(objView.size.x,objView.size.y), new Position(objView.position.x,(objView.position.y+HEIGHT_INV)),0,0,objView.turn);
+                }
+                else if (objView.type == "VIEW_SKETCH"){
+                    ov = loadSketch(objView.id,objView.draws);
+                }
                 o.addView(ov);
             })
             er.addObject(o);
@@ -265,7 +343,7 @@ function loadEvents(dataEvents) {
         const id = dataEvent.id;
         const dataPreconditions = dataEvent.preconditions || {};
         const dataPosconditions = dataEvent.posconditions;
-        const repetitions = dataEvent.repetitions || null;
+        const repetitions = dataEvent.repetitions || Infinity;
         const preConditions = new PreConditionTree(loadPreconditions(dataPreconditions));
         const posConditions = loadPosconditions(dataPosconditions);
 

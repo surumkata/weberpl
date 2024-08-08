@@ -57,9 +57,7 @@ export class EscapeRoom {
   updateEvent(event) {
       if (event in this.events) {
           this.events[event].happen = true;
-          if (!this.events[event].infinityRepetitions) {
-              this.events[event].repetitions -= 1;
-          }
+          this.events[event].repetitions -= 1;
       }
   }
 

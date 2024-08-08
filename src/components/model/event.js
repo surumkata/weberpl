@@ -5,9 +5,5 @@ export class Event {
     this.posConditions = posConditions;
     this.repetitions = repetitions;
     this.happen = false;
-    this.infinityRepetitions = false
-    if (this.repetitions == null){
-      this.infinityRepetitions = true
-    }
   }
 }

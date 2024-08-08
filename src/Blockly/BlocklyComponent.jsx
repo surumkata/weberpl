@@ -3,12 +3,16 @@ import './BlocklyComponent.css';
 import {useEffect, useRef, useState} from 'react';
 
 import * as Blockly from 'blockly/core';
+import {toolboxCategories, createPlayground} from '@blockly/dev-tools';
+import 'blockly/blocks';
+
+
 import {javascriptGenerator} from 'blockly/javascript';
 import * as locale from 'blockly/msg/en';
-import 'blockly/blocks';
 import { Link } from 'react-router-dom';
 import Sketch from 'react-p5';
 import { load } from '../components/model/load';
+import { validate } from './validate';
 
 import { WIDTH,HEIGHT,HEIGHT_INV, SCALE_EDIT } from '../components/model/utils';
 
@@ -16,13 +20,13 @@ Blockly.setLocale(locale);
 
 function BlocklyComponent(props) {
   const blocklyDiv = useRef();
-  const toolbox = useRef();
+  const toolbox = useRef(toolboxCategories);
   let primaryWorkspace = useRef();
   let data = useRef(null);
   const [haveData, setHaveData] = useState(false);
   const [loaded, setLoaded] = useState(false);
   const [escape_room, setEscapeRoom] = useState(null);
-  const [validated, setValidate] = useState(false);
+  const [errors, setErrors] = useState([]);
   const [transitionsIds, setTransitionsIds] = useState([]);
   const [scenariosIds, setScenariosIds] = useState(["SCENARIO_1"]);
 
@@ -162,137 +166,22 @@ function BlocklyComponent(props) {
 
   const generateCode = () => {
     var code = javascriptGenerator.workspaceToCode(primaryWorkspace.current);
-    var reasons = validate(code);
+    let json = JSON.parse(code);
+    var reasons = validate(json);
     if (reasons.length == 0) {
-      console.log(reasons)
       data.current = btoa(code);
       setHaveData(true);
     }
-    else {
-      console.log(reasons)
-    }  
   };
 
-  const validate = (code) => {
-    let er = JSON.parse(code);
-    console.log(er);
-    let scenarios = er.scenarios;
-    let events = er.events;
-    let transitions = er.transitions;
-    var reasons = []
-
-    var vars = {
-      scenarios : {},
-      objects : {},
-      events : {},
-      transitions : {}
-    }
-
-    //Verificar se existe pelo menos 1 cenario
-    if (scenarios.length == 0){
-      reasons.push("Escape Room tem de ter pelo menos 1 cenário.")
-    }
-    else {
-      // Validar cenarios
-      scenarios.forEach(scenario => {
-        //Verificar se existem cenarios com o mesmo id
-        if (scenario.id in vars.scenarios){
-          reasons.push("Não pode existir cenários com o mesmo id")
-        }
-        else {
-          vars.scenarios[scenario.id] = {
-            views : []
-          }
-          let views = scenario.views;
-          //Verificar se os cenarios tem pelo menos 1 view.
-          if (views.length == 0) {
-            reasons.push("Os cenários precisam ter pelo menos 1 view.")
-          }
-          //Validar views de um cenario 
-          views.forEach(view => {
-            //Verificar se existem ids duplicados nas views desse cenario
-            if (vars.scenarios[scenario.id].views.includes(view.id)){
-              reasons.push("Não pode existir views com o mesmo id no mesmo cenário")
-            }
-            else {
-              vars.scenarios[scenario.id].views.push(view.id)
-              //Verificar se view tem posiçao
-              if (!view.position) {
-                reasons.push("Views preicam ter uma posição")
-              }
-              //Verificar se view tem tamanho
-              if (!view.size) {
-                reasons.push("Views preicam ter um tamanho")
-              }
-              //Verificar se view tem source
-              if (!view.src) {
-                reasons.push("Views preicam ter uma source")
-              }
-            }
-          });
-          //Verificar se a initial view de uma cena existe
-          if (!(vars.scenarios[scenario.id].views.includes(scenario.initial_view))){
-            reasons.push(scenario.initial_view + " não é uma view de " + scenario.id)
-          }
-          let objects = scenario.objects
-          //Validar objetos de um cenario
-          objects.forEach(object => {
-            //Verificar se existem id ja existe entre os objetos
-            if (object.id in vars.objects){
-              reasons.push("Não pode existir objetos com o mesmo id")
-            }
-            else {
-              vars.objects[object.id] = {
-                views : []
-              }
-              let views = object.views;
-              //Verificar se os objetos tem pelo menos 1 view
-              if (views.length == 0) {
-                reasons.push("Os objetos precisam ter pelo menos 1 view.")
-              }
-              //Validar views do objeto
-              views.forEach(view => {
-                //Verificar se existem ids duplicados nas views desse cenario
-                if (vars.objects[object.id].views.includes(view.id)){
-                  reasons.push("Não pode existir views com o mesmo id no mesmo cenário")
-                }
-                else {
-                  vars.objects[object.id].views.push(view.id)
-                  //Verificar se view tem posiçao
-                  if (!view.position) {
-                    reasons.push("Views preicam ter uma posição")
-                  }
-                  //Verificar se view tem tamanho
-                  if (!view.size) {
-                    reasons.push("Views preicam ter um tamanho")
-                  }
-                  //Verificar se view tem source
-                  if (!view.src) {
-                    reasons.push("Views preicam ter uma source")
-                  }
-                }
-              });
-              //Verificar se a initial view de um objeto existe
-              if (!(vars.objects[object.id].views.includes(object.initial_view))){
-                reasons.push(object.initial_view + " não é uma view de " + object.id)
-              }
-            }
-          })
-        }  
-      });
-
-
-  
-      return reasons;
-    }
-  }
-
-
-  const updateTypes = ['block_field_intermediate_change', 'change','delete']
+  const updateTypes = ['block_field_intermediate_change', 'change','delete','create']
 
   const update = (e) => {
-    console.log(e.type)
     if(updateTypes.includes(e.type)){
+        setLoaded(false);
+        makeScenariosTransitionsList();
+    }
+    else if (e.type === 'move' && e.reason && (e.reason.includes('connect') || e.reason.includes('disconnect'))){
         setLoaded(false);
         makeScenariosTransitionsList();
     }
@@ -312,15 +201,8 @@ function BlocklyComponent(props) {
       transitions.push(transitionBlock.getFieldValue('ID'));
     })
 
-    
-    console.log("NOVO ARRAY");
-    console.log(scenarios);
-
     setTransitionsIds(transitions);
     setScenariosIds(scenarios);
-     
-    console.log(scenariosIds);
-    console.log(transitionsIds);
 
    }; 
 
@@ -328,6 +210,7 @@ function BlocklyComponent(props) {
     const {initialXml, children, ...rest} = props;
     primaryWorkspace.current = Blockly.inject(blocklyDiv.current, {
       toolbox: toolbox.current,
+      zoom: {controls:true},
       ...rest,
     });
 
@@ -356,10 +239,87 @@ function BlocklyComponent(props) {
     json.scenarios.forEach(scenario => {
       scenario.objects.forEach(object => {
         object.views.forEach(view => {
-          view.position.x *= SCALE_EDIT;
-          view.position.y *= SCALE_EDIT;
-          view.size.x *= SCALE_EDIT;
-          view.size.y *= SCALE_EDIT;
+          if (view.type == "VIEW_IMAGE"){
+            view.position.x *= SCALE_EDIT;
+            view.position.y *= SCALE_EDIT;
+            view.size.x *= SCALE_EDIT;
+            view.size.y *= SCALE_EDIT;
+          }
+          else if (view.type == "VIEW_SKETCH"){
+            view.draws.forEach(draw => {
+              switch(draw.type) {
+                case "RECT":
+                  draw.x *= SCALE_EDIT;
+                  draw.y *= SCALE_EDIT;
+                  draw.w *= SCALE_EDIT;
+                  draw.h *= SCALE_EDIT;
+                  draw.tl *= SCALE_EDIT;
+                  draw.tr *= SCALE_EDIT;
+                  draw.br *= SCALE_EDIT;
+                  draw.bl *= SCALE_EDIT;
+                  break;
+                case "QUAD":
+                  draw.x1 *= SCALE_EDIT;
+                  draw.y1 *= SCALE_EDIT;
+                  draw.x2 *= SCALE_EDIT;
+                  draw.y2 *= SCALE_EDIT;
+                  draw.x3 *= SCALE_EDIT;
+                  draw.y3 *= SCALE_EDIT;
+                  draw.x4 *= SCALE_EDIT;
+                  draw.y4 *= SCALE_EDIT;
+                  break;
+                case "SQUARE":
+                  draw.x  *= SCALE_EDIT;
+                  draw.y  *= SCALE_EDIT;
+                  draw.s  *= SCALE_EDIT;
+                  draw.tl *= SCALE_EDIT;
+                  draw.tr *= SCALE_EDIT;
+                  draw.br *= SCALE_EDIT;
+                  draw.bl *= SCALE_EDIT;
+                  break;
+                case "TRIANGLE":
+                  draw.x1 *= SCALE_EDIT;
+                  draw.y1 *= SCALE_EDIT;
+                  draw.x2 *= SCALE_EDIT;
+                  draw.y2 *= SCALE_EDIT;
+                  draw.x3 *= SCALE_EDIT;
+                  draw.y3 *= SCALE_EDIT; 
+                  break;
+                case "LINE":
+                  draw.x1 *= SCALE_EDIT;
+                  draw.y1 *= SCALE_EDIT;
+                  draw.x2 *= SCALE_EDIT;
+                  draw.y2 *= SCALE_EDIT;
+                  break;
+                case "POINT":
+                  draw.x1 *= SCALE_EDIT;
+                  draw.y1 *= SCALE_EDIT;
+                  break;
+                case "ARC":
+                  draw.x *= SCALE_EDIT;
+                  draw.y *= SCALE_EDIT;
+                  draw.w *= SCALE_EDIT;
+                  draw.h *= SCALE_EDIT;
+                  break;
+                case "CIRCLE":
+                  draw.x *= SCALE_EDIT;
+                  draw.y *= SCALE_EDIT;
+                  draw.d *= SCALE_EDIT;
+                  break;
+                case "ELLIPSE":
+                  draw.x *= SCALE_EDIT;
+                  draw.y *= SCALE_EDIT;
+                  draw.w *= SCALE_EDIT;
+                  draw.h *= SCALE_EDIT;
+                  break;
+                case "STROKE":
+                  draw.w *= SCALE_EDIT;
+                  break;
+                default:
+                  break;
+              }
+            })
+          }
         })
       })
     })
@@ -367,27 +327,54 @@ function BlocklyComponent(props) {
 
   const draw = (p5) => {
       p5.background(255);
-
       if(!loaded) {
         let code = javascriptGenerator.workspaceToCode(primaryWorkspace.current);
         try {
           let json = JSON.parse(code);
-          scaleToEdit(json);
-          var room = load(p5,json,true);
+          var errors_json = validate(json);
+          if (errors_json.length == 0) {
+            scaleToEdit(json);
+            var room = load(p5,json,true);
+            setEscapeRoom(room)
+          }
+          else {
+            setEscapeRoom(null);
+          }
+          setErrors(errors_json);
           setLoaded(true)
-          setEscapeRoom(room)
         }
-        catch{}
+        catch(e){
+          console.log(e);
+          setEscapeRoom(null);
+          setLoaded(true);
+        }
       }
 
-      if(escape_room != undefined){
-        console.log(escape_room.gameState.currentScenario)
+      if(escape_room !== null){
         escape_room.escapeRoom.draw(p5,escape_room.gameState.currentScenario);
+      }
+      else if (errors.length > 0){
+        var error_number = 1;
+        p5.push()
+        p5.textSize(30);
+        p5.fill(255,0,0);
+        p5.stroke(0);
+        p5.strokeWeight(1);
+        p5.text("ERRORS!", 10, HEIGHT_INV);
+        errors.forEach(error => {
+          p5.textSize(20);
+          p5.fill(255,0,0);
+          p5.stroke(0);
+          p5.strokeWeight(1);
+          p5.text(error_number + ". " + error, 10, HEIGHT_INV+30*error_number);
+          error_number += 1;
+        })
+        p5.pop();
       }
   }
 
   const mouseMoved = (e) => {
-    if(escape_room != undefined){
+    if(escape_room !== null){
       for(var objectId in escape_room.escapeRoom.objects){
         var obj = escape_room.escapeRoom.objects[objectId]
         if (obj.currentView in obj.views){
@@ -401,7 +388,7 @@ function BlocklyComponent(props) {
   }
 
   const mousePressed = (e) => {
-    if(escape_room != undefined){
+    if(escape_room !== null){
       for(var objectId in escape_room.escapeRoom.objects){
         var obj = escape_room.escapeRoom.objects[objectId]
         if (obj.currentView in obj.views){
@@ -415,7 +402,7 @@ function BlocklyComponent(props) {
   }
 
   const mouseDragged = (e) => {
-    if(escape_room != undefined){
+    if(escape_room !== null){
       for(var objectId in escape_room.escapeRoom.objects){
         var obj = escape_room.escapeRoom.objects[objectId]
         if (obj.currentView in obj.views){
@@ -465,7 +452,7 @@ function BlocklyComponent(props) {
   };
 
   const mouseReleased = (e) => {
-    if(escape_room != undefined){
+    if(escape_room !== null){
       for(var objectId in escape_room.escapeRoom.objects){
         var obj = escape_room.escapeRoom.objects[objectId]
         if (obj.currentView in obj.views){
@@ -491,7 +478,7 @@ function BlocklyComponent(props) {
 
   const keyPressed = (e) => {
     if (e.keyCode == 16){
-      if(escape_room != undefined){
+      if(escape_room !== null){
         for(var objectId in escape_room.escapeRoom.objects){
           var obj = escape_room.escapeRoom.objects[objectId]
           for (var viewId in obj.views)
@@ -503,7 +490,7 @@ function BlocklyComponent(props) {
   
   const keyReleased = (e) => {
     if (e.keyCode == 16){
-      if(escape_room != undefined){
+      if(escape_room !== null){
         for(var objectId in escape_room.escapeRoom.objects){
           var obj = escape_room.escapeRoom.objects[objectId]
           for (var viewId in obj.views)
@@ -512,8 +499,6 @@ function BlocklyComponent(props) {
       }
     }
   }
-  
-  console.log(scenariosIds)
 
 
   return (
@@ -523,7 +508,7 @@ function BlocklyComponent(props) {
           {props.children}
         </div>
         <div className="container-buttons">
-          <button onClick={generateCode}>Convert</button>
+          <button onClick={generateCode} disabled={!errors.length == 0}>Convert</button>
           <button onClick={exportBlocks}>Exportar Blocos</button>
           <input onChange={importBlocks} type="file" accept=".xml"/>
           <select>

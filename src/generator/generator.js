@@ -69,8 +69,6 @@ javascriptGenerator.forBlock['escape_room'] = function(block, generator) {
     "start" : start_id
   };
 
-  console.log(code)
-
   return JSON.stringify(code, null, 2); // Retornar o JSON como string formatada
 };
 
@@ -145,6 +143,7 @@ javascriptGenerator.forBlock['scenario'] = function(block, generator) {
 
 javascriptGenerator.forBlock['event'] = function(block, generator) {
   var text_id = block.getFieldValue('ID');
+  var number_repetitions = block.getFieldValue('REPETITIONS');
   var ifString = generator.valueToCode(block, 'IF', Order.ATOMIC);
   var doString = generator.valueToCode(block, 'DO', Order.ATOMIC);
 
@@ -170,7 +169,8 @@ javascriptGenerator.forBlock['event'] = function(block, generator) {
   var code = {
     "id" : text_id,
     "preconditions" : ifObject,
-    "posconditions" : doObject
+    "posconditions" : doObject,
+    "repetitions" : number_repetitions
   }
   return JSON.stringify(code, null, 2);
 };
@@ -287,6 +287,7 @@ javascriptGenerator.forBlock['view'] = function(block, generator) {
 
   var code = {
     "id" : text_id,
+    "type" : "VIEW_IMAGE",
     "src" : value_image,
     "position" : posObject,
     "size" : sizeObject,
@@ -907,3 +908,333 @@ javascriptGenerator.forBlock['position'] = function(block, generator) {
   // Retornar o objeto JSON e a ordem (ORDER_NONE neste caso)
   return [jsonString, javascriptGenerator.ORDER_NONE];
 };
+
+//DRAWS
+
+javascriptGenerator.forBlock['draw_rect'] = function(block, generator) {
+  const text_id = block.getFieldValue('ID');
+
+  const x = block.getFieldValue('X');
+  const y = block.getFieldValue('Y');
+
+  const w = block.getFieldValue('W');
+  const h = block.getFieldValue('H');
+
+  const tl = block.getFieldValue('TL');
+  const tr = block.getFieldValue('TR');
+  const br = block.getFieldValue('BR');
+  const bl = block.getFieldValue('BL');
+
+  var code = {
+    "id" : text_id,
+    "type" : "RECT",
+    "x" : x,
+    "y" : y,
+    "w" : w,
+    "h" : h,
+    "tl" : tl,
+    "tr" : tr,
+    "br" : br,
+    "bl" : bl
+  }
+
+  return JSON.stringify(code, null, 2); // Retornar o JSON como string formatada
+}
+
+javascriptGenerator.forBlock['draw_quad'] = function(block, generator) {
+  const text_id = block.getFieldValue('ID');
+
+  const x1 = block.getFieldValue('X1');
+  const y1 = block.getFieldValue('Y1');
+
+  const x2 = block.getFieldValue('X2');
+  const y2 = block.getFieldValue('Y2');
+
+  const x3 = block.getFieldValue('X3');
+  const y3 = block.getFieldValue('Y3');
+
+  const x4 = block.getFieldValue('X4');
+  const y4 = block.getFieldValue('Y4');
+
+  var code = {
+    "id" : text_id,
+    "type" : "QUAD",
+    "x1" : x1,
+    "y1" : y1,
+    "x2" : x2,
+    "y2" : y2,
+    "x3" : x3,
+    "y3" : y3,
+    "x4" : x4,
+    "y4" : y4
+  }
+
+  return JSON.stringify(code, null, 2); // Retornar o JSON como string formatada
+}
+
+javascriptGenerator.forBlock['draw_square'] = function(block, generator) {
+  const text_id = block.getFieldValue('ID');
+
+  const x = block.getFieldValue('X');
+  const y = block.getFieldValue('Y');
+  const s = block.getFieldValue('S');
+
+  const tl = block.getFieldValue('TL');
+  const tr = block.getFieldValue('TR');
+  const br = block.getFieldValue('BR');
+  const bl = block.getFieldValue('BL');
+
+  var code = {
+    "id" : text_id,
+    "type" : "SQUARE",
+    "x" : x,
+    "y" : y,
+    "s" : s,
+    "tl" : tl,
+    "tr" : tr,
+    "br" : br,
+    "bl" : bl
+  }
+
+  return JSON.stringify(code, null, 2); // Retornar o JSON como string formatada
+}
+
+javascriptGenerator.forBlock['draw_triangle'] = function(block, generator) {
+  const text_id = block.getFieldValue('ID');
+
+  const x1 = block.getFieldValue('X1');
+  const y1 = block.getFieldValue('Y1');
+
+  const x2 = block.getFieldValue('X2');
+  const y2 = block.getFieldValue('Y2');
+
+  const x3 = block.getFieldValue('X3');
+  const y3 = block.getFieldValue('Y3');
+
+  var code = {
+    "id" : text_id,
+    "type" : "TRIANGLE",
+    "x1" : x1,
+    "y1" : y1,
+    "x2" : x2,
+    "y2" : y2,
+    "x3" : x3,
+    "y3" : y3,
+  }
+
+  return JSON.stringify(code, null, 2); // Retornar o JSON como string formatada
+}
+
+javascriptGenerator.forBlock['draw_line'] = function(block, generator) {
+  const text_id = block.getFieldValue('ID');
+
+  const x1 = block.getFieldValue('X1');
+  const y1 = block.getFieldValue('Y1');
+
+  const x2 = block.getFieldValue('X2');
+  const y2 = block.getFieldValue('Y2');
+
+  var code = {
+    "id" : text_id,
+    "type" : "LINE",
+    "x1" : x1,
+    "y1" : y1,
+    "x2" : x2,
+    "y2" : y2
+  }
+
+  return JSON.stringify(code, null, 2); // Retornar o JSON como string formatada
+}
+
+javascriptGenerator.forBlock['draw_point'] = function(block, generator) {
+  const text_id = block.getFieldValue('ID');
+
+  const x = block.getFieldValue('X');
+  const y = block.getFieldValue('Y');
+
+  var code = {
+    "id" : text_id,
+    "type" : "POINT",
+    "x" : x,
+    "y" : y
+  }
+
+  return JSON.stringify(code, null, 2); // Retornar o JSON como string formatada
+}
+
+javascriptGenerator.forBlock['draw_arc'] = function(block, generator) {
+  const text_id = block.getFieldValue('ID');
+
+  const x = block.getFieldValue('X');
+  const y = block.getFieldValue('Y');
+
+  const w = block.getFieldValue('W');
+  const h = block.getFieldValue('H');
+
+  const start = block.getFieldValue('START');
+  const stop = block.getFieldValue('STOP');
+
+  const mode = block.getFieldValue('MODE');
+
+  var code = {
+    "id" : text_id,
+    "type" : "ARC",
+    "x" : x,
+    "y" : y,
+    "w" : w,
+    "h" : h,
+    "start" : start,
+    "stop" : stop,
+    "mode" : mode
+  }
+
+  return JSON.stringify(code, null, 2); // Retornar o JSON como string formatada
+}
+
+javascriptGenerator.forBlock['draw_circle'] = function(block, generator) {
+  const text_id = block.getFieldValue('ID');
+
+  const x = block.getFieldValue('X');
+  const y = block.getFieldValue('Y');
+  const d = block.getFieldValue('D');
+
+  var code = {
+    "id" : text_id,
+    "type" : "CIRCLE",
+    "x" : x,
+    "y" : y,
+    "d" : d
+  }
+
+  return JSON.stringify(code, null, 2); // Retornar o JSON como string formatada
+}
+
+javascriptGenerator.forBlock['draw_ellipse'] = function(block, generator) {
+  const text_id = block.getFieldValue('ID');
+
+  const x = block.getFieldValue('X');
+  const y = block.getFieldValue('Y');
+  const w = block.getFieldValue('W');
+  const h = block.getFieldValue('H');
+
+  var code = {
+    "id" : text_id,
+    "type" : "ELLIPSE",
+    "x" : x,
+    "y" : y,
+    "w" : w,
+    "h" : h
+  }
+
+  return JSON.stringify(code, null, 2); // Retornar o JSON como string formatada
+}
+
+javascriptGenerator.forBlock['view_draw'] = function(block,generator) {
+  const text_id = block.getFieldValue('ID');
+
+  var stringDraws = generator.statementToCode(block, 'DRAWS');
+
+  if (stringDraws){
+    stringDraws = stringDraws.replaceAll(/}\s*{/g, "},{");
+    stringDraws = "[" + stringDraws + "]"
+  }
+  else {
+    stringDraws = "[]"
+  }
+
+  var draws = JSON.parse(stringDraws);
+
+  var code = {
+    "id" : text_id,
+    "type" : "VIEW_SKETCH",
+    "draws" : draws
+  }
+
+  return JSON.stringify(code, null, 2) 
+}
+
+javascriptGenerator.forBlock['begin_clip'] = function(block,generator) {
+
+  var code = {
+    "type" : "BEGIN_CLIP"
+  }
+
+  return JSON.stringify(code, null, 2) 
+}
+
+javascriptGenerator.forBlock['end_clip'] = function(block,generator) {
+
+  var code = {
+    "type" : "END_CLIP"
+  }
+
+  return JSON.stringify(code, null, 2) 
+}
+
+javascriptGenerator.forBlock['erase'] = function(block,generator) {
+
+  var code = {
+    "type" : "ERASE"
+  }
+
+  return JSON.stringify(code, null, 2) 
+}
+
+javascriptGenerator.forBlock['no_erase'] = function(block,generator) {
+
+  var code = {
+    "type" : "NO_ERASE"
+  }
+
+  return JSON.stringify(code, null, 2) 
+}
+
+javascriptGenerator.forBlock['fill'] = function(block,generator) {
+
+  const color = generator.quote_(block.getFieldValue('COLOUR'));
+  const alpha = block.getFieldValue('ALPHA');
+
+
+  var code = {
+    "type" : "FILL",
+    "color" : color.slice(1,-1),
+    "alpha" : alpha
+  }
+
+  return JSON.stringify(code, null, 2) 
+}
+
+javascriptGenerator.forBlock['no_fill'] = function(block,generator) {
+
+  var code = {
+    "type" : "NO_FILL"
+  }
+
+  return JSON.stringify(code, null, 2) 
+}
+
+javascriptGenerator.forBlock['stroke'] = function(block,generator) {
+
+  const color = generator.quote_(block.getFieldValue('COLOUR'));
+  const w = block.getFieldValue('W');
+  const alpha = block.getFieldValue('ALPHA');
+
+  var code = {
+    "type" : "STROKE",
+    "color" : color.slice(1,-1),
+    "w" : w,
+    "alpha" : alpha
+    
+  }
+
+  return JSON.stringify(code, null, 2) 
+}
+
+javascriptGenerator.forBlock['no_stroke'] = function(block,generator) {
+
+  var code = {
+    "type" : "NO_STROKE"
+  }
+
+  return JSON.stringify(code, null, 2) 
+}

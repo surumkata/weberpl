@@ -131,6 +131,28 @@ function BlockEditor() {
             <Block type="challenge_connection"/>
             <Block type="challenge_sequence"/>
         </Category>
+        <Category name="Draws">
+          <Block type="view_draw"/>
+          <Block type="draw_rect"/>
+          <Block type="draw_quad"/>
+          <Block type="draw_square"/>
+          <Block type="draw_triangle"/>
+          <Block type="draw_line"/>
+          <Block type="draw_point"/>
+          <Block type="draw_arc"/>
+          <Block type="draw_circle"/>
+          <Block type="draw_ellipse"/>
+        </Category>
+        <Category name="Draws Auxs">
+          <Block type="begin_clip"/>
+          <Block type="end_clip"/>
+          <Block type="erase"/>
+          <Block type="no_erase"/>
+          <Block type="fill"/>
+          <Block type="no_fill"/>
+          <Block type="stroke"/>
+          <Block type="no_stroke"/>
+        </Category>
         </BlocklyComponent>
   );
 }

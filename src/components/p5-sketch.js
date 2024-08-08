@@ -97,7 +97,7 @@ function P5Sketch(json) {
             if (event.preConditions.root === null) {
                 continue;
             }
-            if (!event.infinityRepetitions && event.repetitions <= 0) {
+            if (event.repetitions === 0) {
                 continue;
             }
             if (event.preConditions.testTree(gameData.escapeRoom, gameData.inventory, gameData.gameState)) {
