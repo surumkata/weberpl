@@ -10,7 +10,7 @@ import 'blockly/blocks';
 import {javascriptGenerator} from 'blockly/javascript';
 import * as locale from 'blockly/msg/en';
 import { Link } from 'react-router-dom';
-import Sketch from 'react-p5';
+import { P5CanvasInstance, ReactP5Wrapper } from "@p5-wrapper/react";
 import { load } from '../components/model/load';
 import { validate } from './validate';
 
@@ -231,9 +231,7 @@ function BlocklyComponent(props) {
     primaryWorkspace.current.addChangeListener(update);
   }, [primaryWorkspace, toolbox, blocklyDiv, props]);
 
-  const setup = (p5, canvasParentRef) => {
-      p5.createCanvas(WIDTH * SCALE_EDIT, (HEIGHT+HEIGHT_INV) * SCALE_EDIT).parent(canvasParentRef);
-  }
+  
 
   const scaleToEdit = (json) => {
     json.scenarios.forEach(scenario => {
@@ -325,92 +323,7 @@ function BlocklyComponent(props) {
     })
   }
 
-  const draw = (p5) => {
-      p5.background(255);
-      if(!loaded) {
-        let code = javascriptGenerator.workspaceToCode(primaryWorkspace.current);
-        try {
-          let json = JSON.parse(code);
-          var errors_json = validate(json);
-          if (errors_json.length == 0) {
-            scaleToEdit(json);
-            var room = load(p5,json,true);
-            setEscapeRoom(room)
-          }
-          else {
-            setEscapeRoom(null);
-          }
-          setErrors(errors_json);
-          setLoaded(true)
-        }
-        catch(e){
-          console.log(e);
-          setEscapeRoom(null);
-          setLoaded(true);
-        }
-      }
-
-      if(escape_room !== null){
-        escape_room.escapeRoom.draw(p5,escape_room.gameState.currentScenario);
-      }
-      else if (errors.length > 0){
-        var error_number = 1;
-        p5.push()
-        p5.textSize(30);
-        p5.fill(255,0,0);
-        p5.stroke(0);
-        p5.strokeWeight(1);
-        p5.text("ERRORS!", 10, HEIGHT_INV);
-        errors.forEach(error => {
-          p5.textSize(20);
-          p5.fill(255,0,0);
-          p5.stroke(0);
-          p5.strokeWeight(1);
-          p5.text(error_number + ". " + error, 10, HEIGHT_INV+30*error_number);
-          error_number += 1;
-        })
-        p5.pop();
-      }
-  }
-
-  const mouseMoved = (e) => {
-    if(escape_room !== null){
-      for(var objectId in escape_room.escapeRoom.objects){
-        var obj = escape_room.escapeRoom.objects[objectId]
-        if (obj.currentView in obj.views){
-          var hover = obj.views[obj.currentView].mouseMoved(e)
-          if(hover){
-            break;
-          }
-        }
-      }
-    }
-  }
-
-  const mousePressed = (e) => {
-    if(escape_room !== null){
-      for(var objectId in escape_room.escapeRoom.objects){
-        var obj = escape_room.escapeRoom.objects[objectId]
-        if (obj.currentView in obj.views){
-          var pressed = obj.views[obj.currentView].mousePressed(e)
-          if (pressed){
-            break;
-          }
-        }
-      }
-    }
-  }
-
-  const mouseDragged = (e) => {
-    if(escape_room !== null){
-      for(var objectId in escape_room.escapeRoom.objects){
-        var obj = escape_room.escapeRoom.objects[objectId]
-        if (obj.currentView in obj.views){
-          obj.views[obj.currentView].mouseDragged(e)
-        }
-      }
-    }
-  }
+  
 
   const updateViewPositionAndSize = (objectId, viewId, newPosx, newPosy, newSizex, newSizey) => {
     // 1. Encontrar todos os blocos do tipo 'object'
@@ -451,53 +364,147 @@ function BlocklyComponent(props) {
     });
   };
 
-  const mouseReleased = (e) => {
-    if(escape_room !== null){
-      for(var objectId in escape_room.escapeRoom.objects){
-        var obj = escape_room.escapeRoom.objects[objectId]
-        if (obj.currentView in obj.views){
-          var view = obj.views[obj.currentView]
-          let changes = view.mouseReleased(e);
-          if (changes) {
-            let newPosx = view.position.x * 1/SCALE_EDIT;
-            let newPosy = (view.position.y* 1/SCALE_EDIT-HEIGHT_INV);
-            let newSizex = 0;
-            let newSizey = 0;
-            if(view.size.x !== 0){
-              newSizex = view.size.x * 1/SCALE_EDIT;
+  function sketch(p5){
+    p5.setup = (canvasParentRef) => {
+      p5.createCanvas(WIDTH * SCALE_EDIT, (HEIGHT+HEIGHT_INV) * SCALE_EDIT).parent(canvasParentRef);
+    }
+
+    p5.draw = () => {
+      p5.background(255);
+      if(!loaded) {
+        let code = javascriptGenerator.workspaceToCode(primaryWorkspace.current);
+        try {
+          let json = JSON.parse(code);
+          var errors_json = validate(json);
+          if (errors_json.length == 0) {
+            scaleToEdit(json);
+            var room = load(p5,json,true);
+            setEscapeRoom(room)
+          }
+          else {
+            setEscapeRoom(null);
+          }
+          setErrors(errors_json);
+          setLoaded(true)
+        }
+        catch(e){
+          console.log(e);
+          setEscapeRoom(null);
+          setLoaded(true);
+        }
+      }
+  
+      if(escape_room !== null){
+        escape_room.escapeRoom.draw(p5,escape_room.gameState.currentScenario);
+      }
+      else if (errors.length > 0){
+        var error_number = 1;
+        p5.push()
+        p5.textSize(30);
+        p5.fill(255,0,0);
+        p5.stroke(0);
+        p5.strokeWeight(1);
+        p5.text("ERRORS!", 10, HEIGHT_INV);
+        errors.forEach(error => {
+          p5.textSize(20);
+          p5.fill(255,0,0);
+          p5.stroke(0);
+          p5.strokeWeight(1);
+          p5.text(error_number + ". " + error, 10, HEIGHT_INV+30*error_number);
+          error_number += 1;
+        })
+        p5.pop();
+      }
+    }
+
+    p5.mouseMoved = (e) => {
+      if(escape_room !== null){
+        for(var objectId in escape_room.escapeRoom.objects){
+          var obj = escape_room.escapeRoom.objects[objectId]
+          if (obj.currentView in obj.views){
+            var hover = obj.views[obj.currentView].mouseMoved(p5.mouseX,p5.mouseY)
+            if(hover){
+              break;
             }
-            if(view.size.y !== 0){
-              newSizey = view.size.y * 1/SCALE_EDIT;
-            }
-            updateViewPositionAndSize(objectId,obj.currentView,newPosx,newPosy,newSizex,newSizey);
           }
         }
       }
     }
-  }
+    
+      p5.mousePressed = (e) => {
+        if(escape_room !== null){
+          for(var objectId in escape_room.escapeRoom.objects){
+            var obj = escape_room.escapeRoom.objects[objectId]
+            if (obj.currentView in obj.views){
+              var pressed = obj.views[obj.currentView].mousePressed(p5.mouseX,p5.mouseY)
+              if (pressed){
+                break;
+              }
+            }
+          }
+        }
+      }
+    
+      p5.mouseDragged = (e) => {
+        if(escape_room !== null){
+          for(var objectId in escape_room.escapeRoom.objects){
+            var obj = escape_room.escapeRoom.objects[objectId]
+            if (obj.currentView in obj.views){
+              obj.views[obj.currentView].mouseDragged(p5.mouseX,p5.mouseY)
+            }
+          }
+        }
+      }
+    
+      p5.mouseReleased = (e) => {
+        if(escape_room !== null){
+          for(var objectId in escape_room.escapeRoom.objects){
+            var obj = escape_room.escapeRoom.objects[objectId]
+            if (obj.currentView in obj.views){
+              var view = obj.views[obj.currentView]
+              let changes = view.mouseReleased(p5.mouseX,p5.mouseY);
+              if (changes) {
+                let newPosx = view.position.x * 1/SCALE_EDIT;
+                let newPosy = (view.position.y* 1/SCALE_EDIT-HEIGHT_INV);
+                let newSizex = 0;
+                let newSizey = 0;
+                if(view.size.x !== 0){
+                  newSizex = view.size.x * 1/SCALE_EDIT;
+                }
+                if(view.size.y !== 0){
+                  newSizey = view.size.y * 1/SCALE_EDIT;
+                }
+                updateViewPositionAndSize(objectId,obj.currentView,newPosx,newPosy,newSizex,newSizey);
+              }
+            }
+          }
+        }
+      }
+    
+      p5.keyPressed = (e) => {
+        if (e.keyCode == 16){
+          if(escape_room !== null){
+            for(var objectId in escape_room.escapeRoom.objects){
+              var obj = escape_room.escapeRoom.objects[objectId]
+              for (var viewId in obj.views)
+                obj.views[viewId].shiftPressed();
+            }
+          }
+        }
+      }
+      
+      p5.keyReleased = (e) => {
+        if (e.keyCode == 16){
+          if(escape_room !== null){
+            for(var objectId in escape_room.escapeRoom.objects){
+              var obj = escape_room.escapeRoom.objects[objectId]
+              for (var viewId in obj.views)
+                obj.views[viewId].shiftReleased();
+            }
+          }
+        }
+      }
 
-  const keyPressed = (e) => {
-    if (e.keyCode == 16){
-      if(escape_room !== null){
-        for(var objectId in escape_room.escapeRoom.objects){
-          var obj = escape_room.escapeRoom.objects[objectId]
-          for (var viewId in obj.views)
-            obj.views[viewId].shiftPressed();
-        }
-      }
-    }
-  }
-  
-  const keyReleased = (e) => {
-    if (e.keyCode == 16){
-      if(escape_room !== null){
-        for(var objectId in escape_room.escapeRoom.objects){
-          var obj = escape_room.escapeRoom.objects[objectId]
-          for (var viewId in obj.views)
-            obj.views[viewId].shiftReleased();
-        }
-      }
-    }
   }
 
 
@@ -521,7 +528,7 @@ function BlocklyComponent(props) {
           }
         </div>
         <div className="scene-container">
-            {<Sketch setup={setup} draw={draw} mouseMoved={mouseMoved} mousePressed={mousePressed} mouseDragged={mouseDragged} mouseReleased={mouseReleased} keyPressed={keyPressed} keyReleased={keyReleased}/>}
+            {<ReactP5Wrapper sketch={sketch} />}
         </div>  
     </React.Fragment>
   );

@@ -24,6 +24,7 @@ class EventPreConditionClickedObject extends EventPreCondition {
       const object = room.objects[objectId];
       if (object.reference === state.currentScenario) {
           for (const [mX,mY] of state.bufferClickEvents) {
+              console.log(object.views[object.currentView].position.x,object.views[object.currentView].position.y);
               tested = object.haveClicked(mX,mY);
               if (tested) {
                   break;

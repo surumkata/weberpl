@@ -20,6 +20,7 @@ const load = (p5,json,edit=false) => {
         setHEIGHT_INV(HEIGHT_INV*SCALE_EDIT);
     }
     if (!json) {
+        console.log("NO JSON!")
         return undefined;
     }
     let scenarios = json.scenarios

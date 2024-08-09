@@ -1,4 +1,5 @@
 import { HEIGHT, HEIGHT_INV, Position, WIDTH, SCALE_EDIT } from "./utils";
+//import { Hitbox, HitboxRect } from "./hitbox";
 
 export class View {
   constructor(p5,id, srcImages, size, position, timeSprite, repeate,turn) {
@@ -21,6 +22,7 @@ export class View {
     this.shift = false
     this.turnX = turn.x
     this.turnY = turn.y
+    //this.hitbox = new HitboxRect(this.position.x,this.position.y,this.size.x,this.size.y);
 
     for (let i in this.srcImages){
       //TODO: colocar assets para funcionar :)
@@ -117,6 +119,7 @@ export class View {
     p5.image(this.images[this.currentSprite],posX,posY,width,height);
     p5.pop();
     if(this.hover){
+      p5.push();
       p5.stroke(255,0,0);
       p5.strokeWeight(2);
       p5.fill(100,100,100,0);
@@ -127,6 +130,7 @@ export class View {
       p5.circle(this.position.x+this.size.x,this.position.y,10);
       p5.circle(this.position.x,this.position.y+this.size.y,10);
       p5.circle(this.position.x+this.size.x,this.position.y+this.size.y,10);
+      p5.pop();
     }
     
 
@@ -140,9 +144,7 @@ export class View {
     this.shift = false;
   }
 
-  mouseMoved(e) {
-    let mX = e.mouseX;
-    let mY = e.mouseY;
+  mouseMoved(mX,mY) {
     let width = this.size.x;
     let height = this.size.y;
     let posX = this.position.x;
@@ -198,9 +200,7 @@ export class View {
     return this.hover
   }
 
-  mousePressed(e) {
-    let mX = e.mouseX;
-    let mY = e.mouseY;
+  mousePressed(mX,mY) {
     if(this.circleCollision(mX,mY,this.position.x,this.position.y,11)){ //CIRCULO ESQUERDO CIMA
       this.isResizing = true
       this.setLastPosition(mX,mY);
@@ -337,7 +337,7 @@ export class View {
         this.resizeX(WIDTH*SCALE_EDIT - this.position.x);
         touched_limits = true;
       }
-      if (this.size.x != 0 && !touched_limits) {
+      if (this.size.x !== 0 && !touched_limits) {
         this.setLastPosition(mX,mY);
       }
     }
@@ -351,7 +351,7 @@ export class View {
         this.resizeY((HEIGHT+HEIGHT_INV)*SCALE_EDIT - this.position.y);
         touched_limits = true;
       }
-      if (this.size.y != 0 && !touched_limits) {
+      if (this.size.y !== 0 && !touched_limits) {
         this.setLastPosition(mX,mY);
       }
     }
@@ -372,7 +372,7 @@ export class View {
         this.resizeX(0);
       }
       
-      if (this.size.x != 0 && !touched_limits) {
+      if (this.size.x !== 0 && !touched_limits) {
         this.setLastPosition(mX,mY);
       }
     }
@@ -394,7 +394,7 @@ export class View {
         this.resizeY(0);
       }
 
-      if (this.size.y != 0 && !touched_limits) {
+      if (this.size.y !== 0 && !touched_limits) {
         this.setLastPosition(mX,mY);
       }
     }
@@ -427,7 +427,7 @@ export class View {
         touched_limits = true;
       }
 
-      if (this.size.x != 0.1 && this.size.y != 0.1 && !touched_limits) {
+      if (this.size.x !== 0.1 && this.size.y !== 0.1 && !touched_limits) {
         this.setLastPosition(mX,mY);
       }
     }
@@ -475,7 +475,7 @@ export class View {
         touched_limits = true;
       }
 
-      if (this.size.x != 0.1 && this.size.y != 0.1 && !touched_limits) {
+      if (this.size.x !== 0.1 && this.size.y !== 0.1 && !touched_limits) {
         this.setLastPosition(mX,mY);
       }
     }
@@ -525,7 +525,7 @@ export class View {
         this.resizeX(0.1);
       }
 
-      if (this.size.x != 0.1 && this.size.y != 0.1 && !touched_limits) {
+      if (this.size.x !== 0.1 && this.size.y !== 0.1 && !touched_limits) {
         this.setLastPosition(mX,mY);
       }
     }
@@ -580,15 +580,13 @@ export class View {
         this.resizeX(0.1);
       }
 
-      if (this.size.x != 0.1 && this.size.y != 0.1 && !touched_limits) {
+      if (this.size.x !== 0.1 && this.size.y !== 0.1 && !touched_limits) {
         this.setLastPosition(mX,mY);
       }
     }
   }
 
-  mouseDragged(e) {
-    let mX = e.mouseX;
-    let mY = e.mouseY;
+  mouseDragged(mX,mY) {
     let changeX = mX-this.lastPosition.x;
     let changeY = mY-this.lastPosition.y;
     let relXY = this.size.x / this.size.y;
@@ -653,7 +651,7 @@ export class View {
     }
   }
 
-  mouseReleased(e) {
+  mouseReleased(mX,mY) {
     if (this.isDragging || this.isResizing){
       this.isDragging = false;
       this.isResizing = false;
@@ -671,6 +669,7 @@ export class ViewSketch {
 
   draw(p5){
     p5.push();
+    p5.noStroke();
     this.draws.forEach(draw => {
       draw.draw(p5);
     })
@@ -681,10 +680,10 @@ export class ViewSketch {
     this.draws.push(draw);
   }
 
-  mouseMoved(e) {}
-  mousePressed(e) {}
-  mouseDragged(e) {}
-  mouseReleased(e) {}
+  mouseMoved(mX,mY) {}
+  mousePressed(mX,mY) {}
+  mouseDragged(mX,mY) {}
+  mouseReleased(mX,mY) {}
 }
 
 

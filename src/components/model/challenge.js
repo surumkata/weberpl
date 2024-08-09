@@ -28,11 +28,11 @@ class Challenge {
         // Abstract method to be implemented in subclasses
     }
 
-    mousePressed(e,gameState) {
+    mousePressed(mX,mY,gameState) {
         // Abstract method to be implemented in subclasses
     }
 
-    mouseMoved(e){
+    mouseMoved(mX,mY){
         // Abstract method to be implemented in subclasses
     }
 
@@ -110,9 +110,7 @@ class ChallengeQuestion extends Challenge {
         p5.text(this.question, this.background[0] + this.padding, this.background[1] + this.textSize);
     }
 
-    mousePressed(e,gameState) {
-        let mX = e.mouseX
-        let mY = e.mouseY
+    mousePressed(mX,mY,gameState) {
         if (mX >= 0 && mY >= 0 && mX <= WIDTH && mY <= HEIGHT) {
             if (super.rectCollision(mX,mY,this.background)){
                 if (super.trianCollision(mX,mY,this.triangle)){
@@ -132,9 +130,7 @@ class ChallengeQuestion extends Challenge {
         return undefined;      
     }
 
-    mouseMoved(e){
-        let mX = e.mouseX;
-        let mY = e.mouseY;
+    mouseMoved(mX,mY){
         if (super.trianCollision(mX,mY,this.triangle)){
             this.hover = true;
             document.documentElement.style.cursor = 'pointer';
@@ -212,9 +208,7 @@ class ChallengeMultipleChoice extends Challenge {
     }
 
 
-    mousePressed(e,gameState) {
-        let mX = e.mouseX
-        let mY = e.mouseY
+    mousePressed(mX,mY,gameState) {
         if (mX >= 0 && mY >= 0 && mX <= WIDTH && mY <= HEIGHT) {
             if (super.rectCollision(mX,mY,this.bigBackground)){
                 var i = 0;
@@ -240,9 +234,7 @@ class ChallengeMultipleChoice extends Challenge {
         return undefined;      
     }
 
-    mouseMoved(e){
-        let mX = e.mouseX
-        let mY = e.mouseY
+    mouseMoved(mX,mY){
         var i = 0
         var choiceHover = undefined
         this.choiceBoxes.forEach(box => {
@@ -334,9 +326,7 @@ class ChallengeSequence extends Challenge {
         p5.text(this.question, WIDTH/8 + 10, HEIGHT/8 + 32);
     }
 
-    mousePressed(e,gameState) {
-        let mX = e.mouseX
-        let mY = e.mouseY
+    mousePressed(mX,mY,gameState) {
         if (mX >= 0 && mY >= 0 && mX <= WIDTH && mY <= HEIGHT) {
             if (super.rectCollision(mX,mY,this.bigBackground)){
                 var i = 0;
@@ -368,9 +358,7 @@ class ChallengeSequence extends Challenge {
         return undefined;      
     }
 
-    mouseMoved(e){
-        let mX = e.mouseX
-        let mY = e.mouseY
+    mouseMoved(mX,mY){
         var i = 0
         var choiceHover = undefined
         this.choiceBoxes.forEach(box => {
@@ -505,10 +493,8 @@ class ChallengeConnections extends Challenge{
         p5.text(this.question, this.bigBackground[0] + this.padding, this.bigBackground[1] + this.textSize + this.padding);
 
     }
-    mousePressed(e,gameState) {
+    mousePressed(mX,mY,gameState) {
         document.documentElement.style.cursor = 'default';
-        let mX = e.mouseX
-        let mY = e.mouseY
         if (mX >= 0 && mY >= 0 && mX <= WIDTH && mY <= HEIGHT) {
             if (super.rectCollision(mX,mY,this.bigBackground)){
                 var i = 0;
@@ -568,9 +554,7 @@ class ChallengeConnections extends Challenge{
         return undefined;      
     }
 
-    mouseMoved(e){
-        let mX = e.mouseX
-        let mY = e.mouseY
+    mouseMoved(mX,mY){
         var i = 0
         var choiceHover = undefined
         this.leftBoxes.forEach(box => {

@@ -1,12 +1,13 @@
-import React from 'react';
-// import ReactDOM from 'react-dom/client'; <- This import is only // for React version 18
-import { render } from 'react-dom'; // <- This is the correct import // statement for React version 17
-import './index.css';
-import App from './App';
+import { StrictMode } from "react";
+import { createRoot } from "react-dom/client";
 
-// const root = //ReactDOM.createRoot(document.getElementById('root'));
-const root = document.getElementById('root'); // <- This is the //correct method call for React version 17
-render(
-  <React.StrictMode>
+import App from "./App";
+
+const rootElement = document.getElementById("root");
+const root = createRoot(rootElement);
+
+root.render(
+  <StrictMode>
     <App />
-  </React.StrictMode>, root);
+  </StrictMode>
+);

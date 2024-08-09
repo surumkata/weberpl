@@ -41,6 +41,7 @@ export class Item {
   }
 
   draw(p5) {
+    p5.push();
     if(this.inUse){
         p5.fill(0,255,0);
         p5.stroke(0);
@@ -53,6 +54,7 @@ export class Item {
         p5.strokeWeight(2);
         p5.rect(this.slotPosition.x, this.slotPosition.y, SQUARE_SIZE,SQUARE_SIZE);
     }
+    p5.pop();
     // Desenha a imagem na posição especificada
     p5.image(this.view.images[0],this.position.x,this.position.y,this.size.x,this.size.y);
   }
@@ -185,20 +187,23 @@ export class Inventory {
 
   draw(p5) {
     // Fundo colorido
-    
+    p5.push();
     p5.fill(255);
     p5.stroke(0);
     p5.strokeWeight(2);
     p5.rect(0, 0, this.inWidth, this.invHeight);
+    p5.pop();
     
     let i = 1;
     while (true) {
         let x = this.startPadding + ((i - 1) * (this.squareSize + this.padding));
         if (x < this.inWidth - this.squareSize) {
+            p5.push();
             p5.fill(255);  // Cor branca
             p5.stroke(0);
             p5.strokeWeight(2);
             p5.rect(x, this.padding, this.squareSize, this.squareSize);
+            p5.pop();
             i++;
         } else {
             break;

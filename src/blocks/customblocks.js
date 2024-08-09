@@ -231,28 +231,64 @@ Blockly.Blocks['object'] = {
 
 Blockly.Blocks['view'] = {
   init: function() {
-    this.appendEndRowInput()
-        .setAlign(Blockly.inputs.Align.CENTRE)
-        .appendField("VIEW")
-        .appendField(new Blockly.FieldTextInput("VIEW_1"), "ID");
-    this.appendValueInput("IMAGE")
-        .setCheck("url")
-        .appendField("IMAGE:");
-    this.appendEndRowInput();
-    this.appendValueInput("POSITION")
-        .setCheck("position")
-        .appendField("POSITION:");
-    this.appendEndRowInput();
-    this.appendValueInput("SIZE")
-        .setCheck("size")
-        .appendField("SIZE:");
-    this.setPreviousStatement(true, "view");
-    this.setNextStatement(true, "view");
+    this.appendDummyInput('ID')
+      .setAlign(Blockly.inputs.Align.CENTRE)
+      .appendField('VIEW')
+      .appendField(new Blockly.FieldTextInput('VIEW_1'), 'ID');
+    this.appendDummyInput('HITBOX')
+    .setAlign(Blockly.inputs.Align.CENTRE)
+    .appendField('HITBOX:')
+    .appendField(new Blockly.FieldDropdown([
+        ['default', 'DEFAULT'],
+        ['no', 'NO'],
+        ['advanced', 'ADVANCED']
+      ], this.onHitboxChange.bind(this)), 'HITBOX_TYPE');  // Associa a função de mudança
+    this.appendValueInput('IMAGE')
+      .setAlign(Blockly.inputs.Align.CENTRE)
+      .setCheck('url')
+      .appendField('IMAGE:');
+    this.appendValueInput('POSITION')
+      .setAlign(Blockly.inputs.Align.CENTRE)
+      .setCheck('position')
+      .appendField('POSITION:');
+    this.appendValueInput('SIZE')
+      .setAlign(Blockly.inputs.Align.CENTRE)
+      .setCheck('size')
+      .appendField('SIZE:');
+    this.setPreviousStatement(true, 'view');
+    this.setNextStatement(true, 'view');
+    this.setTooltip('');
+    this.setHelpUrl('');
     this.setColour(60);
- this.setTooltip("");
- this.setHelpUrl("");
+  },
+
+  onHitboxChange: function(newValue) {
+    this.updateAdvancedHitbox(newValue);
+  },
+
+  updateAdvancedHitbox: function(option) {
+    // Remove o campo de advanced hitbox, se existir
+    if (this.getInput('ADVANCED_HITBOX')) {
+      this.removeInput('ADVANCED_HITBOX');
+      this.removeInput('ADVANCED_HITBOX_LABEL');
+    }
+
+    // Adiciona o campo se a opção for "ADVANCED"
+    if (option === 'ADVANCED') {
+      this.appendDummyInput('ADVANCED_HITBOX_LABEL')
+        .appendField('ADVANCED HITBOX:');
+      this.appendStatementInput('ADVANCED_HITBOX')
+        .setCheck('hitbox');
+
+      this.moveInputBefore('ADVANCED_HITBOX', 'IMAGE');
+      this.moveInputBefore('ADVANCED_HITBOX_LABEL', 'ADVANCED_HITBOX');
+    }
+
+    // Atualiza o layout do bloco
+    this.render();
   }
 };
+
 
 Blockly.Blocks['view2'] = {
   init: function() {

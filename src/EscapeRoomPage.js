@@ -3,7 +3,7 @@ import React from 'react';
 import './blocks/customblocks';
 import './generator/generator';
 import { useParams } from 'react-router-dom';
-import P5Sketch from './components/p5-sketch';
+import P5Sketch from './components/p5-sketch.js';
 
 
 function EscapeRoomPage() {
