@@ -1,3 +1,4 @@
+import { HitboxArc } from "./hitbox";
 import { HEIGHT, HEIGHT_INV, Position, WIDTH, SCALE_EDIT } from "./utils";
 //import { Hitbox, HitboxRect } from "./hitbox";
 
@@ -780,7 +781,6 @@ export class Arc extends DrawP5 {
   }
 
   draw(p5){
-    console.log(this.mode);
     if(this.mode !== 'default') {
       p5.arc(this.x, this.y, this.w, this.h, this.start, this.stop, this.mode);
     }

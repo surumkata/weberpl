@@ -3,20 +3,15 @@ import { ReactP5Wrapper } from "@p5-wrapper/react";
 import { load } from './model/load.js';
 import "./p5-sketch.css";
 import { WIDTH, HEIGHT, HEIGHT_INV } from './model/utils.js';
-import { Howl } from 'howler';
 
 const P5Sketch = ({ json }) => {
     var gameData;
     const soundRef = useRef(null);
+    let playing = false;
 
     const playSound = () => {
         if (!soundRef.current) {
-            soundRef.current = new Howl({
-                src: ['weberpl/assets/soundtrack.mp3'], // Caminho para o arquivo de áudio
-                volume: 1.0, // Volume do som
-                loop: true, // Loop habilitado
-                html5: true, // Usa HTML5 para garantir compatibilidade com formatos de áudio
-            });
+            soundRef.current = new Audio("weberpl/assets/soundtrack.mp3");
         }
         soundRef.current.play(); // Toca o som
     };
@@ -57,7 +52,6 @@ const P5Sketch = ({ json }) => {
             if (gameData) {
                 gameData.gameState.inputElem = textarea;
             }
-            playSound();
         };
 
         p5.draw = () => {
@@ -85,6 +79,10 @@ const P5Sketch = ({ json }) => {
 
         p5.mousePressed = () => {
             if (gameData) {
+                if(!playing){
+                    playSound();
+                    playing = true;
+                }  
                 if (gameData.gameState.isRunning()) {
                     gameData.gameState.bufferMessages = [];
                     gameData.gameState.bufferClickEvents.push([p5.mouseX, p5.mouseY]);
@@ -113,7 +111,7 @@ const P5Sketch = ({ json }) => {
                     gameData.gameState.challenge.mouseMoved(p5.mouseX, p5.mouseY);
                 } else if (gameData.gameState.isRunning()) {
                     gameData.inventory.mouseMoved(p5.mouseX, p5.mouseY);
-                }
+                }  
             }
         };
     };

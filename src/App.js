@@ -9,7 +9,7 @@ const App = () => {
   return (
       <HashRouter>
           <Routes>
-              <Route path="" element={<BlockEditor />} />
+              <Route path="/weberpl" element={<BlockEditor />} />
               <Route path="/escape_room/:data" element={<EscapeRoomPage />} />
           </Routes>
       </HashRouter>
