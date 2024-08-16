@@ -1,0 +1,12 @@
+.injectionDiv {
+  height: 100%;
+  width: 50%!important;
+  position: absolute;
+  bottom: 0;
+}
+
+.sceneContainer{
+  position: absolute;
+  left: 60%;
+  top: 8%;
+}

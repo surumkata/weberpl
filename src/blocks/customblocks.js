@@ -3,12 +3,6 @@ import {registerFieldAngle} from '@blockly/field-angle';
 import { FieldAngle } from '@blockly/field-angle';
 import {FieldColourHsvSliders} from '@blockly/field-colour-hsv-sliders';
 
-// Since we're using json to initialize the field, we'll need to import it.
-import '../fields/BlocklyReactField';
-import '../fields/DateField';
-
-import '@blockly/field-date';
-
 Blockly.Blocks['escape_room'] = {
   init: function() {
     this.appendDummyInput()

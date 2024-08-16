@@ -1,19 +1,18 @@
 import React from 'react';
-import BlockEditor from './BlockEditor';
-import EscapeRoomPage from './EscapeRoomPage'
 import { Routes, Route, HashRouter } from "react-router-dom";
-
+import { Editor } from './Editor';
+import { EscapeRoomPage } from './EscapeRoomPage'
 
 
 const App = () => {
   return (
       <HashRouter>
           <Routes>
-              <Route path="" element={<BlockEditor />} />
+              <Route path="" element={<Editor />} />
               <Route path="/escape_room/:data" element={<EscapeRoomPage />} />
           </Routes>
       </HashRouter>
   );
 }
 
-export default App;
+export {App};

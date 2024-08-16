@@ -1,4 +1,4 @@
-export const validate = (er) => {
+const validate = (er) => {
     let scenarios = er.scenarios;
     let events = er.events;
     let transitions = er.transitions;
@@ -138,3 +138,5 @@ export const validate = (er) => {
       return reasons;
     }
   }
+
+export {validate};

@@ -1,36 +1,25 @@
 {
-  "homepage": "https://surumkata.github.io/weberpl/#",
-  "name": "blockly-react-sample",
-  "version": "0.0.0",
+  "name": "@react-blockly/web-example",
+  "version": "1.0.0",
   "private": true,
   "dependencies": {
-    "@blockly/field-angle": "^5.0.6",
-    "@blockly/field-colour-hsv-sliders": "^5.0.6",
-    "@blockly/field-date": "^9.0.0",
+    "@blockly/field-angle": "^5.0.7",
+    "@blockly/field-colour-hsv-sliders": "^5.0.7",
     "@blockly/zoom-to-fit": "^6.0.7",
     "@p5-wrapper/react": "^4.4.2",
-    "blockly": "^11.0.0",
+    "@react-blockly/web": "*",
     "p5collide": "^2.0.2",
     "react": "^18.3.1",
-    "react-datepicker": "^7.3.0",
     "react-dom": "^18.3.1",
-    "react-router-dom": "^6.23.1",
-    "react-scripts": "^5.0.1",
-    "util": "^0.12.5"
+    "react-router-dom": "^6.26.1"
+  },
+  "devDependencies": {
+    "react-scripts": "^5.0.1"
   },
   "scripts": {
-    "predeploy": "npm run build",
-    "deploy": "gh-pages -d build",
-    "audit": "npm audit fix",
-    "update": "npm update",
-    "postinstall": "cp -r node_modules/blockly/media public/media",
     "start": "react-scripts start",
     "build": "react-scripts build",
-    "test": "react-scripts test",
-    "eject": "react-scripts eject"
-  },
-  "eslintConfig": {
-    "extends": "react-app"
+    "test": "react-scripts test"
   },
   "browserslist": {
     "production": [
@@ -43,17 +32,5 @@
       "last 1 firefox version",
       "last 1 safari version"
     ]
-  },
-  "blocklyDemoConfig": {
-    "title": "Blockly in React",
-    "description": "Load Blockly in a React project.",
-    "files": [
-      "build/index.html",
-      "build/**/*"
-    ]
-  },
-  "devDependencies": {
-    "@blockly/dev-tools": "^8.0.7",
-    "gh-pages": "^6.1.1"
   }
 }
