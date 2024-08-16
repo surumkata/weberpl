@@ -9,6 +9,7 @@
     "@blockly/zoom-to-fit": "^6.0.7",
     "@p5-wrapper/react": "^4.4.2",
     "@react-blockly/web": "*",
+    "gh-pages": "^6.1.1",
     "p5collide": "^2.0.2",
     "react": "^18.3.1",
     "react-dom": "^18.3.1",
