@@ -8,7 +8,7 @@ import './blocks/otherGenerator'
 
 import * as Blockly from 'blockly/core';
 
-import './Editor.css'
+import './EscapeRoomEditor.css'
 import ConfigFiles from './content';
 
 import { ReactP5Wrapper } from "@p5-wrapper/react";
@@ -19,7 +19,7 @@ import { load } from './components/model/load';
 
 import { Link } from 'react-router-dom';
 
-function Editor() {
+function EscapeRoomEditor() {
 
   const [erCode, setEscapeRoomCode] = useState(null);
   const [er, setEscapeRoom] = useState(null);
@@ -233,6 +233,45 @@ function Editor() {
     console.log('onError', error);
   }, []);
 
+  const updateViewPositionAndSize = (objectId, viewId, newPosx, newPosy, newSizex, newSizey) => {
+    // 1. Encontrar todos os blocos do tipo 'object'
+    const objectBlocks = workspaceRef.current.getBlocksByType('object');
+
+    objectBlocks.forEach(objectBlock => {
+      // 2. Verificar se este bloco 'object' tem o ID que estamos procurando
+      if (objectBlock.getFieldValue('ID') === objectId) {
+        // 3. Encontrar todos os sub-blocos do tipo 'view' dentro do bloco 'object'
+        var viewBlocks = objectBlock.getChildren(false).filter(childBlock => childBlock.type === 'view');
+        const turnBlocks = objectBlock.getChildren(false).filter(childBlock => childBlock.type === 'turn');
+
+
+        turnBlocks.forEach(turnBlock => {
+          const turnViewBlocks = turnBlock.getChildren(false).filter(childBlock => childBlock.type === 'view');
+          viewBlocks = viewBlocks.concat(turnViewBlocks);
+        });
+
+        viewBlocks.forEach(viewBlock => {
+          // 4. Verificar se este bloco 'view' tem o ID que estamos procurando
+          if (viewBlock.getFieldValue('ID') === viewId) {
+            // 5. Encontrar o sub-bloco 'position' dentro do bloco 'view'
+            const positionBlock = viewBlock.getChildren(false).find(childBlock => childBlock.type === 'position');
+            if (positionBlock) {
+              // 6. Alterar os valores dos campos 'x' e 'y'
+              positionBlock.setFieldValue(newPosx, 'x');
+              positionBlock.setFieldValue(newPosy, 'y');
+            }
+            const sizeBlock = viewBlock.getChildren(false).find(childBlock => childBlock.type === 'size');
+            if (sizeBlock) {
+              sizeBlock.setFieldValue(newSizex, 'x');
+              sizeBlock.setFieldValue(newSizey, 'y')
+            }
+          }
+        });
+
+      }
+    });
+  };
+
   function sketch(p5){
     p5.setup = (canvasParentRef) => {
       p5.createCanvas(WIDTH * SCALE_EDIT, (HEIGHT+HEIGHT_INV) * SCALE_EDIT).parent(canvasParentRef);
@@ -275,6 +314,94 @@ function Editor() {
         p5.pop();
       }
     }
+
+    p5.mouseMoved = (e) => {
+      if(er !== null){
+        for(var objectId in er.escapeRoom.objects){
+          var obj = er.escapeRoom.objects[objectId]
+          if (obj.currentView in obj.views){
+            var hover = obj.views[obj.currentView].mouseMoved(p5.mouseX,p5.mouseY)
+            if(hover){
+              break;
+            }
+          }
+        }
+      }
+    }
+
+      p5.mousePressed = (e) => {
+        if(er !== null){
+          for(var objectId in er.escapeRoom.objects){
+            var obj = er.escapeRoom.objects[objectId]
+            if (obj.currentView in obj.views){
+              var pressed = obj.views[obj.currentView].mousePressed(p5.mouseX,p5.mouseY)
+              if (pressed){
+                break;
+              }
+            }
+          }
+        }
+      }
+
+      p5.mouseDragged = (e) => {
+        if(er !== null){
+          for(var objectId in er.escapeRoom.objects){
+            var obj = er.escapeRoom.objects[objectId]
+            if (obj.currentView in obj.views){
+              obj.views[obj.currentView].mouseDragged(p5.mouseX,p5.mouseY)
+            }
+          }
+        }
+      }
+
+      p5.mouseReleased = (e) => {
+        if(er !== null){
+          for(var objectId in er.escapeRoom.objects){
+            var obj = er.escapeRoom.objects[objectId]
+            if (obj.currentView in obj.views){
+              var view = obj.views[obj.currentView]
+              let changes = view.mouseReleased(p5.mouseX,p5.mouseY);
+              if (changes) {
+                let newPosx = view.position.x * 1/SCALE_EDIT;
+                let newPosy = (view.position.y* 1/SCALE_EDIT-HEIGHT_INV);
+                let newSizex = 0;
+                let newSizey = 0;
+                if(view.size.x !== 0){
+                  newSizex = view.size.x * 1/SCALE_EDIT;
+                }
+                if(view.size.y !== 0){
+                  newSizey = view.size.y * 1/SCALE_EDIT;
+                }
+                updateViewPositionAndSize(objectId,obj.currentView,newPosx,newPosy,newSizex,newSizey);
+              }
+            }
+          }
+        }
+      }
+
+      p5.keyPressed = (e) => {
+        if (e.keyCode == 16){
+          if(er !== null){
+            for(var objectId in er.escapeRoom.objects){
+              var obj = er.escapeRoom.objects[objectId]
+              for (var viewId in obj.views)
+                obj.views[viewId].shiftPressed();
+            }
+          }
+        }
+      }
+
+      p5.keyReleased = (e) => {
+        if (e.keyCode == 16){
+          if(er !== null){
+            for(var objectId in er.escapeRoom.objects){
+              var obj = er.escapeRoom.objects[objectId]
+              for (var viewId in obj.views)
+                obj.views[viewId].shiftReleased();
+            }
+          }
+        }
+      }
   }
 
   const generateCode = () => {
@@ -318,4 +445,4 @@ function Editor() {
   );
 }
 
-export {Editor};
+export {EscapeRoomEditor};
