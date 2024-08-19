@@ -235,6 +235,26 @@ javascriptGenerator.forBlock['view'] = function(block, generator) {
   var value_image = generator.valueToCode(block, 'IMAGE', Order.ATOMIC);
   var posString = generator.valueToCode(block, 'POSITION', Order.ATOMIC);
   var sizeString = generator.valueToCode(block, 'SIZE', Order.ATOMIC);
+  var hitboxType = block.getFieldValue('HITBOX_TYPE');
+
+  console.log(hitboxType);
+  var hitboxString;
+  if (hitboxType === "ADVANCED"){
+    hitboxString = generator.statementToCode(block, 'ADVANCED_HITBOX');
+    if (hitboxString){
+      hitboxString = hitboxString.replaceAll(/}\s*{/g, "},{");
+      hitboxString = "[" + hitboxString + "]"
+    }
+    else {
+      hitboxString = "[]"
+    }
+  }
+  else {
+    hitboxString = "[]"
+  }
+
+  var hitboxObject = JSON.parse(hitboxString);
+
 
   if (sizeString) {
     sizeString = sizeString.slice(1, -1);
@@ -264,7 +284,9 @@ javascriptGenerator.forBlock['view'] = function(block, generator) {
     "src" : value_image,
     "position" : posObject,
     "size" : sizeObject,
-    "turn" : {"x" : false, "y" : false}
+    "turn" : {"x" : false, "y" : false},
+    "hitbox_type" : hitboxType,
+    "hitboxs" : hitboxObject
   }
 
   return JSON.stringify(code, null, 2); // Retornar o JSON como string formatada
@@ -1210,4 +1232,27 @@ javascriptGenerator.forBlock['no_stroke'] = function(block,generator) {
   }
 
   return JSON.stringify(code, null, 2) 
+}
+
+//HITBOXS
+
+javascriptGenerator.forBlock['hitbox_rect'] = function(block, generator) {
+  const text_id = block.getFieldValue('ID');
+
+  const x = block.getFieldValue('X');
+  const y = block.getFieldValue('Y');
+
+  const w = block.getFieldValue('W');
+  const h = block.getFieldValue('H');
+
+  var code = {
+    "id" : text_id,
+    "type" : "RECT",
+    "x" : x,
+    "y" : y,
+    "w" : w,
+    "h" : h
+  }
+
+  return JSON.stringify(code, null, 2); // Retornar o JSON como string formatada
 }

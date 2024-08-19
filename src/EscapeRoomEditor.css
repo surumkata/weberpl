@@ -14,10 +14,103 @@
 .containerRight {
   width: 45vw;
   float: right;
+  display: flex;
+  justify-content: center;
+  align-items: center;
 }
 
 
 
 .containerBlockly {
   flex-grow: 1;
+}
+
+.containerSketch {
+  margin-left: auto!important;
+  margin-right: auto!important;
+}
+
+.containerButtons {
+  display: flex;
+  align-items: center;
+  justify-content: center;
+}
+
+.play-btn {
+  background-color: #17116e;
+  border: none;
+  border-radius: 10px;
+  margin-right: 10px;
+}
+
+.play-btn:hover {
+  background-color: #110d4b!important;
+  cursor: pointer;
+}
+
+.play-btn > img {
+  height: 50px;
+  width: 50px;
+  padding: 5px;
+}
+
+.play-btn:disabled {
+  background-color: gray;
+  cursor: not-allowed;
+}
+
+.select-scenario{
+  display: flex;
+  flex-direction: column;
+  align-items: center;
+  margin-right: 10px;
+}
+
+select {
+  /* Reset Select */
+  appearance: none;
+  border: 0;
+  box-shadow: none;
+  /* Personalize */
+  flex: 1;
+  padding: 0 1em;
+  color: #f1d00c;
+  background-color: #17116e;
+  background-image: none;
+  cursor: pointer;
+}
+/* Remove IE arrow */
+select::-ms-expand {
+  display: none;
+}
+
+/* Custom Select wrapper */
+.select {
+  position: relative;
+  display: flex;
+  width: 20em;
+  height: 3em;
+  border-radius: .25em;
+  overflow: hidden;
+}
+select:hover{
+  background-color: #110d4b!important;
+}
+
+/* Arrow */
+.select::after {
+  content: '\25BC';
+  position: absolute;
+  top: 0;
+  right: 0;
+  padding: 1em;
+  background-color: #17116e;
+  color: #f1d00c;
+  transition: .25s all ease;
+  pointer-events: none;
+}
+/* Transition */
+.select:hover::after {
+  color: #17116e;
+  background-color: #f1d00c;
 }

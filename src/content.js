@@ -1,17 +1,20 @@
 const INITIAL =
   `<xml>
   <block type="escape_room" x="10" y="10">
+    <field name="TITLE">ESCAPE ROOM</field>
     <field name="TYPE">SCENARIO</field>
-    <field name="START">SCENARIO_1</field>
+    <field name="START">ROOM</field>
     <statement name="SCENARIOS">
       <block type="scenario">
+        <field name="ID">ROOM</field>
+        <field name="initial_view">WALL</field>
         <statement name="VIEWS">
             <block type="view">
-              <field name="ID">VIEW_1</field>
+              <field name="ID">WALL</field>
               <value name="SIZE">
                 <block type="size">
-                  <field name="x">0</field>
-                  <field name="y">0</field>
+                  <field name="x">1280</field>
+                  <field name="y">720</field>
                 </block>
               </value>
               <value name="POSITION">
@@ -28,9 +31,11 @@ const INITIAL =
         </statement>
         <statement name="OBJECTS">
             <block type="object">
+              <field name="ID">DOOR</field>
+              <field name="initial_view">CLOSED DOOR</field>
               <statement name="VIEWS">
                   <block type="view">
-                    <field name="ID">VIEW_1</field>
+                    <field name="ID">CLOSED DOOR</field>
                     <value name="SIZE">
                       <block type="size">
                         <field name="x">225</field>
@@ -39,8 +44,8 @@ const INITIAL =
                     </value>
                     <value name="POSITION">
                       <block type="position">
-                        <field name="x">600</field>
-                        <field name="y">342</field>
+                        <field name="x">480</field>
+                        <field name="y">360</field>
                       </block>
                     </value>
                     <value name="IMAGE">
@@ -131,6 +136,9 @@ const TOOLBOX =
   '    <block type="no_fill"></block>\n' +
   '    <block type="stroke"></block>\n' +
   '    <block type="no_stroke"></block>\n' +
+  '  </category>\n' +
+  '  <category name="Hitbox Rect" colour="#5C81A6">\n' +
+  '    <block type="hitbox_rect"></block>\n' +
   '  </category>\n' +
   '</xml>';
 

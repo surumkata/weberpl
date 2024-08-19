@@ -27,7 +27,6 @@ function EscapeRoomEditor() {
   const [er, setEscapeRoom] = useState(null);
   const [loaded, setLoaded] = useState(false);
   const [errors, setErrors] = useState([]);
-  const [data, setData] = useState(null);
   const [xml, setXML] = useState(null);
   const workspaceRef = useRef(null);  // Referência para o workspace
   const [transitionsIds, setTransitionsIds] = useState([]);
@@ -73,91 +72,98 @@ function EscapeRoomEditor() {
     workspaceRef.current = workspace;  // Guardar a referência do workspace
   }, []);
 
+  const scaleToEditView = (view) => {
+    if (view.type == "VIEW_IMAGE"){
+      view.position.x *= SCALE_EDIT;
+      view.position.y *= SCALE_EDIT;
+      view.size.x *= SCALE_EDIT;
+      view.size.y *= SCALE_EDIT;
+    }
+    else if (view.type == "VIEW_SKETCH"){
+      view.draws.forEach(draw => {
+        switch(draw.type) {
+          case "RECT":
+            draw.x *= SCALE_EDIT;
+            draw.y *= SCALE_EDIT;
+            draw.w *= SCALE_EDIT;
+            draw.h *= SCALE_EDIT;
+            draw.tl *= SCALE_EDIT;
+            draw.tr *= SCALE_EDIT;
+            draw.br *= SCALE_EDIT;
+            draw.bl *= SCALE_EDIT;
+            break;
+          case "QUAD":
+            draw.x1 *= SCALE_EDIT;
+            draw.y1 *= SCALE_EDIT;
+            draw.x2 *= SCALE_EDIT;
+            draw.y2 *= SCALE_EDIT;
+            draw.x3 *= SCALE_EDIT;
+            draw.y3 *= SCALE_EDIT;
+            draw.x4 *= SCALE_EDIT;
+            draw.y4 *= SCALE_EDIT;
+            break;
+          case "SQUARE":
+            draw.x  *= SCALE_EDIT;
+            draw.y  *= SCALE_EDIT;
+            draw.s  *= SCALE_EDIT;
+            draw.tl *= SCALE_EDIT;
+            draw.tr *= SCALE_EDIT;
+            draw.br *= SCALE_EDIT;
+            draw.bl *= SCALE_EDIT;
+            break;
+          case "TRIANGLE":
+            draw.x1 *= SCALE_EDIT;
+            draw.y1 *= SCALE_EDIT;
+            draw.x2 *= SCALE_EDIT;
+            draw.y2 *= SCALE_EDIT;
+            draw.x3 *= SCALE_EDIT;
+            draw.y3 *= SCALE_EDIT; 
+            break;
+          case "LINE":
+            draw.x1 *= SCALE_EDIT;
+            draw.y1 *= SCALE_EDIT;
+            draw.x2 *= SCALE_EDIT;
+            draw.y2 *= SCALE_EDIT;
+            break;
+          case "POINT":
+            draw.x1 *= SCALE_EDIT;
+            draw.y1 *= SCALE_EDIT;
+            break;
+          case "ARC":
+            draw.x *= SCALE_EDIT;
+            draw.y *= SCALE_EDIT;
+            draw.w *= SCALE_EDIT;
+            draw.h *= SCALE_EDIT;
+            break;
+          case "CIRCLE":
+            draw.x *= SCALE_EDIT;
+            draw.y *= SCALE_EDIT;
+            draw.d *= SCALE_EDIT;
+            break;
+          case "ELLIPSE":
+            draw.x *= SCALE_EDIT;
+            draw.y *= SCALE_EDIT;
+            draw.w *= SCALE_EDIT;
+            draw.h *= SCALE_EDIT;
+            break;
+          case "STROKE":
+            draw.w *= SCALE_EDIT;
+            break;
+          default:
+            break;
+        }
+      })
+    }
+  }
+
   const scaleToEdit = (json) => {
     json.scenarios.forEach(scenario => {
+      scenario.views.forEach(scnView => {
+        scaleToEditView(scnView);
+      })
       scenario.objects.forEach(object => {
-        object.views.forEach(view => {
-          if (view.type == "VIEW_IMAGE"){
-            view.position.x *= SCALE_EDIT;
-            view.position.y *= SCALE_EDIT;
-            view.size.x *= SCALE_EDIT;
-            view.size.y *= SCALE_EDIT;
-          }
-          else if (view.type == "VIEW_SKETCH"){
-            view.draws.forEach(draw => {
-              switch(draw.type) {
-                case "RECT":
-                  draw.x *= SCALE_EDIT;
-                  draw.y *= SCALE_EDIT;
-                  draw.w *= SCALE_EDIT;
-                  draw.h *= SCALE_EDIT;
-                  draw.tl *= SCALE_EDIT;
-                  draw.tr *= SCALE_EDIT;
-                  draw.br *= SCALE_EDIT;
-                  draw.bl *= SCALE_EDIT;
-                  break;
-                case "QUAD":
-                  draw.x1 *= SCALE_EDIT;
-                  draw.y1 *= SCALE_EDIT;
-                  draw.x2 *= SCALE_EDIT;
-                  draw.y2 *= SCALE_EDIT;
-                  draw.x3 *= SCALE_EDIT;
-                  draw.y3 *= SCALE_EDIT;
-                  draw.x4 *= SCALE_EDIT;
-                  draw.y4 *= SCALE_EDIT;
-                  break;
-                case "SQUARE":
-                  draw.x  *= SCALE_EDIT;
-                  draw.y  *= SCALE_EDIT;
-                  draw.s  *= SCALE_EDIT;
-                  draw.tl *= SCALE_EDIT;
-                  draw.tr *= SCALE_EDIT;
-                  draw.br *= SCALE_EDIT;
-                  draw.bl *= SCALE_EDIT;
-                  break;
-                case "TRIANGLE":
-                  draw.x1 *= SCALE_EDIT;
-                  draw.y1 *= SCALE_EDIT;
-                  draw.x2 *= SCALE_EDIT;
-                  draw.y2 *= SCALE_EDIT;
-                  draw.x3 *= SCALE_EDIT;
-                  draw.y3 *= SCALE_EDIT; 
-                  break;
-                case "LINE":
-                  draw.x1 *= SCALE_EDIT;
-                  draw.y1 *= SCALE_EDIT;
-                  draw.x2 *= SCALE_EDIT;
-                  draw.y2 *= SCALE_EDIT;
-                  break;
-                case "POINT":
-                  draw.x1 *= SCALE_EDIT;
-                  draw.y1 *= SCALE_EDIT;
-                  break;
-                case "ARC":
-                  draw.x *= SCALE_EDIT;
-                  draw.y *= SCALE_EDIT;
-                  draw.w *= SCALE_EDIT;
-                  draw.h *= SCALE_EDIT;
-                  break;
-                case "CIRCLE":
-                  draw.x *= SCALE_EDIT;
-                  draw.y *= SCALE_EDIT;
-                  draw.d *= SCALE_EDIT;
-                  break;
-                case "ELLIPSE":
-                  draw.x *= SCALE_EDIT;
-                  draw.y *= SCALE_EDIT;
-                  draw.w *= SCALE_EDIT;
-                  draw.h *= SCALE_EDIT;
-                  break;
-                case "STROKE":
-                  draw.w *= SCALE_EDIT;
-                  break;
-                default:
-                  break;
-              }
-            })
-          }
+        object.views.forEach(objView => {
+          scaleToEditView(objView);
         })
       })
     })
@@ -410,8 +416,10 @@ function EscapeRoomEditor() {
   const generateCode = () => {
     if(erCode !== null){
       let json = JSON.stringify(erCode, null, 2);
-      setData(btoa(json));
-      console.log(data);
+      let data = btoa(json);
+      if (data !== "null" || data !== null) {
+        window.open(`weberpl#/escape_room/${data}`, "_blank", "noreferrer");
+      }
     }
   };
 
@@ -419,6 +427,10 @@ function EscapeRoomEditor() {
     // `current` points to the mounted file input element
     inputFile.current.click();
   };
+
+  const enableInvisibleViews = () => {
+
+  }
 
   return (
     <div>
@@ -432,15 +444,15 @@ function EscapeRoomEditor() {
         </div>
         <div className="nav-links">
           <a className="a-img" href="/"><img src="/weberpl/logo_extenso.png" /></a>
-          <div class="dropdown">
-            <button class="dropbtn">Export <i class="fa fa-caret-down"></i></button>
-            <div class="dropdown-content">
+          <div className="dropdown">
+            <button className="dropbtn">Export <i className="fa fa-caret-down"></i></button>
+            <div className="dropdown-content">
               <a href="#" onClick={exportBlocks}>Export XML</a>
             </div>
           </div> 
-          <div class="dropdown">
-            <button class="dropbtn">Import <i class="fa fa-caret-down"></i></button>
-            <div class="dropdown-content">
+          <div className="dropdown">
+            <button className="dropbtn">Import <i className="fa fa-caret-down"></i></button>
+            <div className="dropdown-content">
               <a href="#" onClick={importXML}>Import XML</a>
               <input type="file" accept=".xml" ref={inputFile} onChange={importBlocks} style={{display: 'none'}}/>
             </div>
@@ -462,19 +474,23 @@ function EscapeRoomEditor() {
         </div>
       </div>
       <div className="containerRight">
-        <div className="containerButtons">
-            <button onClick={generateCode} disabled={!errors.length == 0}>Convert</button>
-            <select>
-              {scenariosIds?.map((id) => <option key={id} value={id} >{id}</option>)}
-              {transitionsIds?.map((id) => <option key={id} value={id} >{id}</option>)}
-            </select>
-            { data !== null && (
-              <Link to={`/escape_room/${data}`} >EscapeRoom</Link>
-            )
-            }
-        </div>
-        <div className="sceneContainer">
-          {<ReactP5Wrapper sketch={sketch} />}
+        <div>
+          <div className="containerButtons">
+              <button className="play-btn" title="PLAY" onClick={generateCode} disabled={!errors.length == 0}><img src='weberpl/logo.png'/></button>
+              <div className="select-scenario">
+                <p>Select the scenario to show:</p>
+                <div className="select">
+                  <select>
+                    {scenariosIds?.map((id) => <option className="option" key={id} value={id} >{id}</option>)}
+                    {transitionsIds?.map((id) => <option className="option" key={id} value={id} >{id}</option>)}
+                  </select>
+                </div>
+              </div>
+              <button className="play-btn" title="Show invisible views" onClick={enableInvisibleViews}><img src='weberpl/invisible.png'/></button>
+          </div>
+          <div className="containerSketch">
+            {<ReactP5Wrapper sketch={sketch} />}
+          </div>
         </div>
       </div>
     </div>    

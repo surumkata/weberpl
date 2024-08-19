@@ -12,6 +12,7 @@ import { Event } from './event.js';
 import { PreConditionOperatorAnd, PreConditionOperatorNot, PreConditionOperatorOr, PreConditionTree, PreConditionVar } from './precondition_tree.js';
 import { EventPreConditionAfterEvent,EventPreConditionAfterTime,EventPreConditionClickedNotObject,EventPreConditionClickedObject,EventPreConditionItemIsInUse,EventPreConditionWhenObjectIsView } from './precondition.js';
 import { EventPosConditionTransition, EventPosConditionConnections, EventPosConditionSequence, EventPosConditionQuestion, EventPosConditionChangeScenario,EventPosConditionDeleteItem,EventPosConditionEndGame,EventPosConditionMultipleChoice,EventPosConditionObjChangePosition,EventPosConditionObjChangeSize,EventPosConditionObjChangeState,EventPosConditionObjPutInventory,EventPosConditionPlaySound,EventPosConditionShowMessage } from './poscondition.js';
+import { Hitbox, HitboxRect } from './hitbox.js';
 
 const load = (p5,json,edit=false) => {
     if(edit){
@@ -29,7 +30,7 @@ const load = (p5,json,edit=false) => {
     }
     var gs = new GameState(new Size(WIDTH,HEIGHT))
     var er = new EscapeRoom(json.title)
-    loadScenarios(p5,er,gs,scenarios);
+    loadScenarios(p5,er,scenarios);
     let events = loadEvents(json.events);
     events.forEach(function(event){
         er.addEvent(event);
@@ -151,35 +152,68 @@ function loadSketch(id,draws){
     return sketch;
 }
 
-function loadScenarios(p5,er,gs,scenarios){
+function loadHitboxs(view){
+    var hitboxs = [];
+    console.log(view);
+    if (view.type === "VIEW_IMAGE"){
+        switch(view.hitbox_type) {
+            case "NO":
+                break;
+            case "ADVANCED":
+                view.hitboxs.forEach(hitbox => {
+                    switch(hitbox.type){
+                        case "RECT" :
+                            hitboxs.push(new HitboxRect(hitbox.x,hitbox.y,hitbox.w,hitbox.h))
+                            break;
+                        default:
+                            break;
+                    }
+                })
+                break;
+            default:
+                hitboxs.push(new HitboxRect(view.position.x,view.position.y+HEIGHT_INV,view.size.x,view.size.y));
+                break;
+        }
+    }
+    else {
+        //TODO:
+    }
+    
+    return hitboxs;
+}
+
+function loadView(p5,view){
+    let hitboxs = loadHitboxs(view);
+    switch(view.type){
+        case "VIEW_IMAGE":
+            return new View(p5,view.id,[view.src],new Size(view.size.x,view.size.y), new Position (view.position.x,view.position.y+HEIGHT_INV),0,0,view.turn,hitboxs);
+        case "VIEW_SKETCH":
+            return loadSketch(view.id,view.draws);
+        default:
+            return null;
+    }
+}
+
+function loadObject(p5,scenario_id,object){
+    let o = new Object(object.id,scenario_id);
+    o.currentView = object['initial_view'];
+    object.views.forEach(objView => {
+        o.addView(loadView(p5,objView));
+    })
+    return o;
+}
+
+
+function loadScenarios(p5,er,scenarios){
     scenarios.forEach(function(scenario){
         let s = new Scenario(scenario.id);
         s.currentView = scenario['initial_view'];
-        scenario.views.forEach(function(view){
-            var sv;
-            if(view.type == "VIEW_IMAGE"){
-                sv = new View(p5,view.id,[view.src],gs.size,new Position(0,HEIGHT_INV),0,0,view.turn);
-            }
-            else if (view.type == "VIEW_SKETCH"){
-                sv = loadSketch(view.id,view.draws);
-            }
-            s.addView(sv);
+        scenario.views.forEach(scnView => {
+            s.addView(loadView(p5,scnView));
         })
         er.addScenario(s);
-        scenario.objects.forEach(function(object){
-            let o = new Object(object.id,scenario.id,new Position(0,0),new Size(0,0));
-            o.currentView = object['initial_view'];
-            object.views.forEach(function(objView){
-                var ov;
-                if (objView.type == "VIEW_IMAGE"){
-                    ov = new View(p5,objView.id,[objView.src],new Size(objView.size.x,objView.size.y), new Position(objView.position.x,(objView.position.y+HEIGHT_INV)),0,0,objView.turn);
-                }
-                else if (objView.type == "VIEW_SKETCH"){
-                    ov = loadSketch(objView.id,objView.draws);
-                }
-                o.addView(ov);
-            })
-            er.addObject(o);
+        scenario.objects.forEach(object => {
+            er.addObject(loadObject(p5,scenario.id,object));
         })
     })
 }

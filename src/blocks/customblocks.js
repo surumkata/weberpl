@@ -1200,3 +1200,29 @@ Blockly.Blocks['view_draw'] = {
     this.setColour(60);
   }
 };
+
+Blockly.Blocks['hitbox_rect'] = {
+  init: function() {
+    this.appendDummyInput('ID')
+    .setAlign(Blockly.inputs.Align.CENTRE)
+      .appendField('RECT')
+      .appendField(new Blockly.FieldTextInput('RECT'), 'ID');
+    this.appendDummyInput('XY')
+    .setAlign(Blockly.inputs.Align.CENTRE)
+      .appendField('x:')
+      .appendField(new Blockly.FieldNumber(0), 'X')
+      .appendField('y:')
+      .appendField(new Blockly.FieldNumber(0), 'Y');
+    this.appendDummyInput('WH')
+    .setAlign(Blockly.inputs.Align.CENTRE)
+      .appendField('w:')
+      .appendField(new Blockly.FieldNumber(0), 'W')
+      .appendField('h:')
+      .appendField(new Blockly.FieldNumber(0), 'H');
+    this.setPreviousStatement(true, 'hitbox');
+    this.setNextStatement(true, 'hitbox');
+    this.setTooltip('');
+    this.setHelpUrl('');
+    this.setColour(100);
+  }
+};

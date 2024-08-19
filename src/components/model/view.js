@@ -3,7 +3,7 @@ import { HEIGHT, HEIGHT_INV, Position, WIDTH, SCALE_EDIT } from "./utils";
 //import { Hitbox, HitboxRect } from "./hitbox";
 
 export class View {
-  constructor(p5,id, srcImages, size, position, timeSprite, repeate,turn) {
+  constructor(p5,id, srcImages, size, position, timeSprite, repeate,turn,hitboxs) {
     this.id = id;
     this.position = position;
     this.size = size;
@@ -12,18 +12,18 @@ export class View {
     this.repeate = repeate;
     this.images = [];
     this.currentSprite = 0;
-    this.currentTimeSprite = 0
-    this.repeateInit = repeate
-    this.repeate = this.repeateInit
-    this.isDragging = false
-    this.isResizing = false
+    this.currentTimeSprite = 0;
+    this.repeateInit = repeate;
+    this.repeate = this.repeateInit;
+    this.isDragging = false;
+    this.isResizing = false;
     this.lastPosition = new Position(0,0);
-    this.typeResizing = ""
-    this.hover = false
-    this.shift = false
-    this.turnX = turn.x
-    this.turnY = turn.y
-    //this.hitbox = new HitboxRect(this.position.x,this.position.y,this.size.x,this.size.y);
+    this.typeResizing = "";
+    this.hover = false;
+    this.shift = false;
+    this.turnX = turn.x;
+    this.turnY = turn.y;
+    this.hitboxs = hitboxs;
 
     for (let i in this.srcImages){
       //TODO: colocar assets para funcionar :)
@@ -49,6 +49,15 @@ export class View {
               this.currentSprite = this.repeate === 0 ? this.currentSprite - 1 : 0;
           }
       }
+  }
+
+  collide(px,py){
+    var collide = false;
+    console.log(this.hitboxs);
+    this.hitboxs.forEach(hitbox => {
+      collide = collide || hitbox.collide(px,py);
+    })
+    return collide;
   }
 
   viewCollision(mx,my){
