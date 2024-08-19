@@ -418,7 +418,7 @@ function EscapeRoomEditor() {
       let json = JSON.stringify(erCode, null, 2);
       let data = btoa(json);
       if (data !== "null" || data !== null) {
-        window.open(`weberpl#/escape_room/${data}`, "_blank", "noreferrer");
+        window.open(`/#/escape_room/${data}`, "_blank", "noreferrer");
       }
     }
   };
