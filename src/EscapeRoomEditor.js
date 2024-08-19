@@ -18,6 +18,8 @@ import { validate } from './components/validate';
 import { load } from './components/model/load';
 
 import { Link } from 'react-router-dom';
+import './Navebar.css'
+import Footer from './Footer';
 
 function EscapeRoomEditor() {
 
@@ -30,6 +32,7 @@ function EscapeRoomEditor() {
   const workspaceRef = useRef(null);  // Referência para o workspace
   const [transitionsIds, setTransitionsIds] = useState([]);
   const [scenariosIds, setScenariosIds] = useState(["SCENARIO_1"]);
+  const inputFile = useRef(null);
 
   const workspaceConfiguration = {
     grid: {
@@ -412,35 +415,70 @@ function EscapeRoomEditor() {
     }
   };
 
+  const importXML = () => {
+    // `current` points to the mounted file input element
+    inputFile.current.click();
+  };
+
   return (
-    <div style={{ display: 'flex', flexGrow: 1, flexDirection: 'row' }}>
-      <div style={{ flexGrow: 1 }}>
-        <BlocklyEditor
-          className={'editor'}
-          workspaceConfiguration={workspaceConfiguration}
-          initial={ConfigFiles.INITIAL}
-          onInject={onInject}
-          onChange={onChange}
-          onDispose={onDispose}
-          onError={onError}
-        />
+    <div>
+      <div className="nav">
+        <input type="checkbox" id="nav-check"/>
+        <div className="nav-header"></div>
+        <div className="nav-btn">
+          <label htmlFor="nav-check">
+            <img src="/weberpl/logo.png"/>
+          </label>
+        </div>
+        <div className="nav-links">
+          <a className="a-img" href="/"><img src="/weberpl/logo_extenso.png" /></a>
+          <div class="dropdown">
+            <button class="dropbtn">Export <i class="fa fa-caret-down"></i></button>
+            <div class="dropdown-content">
+              <a href="#" onClick={exportBlocks}>Export XML</a>
+            </div>
+          </div> 
+          <div class="dropdown">
+            <button class="dropbtn">Import <i class="fa fa-caret-down"></i></button>
+            <div class="dropdown-content">
+              <a href="#" onClick={importXML}>Import XML</a>
+              <input type="file" accept=".xml" ref={inputFile} onChange={importBlocks} style={{display: 'none'}}/>
+            </div>
+          </div> 
+        </div>
       </div>
-      <div className="containerButtons">
-          <button onClick={generateCode} disabled={!errors.length == 0}>Convert</button>
-          <button onClick={exportBlocks}>Exportar Blocos</button>
-          <input type="file" accept=".xml" onChange={importBlocks} />
-          <select>
-            {scenariosIds?.map((id) => <option key={id} value={id} >{id}</option>)}
-            {transitionsIds?.map((id) => <option key={id} value={id} >{id}</option>)}
-          </select>
-          { data !== null && (
-            <Link to={`/escape_room/${data}`} >EscapeRoom</Link>
-          )
-          }
+    <div className="containerEditor">
+      <div className="containerLeft">
+        <div className="containerBlockly">
+          <BlocklyEditor
+            className={'editor'}
+            workspaceConfiguration={workspaceConfiguration}
+            initial={ConfigFiles.INITIAL}
+            onInject={onInject}
+            onChange={onChange}
+            onDispose={onDispose}
+            onError={onError}
+          />
+        </div>
       </div>
-      <div className="sceneContainer">
-        {<ReactP5Wrapper sketch={sketch} />}
-      </div>  
+      <div className="containerRight">
+        <div className="containerButtons">
+            <button onClick={generateCode} disabled={!errors.length == 0}>Convert</button>
+            <select>
+              {scenariosIds?.map((id) => <option key={id} value={id} >{id}</option>)}
+              {transitionsIds?.map((id) => <option key={id} value={id} >{id}</option>)}
+            </select>
+            { data !== null && (
+              <Link to={`/escape_room/${data}`} >EscapeRoom</Link>
+            )
+            }
+        </div>
+        <div className="sceneContainer">
+          {<ReactP5Wrapper sketch={sketch} />}
+        </div>
+      </div>
+    </div>    
+    <Footer/>
     </div>
   );
 }

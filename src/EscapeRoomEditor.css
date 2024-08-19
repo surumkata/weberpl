@@ -1,12 +1,23 @@
-.injectionDiv {
-  height: 100%;
-  width: 50%!important;
-  position: absolute;
-  bottom: 0;
+.containerEditor {
+  height: 100vh;
+  width: 99vw;
+  display: flex;
 }
 
-.sceneContainer{
-  position: absolute;
-  left: 60%;
-  top: 8%;
+.containerLeft {
+  height: 100vh;
+  display: flex;
+  flex-grow: 1;
+  flex-direction: row;
+}
+
+.containerRight {
+  width: 45vw;
+  float: right;
+}
+
+
+
+.containerBlockly {
+  flex-grow: 1;
 }
