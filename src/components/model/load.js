@@ -152,52 +152,42 @@ function loadSketch(id,draws){
     return sketch;
 }
 
-function loadSketchHitbox(draws){
+function loadAdvancedHitbox(draws){
     var hitboxs = []
-    draws.forEach(draw => {
-        switch(draw.type) {
+    draws.forEach(hitbox => {
+        switch(hitbox.type) {
             case "RECT":
-                hitboxs.push(new HitboxRect(draw.x,draw.y+HEIGHT_INV,draw.w,draw.h))
+                hitboxs.push(new HitboxRect(hitbox.x,hitbox.y+HEIGHT_INV,hitbox.w,hitbox.h))
                 break;
             case "QUAD":
                 //TODO:
                 break;
             case "SQUARE":
-                hitboxs.push(new HitboxSquare(draw.x,draw.y+HEIGHT_INV,draw.s));
+                hitboxs.push(new HitboxSquare(hitbox.x,hitbox.y+HEIGHT_INV,hitbox.s));
                 break;
             case "TRIANGLE":
-                hitboxs.push(new HitboxTriangle(draw.x1,draw.y1+HEIGHT_INV,draw.x2,draw.y2+HEIGHT_INV,draw.x3,draw.y3+HEIGHT_INV));
+                hitboxs.push(new HitboxTriangle(hitbox.x1,hitbox.y1+HEIGHT_INV,hitbox.x2,hitbox.y2+HEIGHT_INV,hitbox.x3,hitbox.y3+HEIGHT_INV));
                 break;
             case "LINE":
-                hitboxs.push(new HitboxLine(draw.x1,draw.y1+HEIGHT_INV,draw.x2,draw.y2+HEIGHT_INV));
+                hitboxs.push(new HitboxLine(hitbox.x1,hitbox.y1+HEIGHT_INV,hitbox.x2,hitbox.y2+HEIGHT_INV));
                 break;
             case "POINT":
-                hitboxs.push(new HitboxPoint(draw.x,draw.y+HEIGHT_INV));
+                hitboxs.push(new HitboxPoint(hitbox.x,hitbox.y+HEIGHT_INV));
                 break;
             case "ARC":
-                hitboxs.push(new HitboxArc(draw.x,draw.y+HEIGHT_INV,draw.w,draw.h,draw.start,draw.stop,draw.mode));
+                hitboxs.push(new HitboxArc(hitbox.x,hitbox.y+HEIGHT_INV,hitbox.w,hitbox.h,hitbox.start,hitbox.stop,hitbox.mode));
                 break;
             case "CIRCLE":
-                hitboxs.push(new HitboxCircle(draw.x,draw.y+HEIGHT_INV,draw.d));
+                hitboxs.push(new HitboxCircle(hitbox.x,hitbox.y+HEIGHT_INV,hitbox.d));
                 break;
             case "ELLIPSE":
-                hitboxs.push(new HitboxEllipse(draw.x, draw.y+HEIGHT_INV, draw.w, draw.h));
+                hitboxs.push(new HitboxEllipse(hitbox.x, hitbox.y+HEIGHT_INV, hitbox.w, hitbox.h));
                 break;
             default:
                 break;
         }
     })
     return hitboxs;
-}
-
-function loadAdvancedHitbox(hitbox){
-    switch(hitbox.type){
-        case "RECT" :
-            return new HitboxRect(hitbox.x,hitbox.y,hitbox.w,hitbox.h);
-        default:
-            break;
-    }
-    return null;
 }
 
 function loadHitboxs(view){
@@ -207,9 +197,7 @@ function loadHitboxs(view){
         case "NO":
             break;
         case "ADVANCED":
-            view.hitboxs.forEach(hitbox => {
-                hitboxs.push(loadAdvancedHitbox(hitbox));
-            })
+            hitboxs = loadAdvancedHitbox(view.hitboxs);
             break;
         default:
             switch(view.type){
@@ -217,7 +205,7 @@ function loadHitboxs(view){
                     hitboxs.push(new HitboxRect(view.position.x,view.position.y+HEIGHT_INV,view.size.x,view.size.y));
                     break;
                 case "VIEW_SKETCH":
-                    hitboxs = loadSketchHitbox(view.draws);
+                    hitboxs = loadAdvancedHitbox(view.draws);
             }
             break;
     }

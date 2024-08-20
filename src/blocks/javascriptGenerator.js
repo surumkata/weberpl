@@ -1256,3 +1256,183 @@ javascriptGenerator.forBlock['hitbox_rect'] = function(block, generator) {
 
   return JSON.stringify(code, null, 2); // Retornar o JSON como string formatada
 }
+
+
+javascriptGenerator.forBlock['hitbox_quad'] = function(block, generator) {
+  const text_id = block.getFieldValue('ID');
+
+  const x1 = block.getFieldValue('X1');
+  const y1 = block.getFieldValue('Y1');
+
+  const x2 = block.getFieldValue('X2');
+  const y2 = block.getFieldValue('Y2');
+
+  const x3 = block.getFieldValue('X3');
+  const y3 = block.getFieldValue('Y3');
+
+  const x4 = block.getFieldValue('X4');
+  const y4 = block.getFieldValue('Y4');
+
+  var code = {
+    "id" : text_id,
+    "type" : "QUAD",
+    "x1" : x1,
+    "y1" : y1,
+    "x2" : x2,
+    "y2" : y2,
+    "x3" : x3,
+    "y3" : y3,
+    "x4" : x4,
+    "y4" : y4
+  }
+
+  return JSON.stringify(code, null, 2); // Retornar o JSON como string formatada
+}
+
+javascriptGenerator.forBlock['hitbox_square'] = function(block, generator) {
+  const text_id = block.getFieldValue('ID');
+
+  const x = block.getFieldValue('X');
+  const y = block.getFieldValue('Y');
+  const s = block.getFieldValue('S');
+
+  var code = {
+    "id" : text_id,
+    "type" : "SQUARE",
+    "x" : x,
+    "y" : y,
+    "s" : s
+  }
+
+  return JSON.stringify(code, null, 2); // Retornar o JSON como string formatada
+}
+
+javascriptGenerator.forBlock['hitbox_triangle'] = function(block, generator) {
+  const text_id = block.getFieldValue('ID');
+
+  const x1 = block.getFieldValue('X1');
+  const y1 = block.getFieldValue('Y1');
+
+  const x2 = block.getFieldValue('X2');
+  const y2 = block.getFieldValue('Y2');
+
+  const x3 = block.getFieldValue('X3');
+  const y3 = block.getFieldValue('Y3');
+
+  var code = {
+    "id" : text_id,
+    "type" : "TRIANGLE",
+    "x1" : x1,
+    "y1" : y1,
+    "x2" : x2,
+    "y2" : y2,
+    "x3" : x3,
+    "y3" : y3,
+  }
+
+  return JSON.stringify(code, null, 2); // Retornar o JSON como string formatada
+}
+
+javascriptGenerator.forBlock['hitbox_line'] = function(block, generator) {
+  const text_id = block.getFieldValue('ID');
+
+  const x1 = block.getFieldValue('X1');
+  const y1 = block.getFieldValue('Y1');
+
+  const x2 = block.getFieldValue('X2');
+  const y2 = block.getFieldValue('Y2');
+
+  var code = {
+    "id" : text_id,
+    "type" : "LINE",
+    "x1" : x1,
+    "y1" : y1,
+    "x2" : x2,
+    "y2" : y2
+  }
+
+  return JSON.stringify(code, null, 2); // Retornar o JSON como string formatada
+}
+
+javascriptGenerator.forBlock['hitbox_point'] = function(block, generator) {
+  const text_id = block.getFieldValue('ID');
+
+  const x = block.getFieldValue('X');
+  const y = block.getFieldValue('Y');
+
+  var code = {
+    "id" : text_id,
+    "type" : "POINT",
+    "x" : x,
+    "y" : y
+  }
+
+  return JSON.stringify(code, null, 2); // Retornar o JSON como string formatada
+}
+
+javascriptGenerator.forBlock['hitbox_arc'] = function(block, generator) {
+  const text_id = block.getFieldValue('ID');
+
+  const x = block.getFieldValue('X');
+  const y = block.getFieldValue('Y');
+
+  const w = block.getFieldValue('W');
+  const h = block.getFieldValue('H');
+
+  const start = block.getFieldValue('START');
+  const stop = block.getFieldValue('STOP');
+
+  const mode = block.getFieldValue('MODE');
+
+  var code = {
+    "id" : text_id,
+    "type" : "ARC",
+    "x" : x,
+    "y" : y,
+    "w" : w,
+    "h" : h,
+    "start" : start,
+    "stop" : stop,
+    "mode" : mode
+  }
+
+  return JSON.stringify(code, null, 2); // Retornar o JSON como string formatada
+}
+
+javascriptGenerator.forBlock['hitbox_circle'] = function(block, generator) {
+  const text_id = block.getFieldValue('ID');
+
+  const x = block.getFieldValue('X');
+  const y = block.getFieldValue('Y');
+  const d = block.getFieldValue('D');
+
+  var code = {
+    "id" : text_id,
+    "type" : "CIRCLE",
+    "x" : x,
+    "y" : y,
+    "d" : d
+  }
+
+  return JSON.stringify(code, null, 2); // Retornar o JSON como string formatada
+}
+
+javascriptGenerator.forBlock['hitbox_ellipse'] = function(block, generator) {
+  const text_id = block.getFieldValue('ID');
+
+  const x = block.getFieldValue('X');
+  const y = block.getFieldValue('Y');
+  const w = block.getFieldValue('W');
+  const h = block.getFieldValue('H');
+
+  var code = {
+    "id" : text_id,
+    "type" : "ELLIPSE",
+    "x" : x,
+    "y" : y,
+    "w" : w,
+    "h" : h
+  }
+
+  return JSON.stringify(code, null, 2); // Retornar o JSON como string formatada
+}

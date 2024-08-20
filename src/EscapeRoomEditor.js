@@ -31,7 +31,7 @@ function EscapeRoomEditor() {
   const workspaceRef = useRef(null);  // Referência para o workspace
   const [transitionsIds, setTransitionsIds] = useState([]);
   const [scenariosIds, setScenariosIds] = useState(["SCENARIO_1"]);
-  const inputFile = useRef(null);
+  const inputFileXML = useRef(null);
 
   const workspaceConfiguration = {
     grid: {
@@ -169,20 +169,59 @@ function EscapeRoomEditor() {
     })
   }
 
-  // Função para exportar blocos para XML
-  const exportBlocks = () => {
-    var blob = new Blob([xml], { type: 'text/xml' });
-    var url = URL.createObjectURL(blob);
-    var a = document.createElement('a');
-    a.href = url;
-    a.download = 'workspace.xml';
-    document.body.appendChild(a);
-    a.click();
-    document.body.removeChild(a);
-    URL.revokeObjectURL(url);
+  // Verifica se o navegador suporta a API do File System Access
+  const supportsFileSystemAccess = 'showSaveFilePicker' in window;
+
+  const exportFileWithPicker = async (content, suggestedName, fileType) => {
+    if (supportsFileSystemAccess) {
+      // Usar a API File System Access para escolher o local de salvamento
+      const options = {
+        suggestedName: suggestedName,
+        types: [{
+          description: fileType.description,
+          accept: fileType.accept
+        }]
+      };
+  
+      try {
+        const fileHandle = await window.showSaveFilePicker(options);
+        const writable = await fileHandle.createWritable();
+        await writable.write(content);
+        await writable.close();
+      } catch (error) {
+        console.error("Erro ao salvar o arquivo:", error);
+      }
+    } else {
+      // Fallback para download automático no caso da API não estar disponível
+      const blob = new Blob([content], { type: fileType.mime });
+      exportFile(blob, suggestedName);
+    }
+  }
+  
+  // Função para exportar blocos para XML usando a API do File System Access
+  const exportBlocksXML = async () => {
+    const xmlBlob = new Blob([xml], { type: 'text/xml' });
+    await exportFileWithPicker(xmlBlob, "workspace.xml", {
+      description: "Arquivo XML",
+      accept: { 'text/xml': ['.xml'] },
+      mime: 'text/xml'
+    });
+  }
+  
+  // Função para exportar blocos para JSON usando a API do File System Access
+  const exportBlocksJSON = async () => {
+    if (erCode !== null) {
+      const json = JSON.stringify(erCode, null, 2);
+      const jsonBlob = new Blob([json], { type: 'application/json' });
+      await exportFileWithPicker(jsonBlob, "room.json", {
+        description: "Arquivo JSON",
+        accept: { 'application/json': ['.json'] },
+        mime: 'application/json'
+      });
+    }
   }
 
-  const importBlocks = (event) => {
+  const importBlocksXML = (event) => {
     const file = event.target.files[0];
     if (file) {
       const reader = new FileReader();
@@ -433,7 +472,7 @@ function EscapeRoomEditor() {
 
   const importXML = () => {
     // `current` points to the mounted file input element
-    inputFile.current.click();
+    inputFileXML.current.click();
   };
 
   const enableInvisibleViews = () => {
@@ -455,14 +494,15 @@ function EscapeRoomEditor() {
           <div className="dropdown">
             <button className="dropbtn">Export <i className="fa fa-caret-down"></i></button>
             <div className="dropdown-content">
-              <a href="#" onClick={exportBlocks}>Export XML</a>
+              <a href="#" onClick={exportBlocksXML}>Export XML</a>
+              <a href="#" onClick={exportBlocksJSON}>Export JSON</a>
             </div>
           </div> 
           <div className="dropdown">
             <button className="dropbtn">Import <i className="fa fa-caret-down"></i></button>
             <div className="dropdown-content">
               <a href="#" onClick={importXML}>Import XML</a>
-              <input type="file" accept=".xml" ref={inputFile} onChange={importBlocks} style={{display: 'none'}}/>
+              <input type="file" accept=".xml" ref={inputFileXML} onChange={importBlocksXML} style={{display: 'none'}}/>
             </div>
           </div> 
         </div>

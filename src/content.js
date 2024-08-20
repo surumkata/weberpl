@@ -137,8 +137,16 @@ const TOOLBOX =
   '    <block type="stroke"></block>\n' +
   '    <block type="no_stroke"></block>\n' +
   '  </category>\n' +
-  '  <category name="Hitbox Rect" colour="#5C81A6">\n' +
+  '  <category name="Hitboxs" colour="#5C81A6">\n' +
   '    <block type="hitbox_rect"></block>\n' +
+  '    <block type="hitbox_quad"></block>\n' +
+  '    <block type="hitbox_square"></block>\n' +
+  '    <block type="hitbox_triangle"></block>\n' +
+  '    <block type="hitbox_line"></block>\n' +
+  '    <block type="hitbox_point"></block>\n' +
+  '    <block type="hitbox_arc"></block>\n' +
+  '    <block type="hitbox_circle"></block>\n' +
+  '    <block type="hitbox_ellipse"></block>\n' +
   '  </category>\n' +
   '</xml>';
 
