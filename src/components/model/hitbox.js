@@ -23,6 +23,10 @@ export class HitboxRect extends Hitbox {
     collide(px,py){
         return collidePointRect(px,py,this.x,this.y,this.w,this.h);
     }
+
+    draw(p5){
+        p5.rect(this.x,this.y,this.w,this.h);
+    }
 }
 
 export class HitboxQuad extends Hitbox {
@@ -33,6 +37,10 @@ export class HitboxQuad extends Hitbox {
             {x:x3,y:y3},
             {x:x4,y:y4}
         ]
+    }
+
+    draw(p5){
+        p5.quad(this.x1,this.y1,this.x2,this.y2,this.x3,this.y3,this.x4,this.y4);
     }
 
     collide(px,py){
@@ -73,6 +81,10 @@ export class HitboxSquare extends Hitbox {
     collide(px,py){
         return collidePointRect(px,py,this.x,this.y,this.s,this.s);
     }
+
+    draw(p5){
+        p5.square(this.x,this.y,this.s);
+    }
 }
 
 export class HitboxTriangle extends Hitbox {
@@ -89,6 +101,10 @@ export class HitboxTriangle extends Hitbox {
     collide(px,py){
         return collidePointTriangle(px,py,this.x1,this.y1,this.x2,this.y2,this.x3,this.y3);
     }
+
+    draw(p5){
+        p5.triangle(this.x1,this.y1,this.x2,this.y2,this.x3,this.y3);
+    }
 }
 
 export class HitboxArc extends Hitbox {
@@ -103,6 +119,9 @@ export class HitboxArc extends Hitbox {
         this.mode = mode;
       }
 
+    draw(p5){
+        p5.arc(this.arcX,this.arcY,this.arcW,this.arcH,this.arcStop,this.arcStop,this.mode);
+    }
 
     pointOfEllipse(angle) {
         // Semi-eixos da elipse
@@ -116,7 +135,7 @@ export class HitboxArc extends Hitbox {
         return { x: x, y: y };
     }
 
-    collide(px, py){//ONLY WORKS WELL TO MODE PIE
+    collide(px, py){
         const inside = collidePointEllipse(px,py,this.arcX,this.arcY,this.arcW,this.arcH);
         if (!inside){return false;}
       
@@ -166,6 +185,10 @@ export class HitboxCircle extends Hitbox {
       collide(px,py){
         return collidePointCircle(px, py,this.x, this.y, this.d);
       }
+
+      draw(p5){
+        p5.circle(this.x,this.y,this.d);
+    }
 }
 
 export class HitboxLine extends Hitbox {
@@ -180,6 +203,10 @@ export class HitboxLine extends Hitbox {
       collide(px,py){
         return collidePointLine(px, py,this.x1, this.y1,this.x2,this.y2);
       }
+
+      draw(p5){
+        p5.line(this.x1,this.y1,this.x2,this.y2);
+    }
 }
 
 export class HitboxPoint extends Hitbox {
@@ -192,6 +219,10 @@ export class HitboxPoint extends Hitbox {
       collide(px,py){
         return collidePointPoint(px, py,this.x, this.y);
       }
+
+      draw(p5){
+        p5.point(this.x,this.y);
+    }
 }
 
 
@@ -205,5 +236,9 @@ export class HitboxEllipse extends Hitbox {
 
     collide(px,py){
         return collidePointEllipse(px,py,this.x,this.y,this.w,this.h);
+    }
+
+    draw(p5){
+        p5.ellipse(this.x,this.y,this.w,this.h);
     }
 }

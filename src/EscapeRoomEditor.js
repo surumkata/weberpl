@@ -31,7 +31,8 @@ function EscapeRoomEditor() {
   const workspaceRef = useRef(null);  // Referência para o workspace
   const [transitionsIds, setTransitionsIds] = useState([]);
   const [scenariosIds, setScenariosIds] = useState(["SCENARIO_1"]);
-  const [invisibleViews, setInvisibleViews] = useState(0);
+  const [showInvisible, setInvisibleViews] = useState(0);
+  const [showHitboxs, setShowHitboxs] = useState(false);
   const inputFileXML = useRef(null);
 
   const workspaceConfiguration = {
@@ -343,7 +344,7 @@ function EscapeRoomEditor() {
       }
 
       if(er !== null){
-        er.escapeRoom.draw(p5,er.gameState.currentScenario, invisibleViews);
+        er.escapeRoom.draw(p5,er.gameState.currentScenario, showInvisible, showHitboxs);
       }
       else if (errors.length > 0){
         var error_number = 1;
@@ -478,18 +479,30 @@ function EscapeRoomEditor() {
   };
 
   const enableInvisibleViews = () => {
-    var img = document.getElementById("invisibleViews");
-    if (invisibleViews === 0){
+    var img = document.getElementById("showInvisible");
+    if (showInvisible === 0){
       img.src = "/weberpl/icons/semi_open.png";
       setInvisibleViews(1);
     }
-    else if(invisibleViews === 1){
+    else if(showInvisible === 1){
       img.src = "/weberpl/icons/open_eye.png";
       setInvisibleViews(2);
     }
     else{
       img.src = "/weberpl/icons/closed_eye.png";
       setInvisibleViews(0);
+    }
+  }
+
+  const enableHitboxs = () => {
+    var img = document.getElementById("showHitboxs");
+    if (showHitboxs){
+      img.src = "/weberpl/icons/closed_eye.png";
+      setShowHitboxs(false);
+    }
+    else{
+      img.src = "/weberpl/icons/open_eye.png";
+      setShowHitboxs(true);
     }
   }
 
@@ -548,7 +561,8 @@ function EscapeRoomEditor() {
                   </select>
                 </div>
               </div>
-              <button className="play-btn" title="Show invisible views" onClick={enableInvisibleViews}><img id="invisibleViews" src='/weberpl/icons/closed_eye.png'/></button>
+              <button className="play-btn" title="Show invisible views" onClick={enableInvisibleViews}><img id="showInvisible" src='/weberpl/icons/closed_eye.png'/></button>
+              <button className="play-btn" title="Show Hitboxs" onClick={enableHitboxs}><img id="showHitboxs" src='/weberpl/icons/closed_eye.png'/></button>
           </div>
           <div className="containerSketch">
             {<ReactP5Wrapper sketch={sketch} />}

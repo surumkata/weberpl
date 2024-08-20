@@ -101,6 +101,12 @@ export class View {
     return Math.abs((d1 + d2) - lineLength) < 1e-2;
   }
 
+  drawHitbox(p5){
+    this.hitboxs.forEach(hitbox => {
+      hitbox.draw(p5);
+    })
+  }
+
   draw(p5, semi_opacity =false){
     if(this.size.x === 0 || this.size.y === 0){
       return
@@ -691,6 +697,12 @@ export class ViewSketch {
       draw.draw(p5,semi_opacity);
     })
     p5.pop()
+  }
+
+  drawHitbox(p5){
+    this.hitboxs.forEach(hitbox => {
+      hitbox.draw(p5);
+    })
   }
 
   addDraw(draw){

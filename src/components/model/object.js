@@ -68,5 +68,25 @@ export class Object {
         }
     }
     //TODO: draw hitboxs if true
+    if (hitboxs){
+        p5.push();
+        let alpha = 0.5;
+        p5.fill(`rgba(0, 255, 0, ${alpha})`);
+        if (this.currentView !== null && this.currentView !== "null" && this.currentView in this.views){
+            this.views[this.currentView].drawHitbox(p5);
+        }
+        if(invisibleViews!==0){
+            if(invisibleViews === 1){
+                alpha*=0.5;
+            }
+            p5.fill(`rgba(0, 255, 0, ${alpha})`);
+            for (var view in this.views){
+                if(view !== "null" && view !== null && view !== this.currentView){
+                    this.views[view].drawHitbox(p5);
+                }
+            }
+        }
+        p5.pop();
+    }
   }
 }
