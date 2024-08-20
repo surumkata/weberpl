@@ -72,6 +72,7 @@ const TOOLBOX =
   '    <block type="transition"></block>\n' +
   '    <block type="event"></block>\n' +
   '    <block type="event_do"></block>\n' +
+  '    <block type="test_block"></block>\n' +
   '  </category>\n' +
   '  <category name="Utils" colour="#5C81A6">\n' +
   '    <block type="size"></block>\n' +

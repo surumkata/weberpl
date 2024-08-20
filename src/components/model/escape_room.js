@@ -82,7 +82,7 @@ export class EscapeRoom {
   }
     
   //Função que desenha a cena atual
-  draw(p5, currentScenario){
+  draw(p5, currentScenario, invisibleViews = 0, hitboxs = false){
     //Desenhar cena atual
     if (currentScenario in this.scenarios){
       this.scenarios[currentScenario].draw(p5);
@@ -96,7 +96,7 @@ export class EscapeRoom {
       let object = this.objects[objectId];
       //desenhar objeto se pertencer à cena
       if (currentScenario == object.reference){
-        object.draw(p5);
+        object.draw(p5,invisibleViews,hitboxs);
       } 
     }
   }

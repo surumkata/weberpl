@@ -101,7 +101,7 @@ export class View {
     return Math.abs((d1 + d2) - lineLength) < 1e-2;
   }
 
-  draw(p5){
+  draw(p5, semi_opacity =false){
     if(this.size.x === 0 || this.size.y === 0){
       return
     }
@@ -126,6 +126,9 @@ export class View {
 
     p5.push();
     p5.scale(scaleX,scaleY);
+    if(semi_opacity){
+      p5.tint(255, 127);
+    }
     p5.image(this.images[this.currentSprite],posX,posY,width,height);
     p5.pop();
     if(this.hover){
@@ -677,11 +680,15 @@ export class ViewSketch {
     this.draws = [];
   }
 
-  draw(p5){
+  draw(p5, semi_opacity=false){
     p5.push();
     p5.noStroke();
+    p5.fill(0);
+    if(semi_opacity){
+      p5.fill(0, 127);
+    }
     this.draws.forEach(draw => {
-      draw.draw(p5);
+      draw.draw(p5,semi_opacity);
     })
     p5.pop()
   }
@@ -879,9 +886,14 @@ export class Fill extends DrawP5 {
     this.alpha = alpha;
   }
 
-  draw(p5){
+  draw(p5,semi_opacity=false){
     let color = p5.color(this.color);
-    color.setAlpha(this.alpha);
+    if(!semi_opacity){
+      color.setAlpha(this.alpha);
+    }
+    else{
+      color.setAlpha(this.alpha*0.5);
+    }
     p5.fill(color);
   }
 }
@@ -905,9 +917,14 @@ export class Stroke extends DrawP5 {
 
   }
 
-  draw(p5){
+  draw(p5,semi_opacity=false){
     let color = p5.color(this.color);
-    color.setAlpha(this.alpha);
+    if(!semi_opacity){
+      color.setAlpha(this.alpha);
+    }
+    else{
+      color.setAlpha(this.alpha*0.5);
+    }
     p5.stroke(color);
     p5.strokeWeight(this.w);
   }

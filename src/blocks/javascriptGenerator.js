@@ -237,7 +237,6 @@ javascriptGenerator.forBlock['view'] = function(block, generator) {
   var sizeString = generator.valueToCode(block, 'SIZE', Order.ATOMIC);
   var hitboxType = block.getFieldValue('HITBOX_TYPE');
 
-  console.log(hitboxType);
   var hitboxString;
   if (hitboxType === "ADVANCED"){
     hitboxString = generator.statementToCode(block, 'ADVANCED_HITBOX');

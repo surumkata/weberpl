@@ -128,6 +128,11 @@ Blockly.Blocks['scenario'] = {
         .appendField("OBJECTS:");
     this.appendStatementInput("OBJECTS")
         .setCheck("object");
+    this.appendDummyInput()
+        .setAlign(Blockly.inputs.Align.CENTRE)
+        .appendField("SOUNDS:");
+    this.appendStatementInput("SOUNDS")
+        .setCheck("sound");
     this.setPreviousStatement(true, "scenario");
     this.setNextStatement(true, "scenario");
     this.setColour(200);
@@ -215,6 +220,11 @@ Blockly.Blocks['object'] = {
         .appendField("VIEWS:");
     this.appendStatementInput("VIEWS")
         .setCheck("view");
+    this.appendDummyInput()
+        .setAlign(Blockly.inputs.Align.CENTRE)
+        .appendField("SOUNDS:");
+    this.appendStatementInput("SOUNDS")
+        .setCheck("sound");
     this.setPreviousStatement(true, "object");
     this.setNextStatement(true, "object");
     this.setColour(270);
@@ -1444,5 +1454,23 @@ Blockly.Blocks['hitbox_ellipse']  = {
     this.setTooltip('');
     this.setHelpUrl('');
     this.setColour(100);
+  }
+};
+
+Blockly.Blocks['test_block'] = {
+  init: function() {
+    this.appendStatementInput("FIRST")
+        .setCheck(null)
+        .appendField("First Statement");
+    this.appendDummyInput()
+        .appendField("Intermediate Input"); // Este DummyInput pode ajudar
+    this.appendStatementInput("SECOND")
+        .setCheck(null)
+        .appendField("Second Statement");
+    this.setPreviousStatement(true, null);
+    this.setNextStatement(true, null);
+    this.setColour(160);
+    this.setTooltip("");
+    this.setHelpUrl("");
   }
 };

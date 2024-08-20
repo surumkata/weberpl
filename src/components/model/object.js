@@ -1,5 +1,3 @@
-import { Position,Size } from "./utils";
-
 // CLASSE DE UM OBJETO
 export class Object {
   constructor(id, scenarioId) {
@@ -54,9 +52,21 @@ export class Object {
       this.sounds[sound.id] = sound;
   }
 
-  draw(p5){
-    if (this.currentView !== null && this.currentView != "null" && this.currentView in this.views){
+  draw(p5,invisibleViews=0,hitboxs=false){
+    if (this.currentView !== null && this.currentView !== "null" && this.currentView in this.views){
       this.views[this.currentView].draw(p5);
     }
+    if(invisibleViews!==0){
+        for (var view in this.views){
+            if(view !== "null" && view !== null && view !== this.currentView){
+                let semi_opacity = false;
+                if(invisibleViews===1){
+                    semi_opacity = true;
+                }
+                this.views[view].draw(p5,semi_opacity);
+            }
+        }
+    }
+    //TODO: draw hitboxs if true
   }
 }

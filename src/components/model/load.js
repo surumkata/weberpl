@@ -192,7 +192,6 @@ function loadAdvancedHitbox(draws){
 
 function loadHitboxs(view){
     var hitboxs = [];
-    console.log(view);
     switch(view.hitbox_type){
         case "NO":
             break;
