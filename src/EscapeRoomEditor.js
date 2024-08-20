@@ -279,6 +279,7 @@ function EscapeRoomEditor() {
 
   const onError = useCallback(error => {
     console.log('onError', error);
+    setEscapeRoom(null);
   }, []);
 
   const updateViewPositionAndSize = (objectId, viewId, newPosx, newPosy, newSizex, newSizey) => {
@@ -524,7 +525,7 @@ function EscapeRoomEditor() {
       <div className="containerRight">
         <div>
           <div className="containerButtons">
-              <button className="play-btn" title="PLAY" onClick={generateCode} disabled={!errors.length == 0}><img src='/weberpl/logo.png'/></button>
+              <button className="play-btn" title="PLAY" onClick={generateCode} disabled={er === null}><img src='/weberpl/logo.png'/></button>
               <div className="select-scenario">
                 <p>Select the scenario to show:</p>
                 <div className="select">
