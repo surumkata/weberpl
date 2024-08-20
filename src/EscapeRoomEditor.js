@@ -413,10 +413,18 @@ function EscapeRoomEditor() {
       }
   }
 
+  // Função para codificar em Base64 seguro para URL
+  function toUrlSafeBase64(str) {
+    return btoa(str)
+        .replace(/\+/g, '-')
+        .replace(/\//g, '_')
+        .replace(/=+$/, '');
+  }
+
   const generateCode = () => {
     if(erCode !== null){
       let json = JSON.stringify(erCode, null, 2);
-      let data = btoa(json);
+      let data = toUrlSafeBase64(json);
       if (data !== "null" || data !== null) {
         window.open(`#/escape_room/${data}`, "_blank", "noreferrer");
       }

@@ -12,7 +12,7 @@ import { Event } from './event.js';
 import { PreConditionOperatorAnd, PreConditionOperatorNot, PreConditionOperatorOr, PreConditionTree, PreConditionVar } from './precondition_tree.js';
 import { EventPreConditionAfterEvent,EventPreConditionAfterTime,EventPreConditionClickedNotObject,EventPreConditionClickedObject,EventPreConditionItemIsInUse,EventPreConditionWhenObjectIsView } from './precondition.js';
 import { EventPosConditionTransition, EventPosConditionConnections, EventPosConditionSequence, EventPosConditionQuestion, EventPosConditionChangeScenario,EventPosConditionDeleteItem,EventPosConditionEndGame,EventPosConditionMultipleChoice,EventPosConditionObjChangePosition,EventPosConditionObjChangeSize,EventPosConditionObjChangeState,EventPosConditionObjPutInventory,EventPosConditionPlaySound,EventPosConditionShowMessage } from './poscondition.js';
-import { Hitbox, HitboxRect } from './hitbox.js';
+import { Hitbox, HitboxArc, HitboxCircle, HitboxEllipse, HitboxLine, HitboxPoint, HitboxRect, HitboxSquare, HitboxTriangle } from './hitbox.js';
 
 const load = (p5,json,edit=false) => {
     if(edit){
@@ -152,31 +152,74 @@ function loadSketch(id,draws){
     return sketch;
 }
 
+function loadSketchHitbox(draws){
+    var hitboxs = []
+    draws.forEach(draw => {
+        switch(draw.type) {
+            case "RECT":
+                hitboxs.push(new HitboxRect(draw.x,draw.y+HEIGHT_INV,draw.w,draw.h))
+                break;
+            case "QUAD":
+                //TODO:
+                break;
+            case "SQUARE":
+                hitboxs.push(new HitboxSquare(draw.x,draw.y+HEIGHT_INV,draw.s));
+                break;
+            case "TRIANGLE":
+                hitboxs.push(new HitboxTriangle(draw.x1,draw.y1+HEIGHT_INV,draw.x2,draw.y2+HEIGHT_INV,draw.x3,draw.y3+HEIGHT_INV));
+                break;
+            case "LINE":
+                hitboxs.push(new HitboxLine(draw.x1,draw.y1+HEIGHT_INV,draw.x2,draw.y2+HEIGHT_INV));
+                break;
+            case "POINT":
+                hitboxs.push(new HitboxPoint(draw.x,draw.y+HEIGHT_INV));
+                break;
+            case "ARC":
+                hitboxs.push(new HitboxArc(draw.x,draw.y+HEIGHT_INV,draw.w,draw.h,draw.start,draw.stop,draw.mode));
+                break;
+            case "CIRCLE":
+                hitboxs.push(new HitboxCircle(draw.x,draw.y+HEIGHT_INV,draw.d));
+                break;
+            case "ELLIPSE":
+                hitboxs.push(new HitboxEllipse(draw.x, draw.y+HEIGHT_INV, draw.w, draw.h));
+                break;
+            default:
+                break;
+        }
+    })
+    return hitboxs;
+}
+
+function loadAdvancedHitbox(hitbox){
+    switch(hitbox.type){
+        case "RECT" :
+            return new HitboxRect(hitbox.x,hitbox.y,hitbox.w,hitbox.h);
+        default:
+            break;
+    }
+    return null;
+}
+
 function loadHitboxs(view){
     var hitboxs = [];
     console.log(view);
-    if (view.type === "VIEW_IMAGE"){
-        switch(view.hitbox_type) {
-            case "NO":
-                break;
-            case "ADVANCED":
-                view.hitboxs.forEach(hitbox => {
-                    switch(hitbox.type){
-                        case "RECT" :
-                            hitboxs.push(new HitboxRect(hitbox.x,hitbox.y,hitbox.w,hitbox.h))
-                            break;
-                        default:
-                            break;
-                    }
-                })
-                break;
-            default:
-                hitboxs.push(new HitboxRect(view.position.x,view.position.y+HEIGHT_INV,view.size.x,view.size.y));
-                break;
-        }
-    }
-    else {
-        //TODO:
+    switch(view.hitbox_type){
+        case "NO":
+            break;
+        case "ADVANCED":
+            view.hitboxs.forEach(hitbox => {
+                hitboxs.push(loadAdvancedHitbox(hitbox));
+            })
+            break;
+        default:
+            switch(view.type){
+                case "VIEW_IMAGE":
+                    hitboxs.push(new HitboxRect(view.position.x,view.position.y+HEIGHT_INV,view.size.x,view.size.y));
+                    break;
+                case "VIEW_SKETCH":
+                    hitboxs = loadSketchHitbox(view.draws);
+            }
+            break;
     }
     
     return hitboxs;
@@ -283,6 +326,8 @@ function loadPosconditions(dataPosconditions) {
     dataPosconditions.forEach(dataAction => {
         const type = dataAction.type;
         let eventPoscondition;
+
+        console.log(type);
 
         switch (type) {
             case "END_GAME":
