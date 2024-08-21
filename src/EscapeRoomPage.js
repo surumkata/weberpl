@@ -20,7 +20,7 @@ function EscapeRoomPage() {
   }
 
   try {
-    console.log(fromUrlSafeBase64(data));
+    //console.log(fromUrlSafeBase64(data));
     var escape_room = JSON.parse(fromUrlSafeBase64(data));
   }
   catch {

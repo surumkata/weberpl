@@ -53,7 +53,6 @@ export class View {
 
   collide(px,py){
     var collide = false;
-    console.log(this.hitboxs);
     this.hitboxs.forEach(hitbox => {
       collide = collide || hitbox.collide(px,py);
     })

@@ -80,6 +80,7 @@ javascriptGenerator.forBlock['scenario'] = function(block, generator) {
   var text_initial_view = block.getFieldValue('initial_view');
   var stringViews = generator.statementToCode(block, 'VIEWS');
   var stringObjects = generator.statementToCode(block, 'OBJECTS');
+  var stringSounds = generator.statementToCode(block, 'SOUNDS');
 
   if(stringViews) {
     stringViews = stringViews.replaceAll("}{","},\n{");
@@ -97,16 +98,26 @@ javascriptGenerator.forBlock['scenario'] = function(block, generator) {
   else {
     stringObjects = "[]"
   }
+
+  if(stringSounds) {
+    stringSounds = stringSounds.replaceAll("}{","},\n{");
+    stringSounds = "[" + stringSounds + "]"
+  }
+  else {
+    stringSounds = "[]"
+  }
   
   
   var viewsObject = JSON.parse(stringViews);
   var objectsObject = JSON.parse(stringObjects);
+  var soundsObject = JSON.parse(stringSounds);
   
   var code = {
     'id' : text_id,
     'initial_view' : text_initial_view,
     'views' : viewsObject,
-    'objects' : objectsObject
+    'objects' : objectsObject,
+    'sounds' : soundsObject
   }
 
   return JSON.stringify(code, null, 2);
@@ -208,6 +219,7 @@ javascriptGenerator.forBlock['object'] = function(block, generator) {
   var text_id = block.getFieldValue('ID');
   var text_initial_view = block.getFieldValue('initial_view');
   var stringViews = generator.statementToCode(block, 'VIEWS');
+  var stringSounds = generator.statementToCode(block, 'SOUNDS');
 
   if (stringViews){
     stringViews = stringViews.replaceAll(/}\s*{/g, "},{");
@@ -217,16 +229,55 @@ javascriptGenerator.forBlock['object'] = function(block, generator) {
     stringViews = "[]"
   }
 
+  if (stringSounds){
+    stringSounds = stringSounds.replaceAll(/}\s*{/g, "},{");
+    stringSounds = "[" + stringSounds + "]"
+  }
+  else {
+    stringSounds = "[]"
+  }
+
   var viewsObject = JSON.parse(stringViews);
+  var soundsObject = JSON.parse(stringSounds);
 
   var code = {
     "id" : text_id,
     "initial_view" : text_initial_view,
     "views" : viewsObject,
+    "sounds" : soundsObject
   }
 
   return JSON.stringify(code, null, 2) 
 };
+
+
+javascriptGenerator.forBlock['sound'] = function(block,generator) {
+  var text_id = block.getFieldValue('ID');
+  var checkbox_loop = block.getFieldValue('LOOP');
+  var value_src = generator.valueToCode(block, 'SRC', Order.ATOMIC);
+
+  if (value_src) {
+    value_src = value_src.slice(1,-1);
+  }
+  else{
+    value_src = ""
+  }
+
+  if (checkbox_loop === "TRUE"){
+    checkbox_loop = true;
+  }
+  else {
+    checkbox_loop = false;
+  }
+
+  var code = {
+    "id" : text_id,
+    "src" : value_src,
+    "loop" : checkbox_loop
+  }
+
+  return JSON.stringify(code, null, 2); // Retornar o JSON como string formatada
+}
 
 //Views Array Block
 
@@ -593,13 +644,14 @@ return [JSON.stringify(code, null, 2), javascriptGenerator.ORDER_NONE];
 
 javascriptGenerator.forBlock['poscond_play_sound'] = function(block, generator) {
 var sound_id = block.getFieldValue('SOUND_ID');
-var source_id = block.getFieldValue('ID');
+var source_type = block.getFieldValue('SRC_TYPE');
+var source_id = block.getFieldValue('SRC');
 
 var code = {
   'type' : 'PLAY_SOUND',
   'sound' : sound_id,
-  'source_id' : source_id
-  //'source_type' : source_type //TODO::
+  'sourceId' : source_id,
+  'sourceType' : source_type
 }
 
 return [JSON.stringify(code, null, 2), javascriptGenerator.ORDER_NONE];

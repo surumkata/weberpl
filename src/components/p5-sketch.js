@@ -6,21 +6,6 @@ import { WIDTH, HEIGHT, HEIGHT_INV } from './model/utils.js';
 
 const P5Sketch = ({ json }) => {
     var gameData;
-    const soundRef = useRef(null);
-    let playing = false;
-
-    const playSound = () => {
-        if (!soundRef.current) {
-            soundRef.current = new Audio("weberpl/assets/soundtrack.mp3");
-        }
-        soundRef.current.play(); // Toca o som
-    };
-
-    const stopSound = () => {
-        if (soundRef.current) {
-            soundRef.current.stop(); // Para o som
-        }
-    };
 
     const doEvent = (gameData, event) => {
         for (let posCondition of event.posConditions) {
@@ -79,10 +64,6 @@ const P5Sketch = ({ json }) => {
 
         p5.mousePressed = () => {
             if (gameData) {
-                if(!playing){
-                    playSound();
-                    playing = true;
-                }  
                 if (gameData.gameState.isRunning()) {
                     gameData.gameState.bufferMessages = [];
                     gameData.gameState.bufferClickEvents.push([p5.mouseX, p5.mouseY]);

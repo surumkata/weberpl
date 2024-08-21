@@ -154,9 +154,9 @@ class EventPosConditionPlaySound extends EventPosCondition {
   }
 
   do(room, inventory, state) {
-      if (this.sourceType === 'Object') {
+      if (this.sourceType === 'OBJECT') {
           room.objects[this.sourceId].sounds[this.soundId].play();
-      } else if (this.sourceType === 'Scenario') {
+      } else if (this.sourceType === 'SCENARIO') {
           room.scenarios[this.sourceId].sounds[this.soundId].play();
       }
       debug("EVENT_PLAY_SOUND: Tocando sound " + this.soundId + ".");

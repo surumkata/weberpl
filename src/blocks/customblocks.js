@@ -233,6 +233,28 @@ Blockly.Blocks['object'] = {
   }
 };
 
+Blockly.Blocks['sound'] = {
+  init: function() {
+    this.appendDummyInput('ID')
+    .setAlign(Blockly.inputs.Align.CENTRE)
+      .appendField('SOUND ')
+      .appendField(new Blockly.FieldTextInput('SOUND'), 'ID');
+    this.appendDummyInput('NAME')
+    .setAlign(Blockly.inputs.Align.CENTRE)
+      .appendField('loop:')
+      .appendField(new Blockly.FieldCheckbox('FALSE'), 'LOOP');
+    this.appendValueInput('SRC')
+    .setAlign(Blockly.inputs.Align.CENTRE)
+    .setCheck('url')
+      .appendField('src:');
+    this.setPreviousStatement(true, 'sound');
+    this.setNextStatement(true, 'sound');
+    this.setTooltip('');
+    this.setHelpUrl('');
+    this.setColour(195);
+  }
+};
+
 Blockly.Blocks['view'] = {
   init: function() {
     this.appendDummyInput('ID')
@@ -524,7 +546,8 @@ init: function() {
       .appendField("play")
       .appendField(new Blockly.FieldTextInput("sound_id"), "SOUND_ID")
       .appendField("of")
-      .appendField(new Blockly.FieldTextInput("object_id/scenario_id"), "ID");
+      .appendField(new Blockly.FieldDropdown([["OBJECT","OBJECT"], ["SCENARIO","SCENARIO"]]), "SRC_TYPE")
+      .appendField(new Blockly.FieldTextInput("ID"), "SRC");
   this.setOutput(true, "action");
   this.setColour(180);
 this.setTooltip("");

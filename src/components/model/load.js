@@ -13,6 +13,7 @@ import { PreConditionOperatorAnd, PreConditionOperatorNot, PreConditionOperatorO
 import { EventPreConditionAfterEvent,EventPreConditionAfterTime,EventPreConditionClickedNotObject,EventPreConditionClickedObject,EventPreConditionItemIsInUse,EventPreConditionWhenObjectIsView } from './precondition.js';
 import { EventPosConditionTransition, EventPosConditionConnections, EventPosConditionSequence, EventPosConditionQuestion, EventPosConditionChangeScenario,EventPosConditionDeleteItem,EventPosConditionEndGame,EventPosConditionMultipleChoice,EventPosConditionObjChangePosition,EventPosConditionObjChangeSize,EventPosConditionObjChangeState,EventPosConditionObjPutInventory,EventPosConditionPlaySound,EventPosConditionShowMessage } from './poscondition.js';
 import { Hitbox, HitboxArc, HitboxCircle, HitboxEllipse, HitboxLine, HitboxPoint, HitboxRect, HitboxSquare, HitboxTriangle } from './hitbox.js';
+import { Sound } from './sound.js';
 
 const load = (p5,json,edit=false) => {
     if(edit){
@@ -224,11 +225,18 @@ function loadView(p5,view){
     }
 }
 
+function loadSound(sound){
+    return new Sound(sound.id,sound.src,sound.loop);
+}
+
 function loadObject(p5,scenario_id,object){
     let o = new Object(object.id,scenario_id);
     o.currentView = object['initial_view'];
     object.views.forEach(objView => {
         o.addView(loadView(p5,objView));
+    })
+    object.sounds.forEach(objSound => {
+        o.addSound(loadSound(objSound));
     })
     return o;
 }
@@ -241,10 +249,13 @@ function loadScenarios(p5,er,scenarios){
         scenario.views.forEach(scnView => {
             s.addView(loadView(p5,scnView));
         })
-        er.addScenario(s);
         scenario.objects.forEach(object => {
             er.addObject(loadObject(p5,scenario.id,object));
         })
+        scenario.sounds.forEach(scnSound => {
+            s.addSound(loadSound(scnSound));
+        })
+        er.addScenario(s);
     })
 }
 
@@ -313,8 +324,6 @@ function loadPosconditions(dataPosconditions) {
     dataPosconditions.forEach(dataAction => {
         const type = dataAction.type;
         let eventPoscondition;
-
-        console.log(type);
 
         switch (type) {
             case "END_GAME":
