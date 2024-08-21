@@ -553,28 +553,45 @@ function EscapeRoomEditor() {
 
   const enableInvisibleViews = () => {
     var img = document.getElementById("showInvisible");
+    var btn = document.getElementById("showInvisible-btn");
+    var span = document.getElementById("showInvisible-span")
     if (showInvisible === 0){
       img.src = "/weberpl/icons/semi_open.png";
+      btn.style.backgroundColor = "#f1d00c";
+      span.textContent = "Show Invisible Views (100%)"
+      span.style.color = "#17116e";
       setInvisibleViews(1);
     }
     else if(showInvisible === 1){
       img.src = "/weberpl/icons/open_eye.png";
+      span.textContent = "Hide Invisible Views"
       setInvisibleViews(2);
     }
     else{
       img.src = "/weberpl/icons/closed_eye.png";
+      btn.style.backgroundColor = "#17116e";
+      span.textContent = "Show Invisible Views (50%)"
+      span.style.color = "#f1d00c";
       setInvisibleViews(0);
     }
   }
 
   const enableHitboxs = () => {
     var img = document.getElementById("showHitboxs");
+    var btn = document.getElementById("showHitboxs-btn");
+    var span = document.getElementById("showHitboxs-span");
     if (showHitboxs){
-      img.src = "/weberpl/icons/closed_eye.png";
+      img.src = "/weberpl/icons/hitboxs.png";
+      btn.style.backgroundColor = "#17116e";
+      span.textContent = "Show Hitboxes"
+      span.style.color = "#f1d00c";
       setShowHitboxs(false);
     }
     else{
-      img.src = "/weberpl/icons/open_eye.png";
+      img.src = "/weberpl/icons/hitboxs_visible.png";
+      btn.style.backgroundColor = "#f1d00c";
+      span.textContent = "Hide Hitboxes"
+      span.style.color = "#17116e";
       setShowHitboxs(true);
     }
   }
@@ -627,26 +644,35 @@ function EscapeRoomEditor() {
           />
         </div>
       </div>
+      <div className="containerCenter">
+        <div className="containerButtons">
+                <button className="play-btn" id="" title="PLAY" onClick={generateCode} disabled={er === null}>
+                  <img src='/weberpl/logo.png'/>
+                  <span>Play!</span>
+                </button>
+                <button className="play-btn" id="showInvisible-btn" title="Show invisible views" onClick={enableInvisibleViews}>
+                  <img id="showInvisible" src='/weberpl/icons/closed_eye.png'/>
+                  <span id="showInvisible-span">Show Invisible Views (50%)</span>
+                </button>
+                <button className="play-btn" id="showHitboxs-btn" title="Show Hitboxs" onClick={enableHitboxs}>
+                  <img id="showHitboxs" src='/weberpl/icons/hitboxs.png'/>
+                  <span id="showHitboxs-span">Show Hitboxs</span>
+                </button>
+        </div>
+      </div>
       <div className="containerRight">
-        <div>
-          <div className="containerButtons">
-              <button className="play-btn" title="PLAY" onClick={generateCode} disabled={er === null}><img src='/weberpl/logo.png'/></button>
-              <div className="select-scenario">
-                <p>Select the scenario to show:</p>
-                <div className="select">
-                  <select onChange={changeCurrentScenario}>
-                    {scenariosIds?.map((id) => <option className="option" key={id} value={id} >{id}</option>)}
-                    {transitionsIds?.map((id) => <option className="option" key={id} value={id} >{id}</option>)}
-                  </select>
-                </div>
-              </div>
-              <button className="play-btn" title="Show invisible views" onClick={enableInvisibleViews}><img id="showInvisible" src='/weberpl/icons/closed_eye.png'/></button>
-              <button className="play-btn" title="Show Hitboxs" onClick={enableHitboxs}><img id="showHitboxs" src='/weberpl/icons/closed_eye.png'/></button>
+          <div className="select-scenario">
+            <p>You are seeing the following scenario:</p>
+            <div className="select">
+              <select onChange={changeCurrentScenario}>
+                {scenariosIds?.map((id) => <option className="option" key={id} value={id} >{id}</option>)}
+                {transitionsIds?.map((id) => <option className="option" key={id} value={id} >{id}</option>)}
+              </select>
+            </div>
           </div>
           <div className="containerSketch">
             {<ReactP5Wrapper sketch={sketch} />}
           </div>
-        </div>
       </div>
     </div>    
     <Footer/>
