@@ -21,6 +21,8 @@ import { Link } from 'react-router-dom';
 import './Navebar.css'
 import Footer from './Footer';
 
+import { jsPDF } from 'jspdf';
+
 function EscapeRoomEditor() {
 
   const [erCode, setEscapeRoomCode] = useState(null);
@@ -30,10 +32,14 @@ function EscapeRoomEditor() {
   const [xml, setXML] = useState(null);
   const workspaceRef = useRef(null);  // Referência para o workspace
   const [transitionsIds, setTransitionsIds] = useState([]);
-  const [scenariosIds, setScenariosIds] = useState(["SCENARIO_1"]);
+  const [scenariosIds, setScenariosIds] = useState(["ROOM"]);
   const [showInvisible, setInvisibleViews] = useState(0);
   const [showHitboxs, setShowHitboxs] = useState(false);
   const inputFileXML = useRef(null);
+  const [currentScenario, setCurrentScenario] = useState("ROOM");
+  const [scenariosImgs, setScenariosImgs] = useState({});
+  const [imgsLoaded, setImgsLoaded] = useState(false);
+  const [imgsIndex, setImgIndex] = useState(0);
 
   const workspaceConfiguration = {
     grid: {
@@ -209,6 +215,45 @@ function EscapeRoomEditor() {
       mime: 'text/xml'
     });
   }
+
+  const exportBlocksPDF = async () => {
+    const doc = new jsPDF();
+    scenariosIds.forEach((scenarioId,index) => {
+      if (index > 0) doc.addPage();
+      doc.setFontSize(20);
+      doc.text(`${scenarioId}`, 10, 10);
+      doc.addImage(scenariosImgs[scenarioId], 'PNG', 10, 20, 100, 56.25);
+    })
+
+    // Converte o PDF para Blob
+    const pdfBlob = doc.output('blob');
+
+    // Verifica se o navegador suporta a API File System Access
+    if (window.showSaveFilePicker) {
+      try {
+        // Prompt para o usuário selecionar o nome e local do arquivo
+        const handle = await window.showSaveFilePicker({
+          suggestedName: 'cenarios.pdf',
+          types: [{
+            description: 'PDF Files',
+            accept: { 'application/pdf': ['.pdf'] }
+          }]
+        });
+
+        // Escreve o arquivo PDF no local escolhido
+        const writableStream = await handle.createWritable();
+        await writableStream.write(pdfBlob);
+        await writableStream.close();
+        console.log("Arquivo salvo com sucesso!");
+
+      } catch (err) {
+        console.error("Erro ao salvar o arquivo:", err);
+      }
+    } else {
+      // Caso o navegador não suporte a API, faz o download automático com jsPDF
+      doc.save('cenarios.pdf');
+    }
+  }
   
   // Função para exportar blocos para JSON usando a API do File System Access
   const exportBlocksJSON = async () => {
@@ -335,16 +380,44 @@ function EscapeRoomEditor() {
           let editCode = JSON.parse(JSON.stringify(erCode));
           scaleToEdit(editCode);
           var room = load(p5,editCode,true);
+          room.gameState.currentScenario = scenariosIds[imgsIndex];
+          
           setEscapeRoom(room);
+          setImgsLoaded(false);
+          setImgIndex(0);
+
         }
         else {
           setEscapeRoom(null);
         }
         setLoaded(true);
       }
+    
 
       if(er !== null){
         er.escapeRoom.draw(p5,er.gameState.currentScenario, showInvisible, showHitboxs);
+
+        if(!imgsLoaded){
+          let canvas = document.querySelector('canvas');
+          let imgData = canvas.toDataURL('image/png');
+
+          let scenarioId = er.gameState.currentScenario;
+
+          setScenariosImgs(prev => ({...prev, [scenarioId]: imgData}));
+
+          if(imgsIndex !== scenariosIds.length - 1){
+            let index = imgsIndex+1;
+            setImgIndex(index);
+            er.gameState.currentScenario = scenariosIds[index];
+            setEscapeRoom(er);
+          }
+          else{
+            er.gameState.currentScenario = currentScenario;
+            setEscapeRoom(er);
+            setImgsLoaded(true);
+          }
+        }
+
       }
       else if (errors.length > 0){
         var error_number = 1;
@@ -506,6 +579,11 @@ function EscapeRoomEditor() {
     }
   }
 
+  const changeCurrentScenario = (e) => {
+    setCurrentScenario(e.target.value);
+    setLoaded(false);
+  }
+
   return (
     <div>
       <div className="nav">
@@ -523,6 +601,7 @@ function EscapeRoomEditor() {
             <div className="dropdown-content">
               <a href="#" onClick={exportBlocksXML}>Export XML</a>
               <a href="#" onClick={exportBlocksJSON}>Export JSON</a>
+              <a href="#" onClick={exportBlocksPDF}>Export PDF</a>
             </div>
           </div> 
           <div className="dropdown">
@@ -555,7 +634,7 @@ function EscapeRoomEditor() {
               <div className="select-scenario">
                 <p>Select the scenario to show:</p>
                 <div className="select">
-                  <select>
+                  <select onChange={changeCurrentScenario}>
                     {scenariosIds?.map((id) => <option className="option" key={id} value={id} >{id}</option>)}
                     {transitionsIds?.map((id) => <option className="option" key={id} value={id} >{id}</option>)}
                   </select>
