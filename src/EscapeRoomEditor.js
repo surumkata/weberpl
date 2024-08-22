@@ -370,57 +370,54 @@ function EscapeRoomEditor() {
 
   const updateRect = (objectId,viewId,rectId,newx,newy,neww,newh) => {
     const objectBlocks = workspaceRef.current.getBlocksByType('object');
-    objectBlocks.forEach(objectBlock => {
-      if (objectBlock.getFieldValue('ID') === objectId) {
-        var viewBlocks = objectBlock.getChildren(false).filter(childBlock => childBlock.type === 'view_draw');
 
-        viewBlocks.forEach(viewBlock => {
-          if (viewBlock.getFieldValue('ID') === viewId) {
-            var rectBlocks = viewBlock.getChildren(false).filter(childBlock => childBlock.type === 'draw_rect');
+    const traverseBlocks = (blocks) => {
+      blocks.forEach(block => {
+        if (block.getFieldValue('ID') === objectId && block.type === 'object') {
+          traverseBlocks(block.getChildren(false)); // Recurse into child blocks
+        } else if (block.getFieldValue('ID') === viewId && block.type === 'view_draw') {
+          traverseBlocks(block.getChildren(false)); // Recurse into child blocks
+        } else if (block.getFieldValue('ID') === rectId && block.type === 'draw_rect') {
+          block.setFieldValue(newx, 'X');
+          block.setFieldValue(newy, 'Y');
+          block.setFieldValue(neww, 'W');
+          block.setFieldValue(newh, 'H');
+        } else {
+          // Continue traversing for other children
+          traverseBlocks(block.getChildren(false));
+        }
+      });
+    };
 
-            rectBlocks.forEach(rectBlock => {
-              if (rectBlock.getFieldValue('ID') === rectId) {
-                rectBlock.setFieldValue(newx, 'X');
-                rectBlock.setFieldValue(newy, 'Y');
-                rectBlock.setFieldValue(neww, 'W');
-                rectBlock.setFieldValue(newh, 'H');
-              }
-            })
-          }
-        });
-
-      }
-    });
+    traverseBlocks(objectBlocks);
   }
 
   const updateQuad = (objectId,viewId,quadId,newx1,newy1,newx2,newy2,newx3,newy3,newx4,newy4) => {
     const objectBlocks = workspaceRef.current.getBlocksByType('object');
-    console.log(objectId,viewId,quadId,newx1,newy1,newx2,newy2,newx3,newy3,newx4,newy4);
-    objectBlocks.forEach(objectBlock => {
-      if (objectBlock.getFieldValue('ID') === objectId) {
-        var viewBlocks = objectBlock.getChildren(false).filter(childBlock => childBlock.type === 'view_draw');
 
-        viewBlocks.forEach(viewBlock => {
-          if (viewBlock.getFieldValue('ID') === viewId) {
-            var quadsBlocks = viewBlock.getChildren(false).filter(childBlock => childBlock.type === 'draw_quad');
+    const traverseBlocks = (blocks) => {
+      blocks.forEach(block => {
+        if (block.getFieldValue('ID') === objectId && block.type === 'object') {
+          traverseBlocks(block.getChildren(false)); // Recurse into child blocks
+        } else if (block.getFieldValue('ID') === viewId && block.type === 'view_draw') {
+          traverseBlocks(block.getChildren(false)); // Recurse into child blocks
+        } else if (block.getFieldValue('ID') === quadId && block.type === 'draw_quad') {
+          block.setFieldValue(newx1, 'X1');
+          block.setFieldValue(newy1, 'Y1');
+          block.setFieldValue(newx2, 'X2');
+          block.setFieldValue(newy2, 'Y2');
+          block.setFieldValue(newx3, 'X3');
+          block.setFieldValue(newy3, 'Y3');
+          block.setFieldValue(newx4, 'X4');
+          block.setFieldValue(newy4, 'Y4');
+        } else {
+          // Continue traversing for other children
+          traverseBlocks(block.getChildren(false));
+        }
+      });
+    };
 
-            quadsBlocks.forEach(quadBlock => {
-              if (quadBlock.getFieldValue('ID') === quadId) {
-                quadBlock.setFieldValue(newx1, 'X1');
-                quadBlock.setFieldValue(newy1, 'Y1');
-                quadBlock.setFieldValue(newx2, 'X2');
-                quadBlock.setFieldValue(newy2, 'Y2');
-                quadBlock.setFieldValue(newx3, 'X3');
-                quadBlock.setFieldValue(newy3, 'Y3');
-                quadBlock.setFieldValue(newx4, 'X4');
-                quadBlock.setFieldValue(newy4, 'Y4');
-              }
-            })
-          }
-        });
-
-      }
-    });
+    traverseBlocks(objectBlocks);
   }
 
   function sketch(p5){
