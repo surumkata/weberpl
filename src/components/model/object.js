@@ -52,7 +52,7 @@ export class Object {
       this.sounds[sound.id] = sound;
   }
 
-  draw(p5,invisibleViews=0,hitboxs=false){
+  draw(p5,invisibleViews=0,hitboxes=false){
     if (this.currentView !== null && this.currentView !== "null" && this.currentView in this.views){
       this.views[this.currentView].draw(p5);
     }
@@ -67,8 +67,8 @@ export class Object {
             }
         }
     }
-    //TODO: draw hitboxs if true
-    if (hitboxs){
+    //TODO: draw hitboxes if true
+    if (hitboxes){
         p5.push();
         let alpha = 0.5;
         p5.fill(`rgba(0, 255, 0, ${alpha})`);

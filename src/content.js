@@ -139,7 +139,7 @@ const TOOLBOX =
   '    <block type="stroke"></block>\n' +
   '    <block type="no_stroke"></block>\n' +
   '  </category>\n' +
-  '  <category name="Hitboxs" colour="#5C81A6">\n' +
+  '  <category name="Hitboxes" colour="#5C81A6">\n' +
   '    <block type="hitbox_rect"></block>\n' +
   '    <block type="hitbox_quad"></block>\n' +
   '    <block type="hitbox_square"></block>\n' +

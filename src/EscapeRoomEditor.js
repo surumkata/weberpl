@@ -22,6 +22,7 @@ import './Navebar.css'
 import Footer from './Footer';
 
 import { jsPDF } from 'jspdf';
+import { Quad, Rect, View, ViewSketch } from './components/model/view';
 
 function EscapeRoomEditor() {
 
@@ -330,7 +331,6 @@ function EscapeRoomEditor() {
   }, []);
 
   const updateViewPositionAndSize = (objectId, viewId, newPosx, newPosy, newSizex, newSizey) => {
-    // 1. Encontrar todos os blocos do tipo 'object'
     const objectBlocks = workspaceRef.current.getBlocksByType('object');
 
     objectBlocks.forEach(objectBlock => {
@@ -367,6 +367,61 @@ function EscapeRoomEditor() {
       }
     });
   };
+
+  const updateRect = (objectId,viewId,rectId,newx,newy,neww,newh) => {
+    const objectBlocks = workspaceRef.current.getBlocksByType('object');
+    objectBlocks.forEach(objectBlock => {
+      if (objectBlock.getFieldValue('ID') === objectId) {
+        var viewBlocks = objectBlock.getChildren(false).filter(childBlock => childBlock.type === 'view_draw');
+
+        viewBlocks.forEach(viewBlock => {
+          if (viewBlock.getFieldValue('ID') === viewId) {
+            var rectBlocks = viewBlock.getChildren(false).filter(childBlock => childBlock.type === 'draw_rect');
+
+            rectBlocks.forEach(rectBlock => {
+              if (rectBlock.getFieldValue('ID') === rectId) {
+                rectBlock.setFieldValue(newx, 'X');
+                rectBlock.setFieldValue(newy, 'Y');
+                rectBlock.setFieldValue(neww, 'W');
+                rectBlock.setFieldValue(newh, 'H');
+              }
+            })
+          }
+        });
+
+      }
+    });
+  }
+
+  const updateQuad = (objectId,viewId,quadId,newx1,newy1,newx2,newy2,newx3,newy3,newx4,newy4) => {
+    const objectBlocks = workspaceRef.current.getBlocksByType('object');
+    console.log(objectId,viewId,quadId,newx1,newy1,newx2,newy2,newx3,newy3,newx4,newy4);
+    objectBlocks.forEach(objectBlock => {
+      if (objectBlock.getFieldValue('ID') === objectId) {
+        var viewBlocks = objectBlock.getChildren(false).filter(childBlock => childBlock.type === 'view_draw');
+
+        viewBlocks.forEach(viewBlock => {
+          if (viewBlock.getFieldValue('ID') === viewId) {
+            var quadsBlocks = viewBlock.getChildren(false).filter(childBlock => childBlock.type === 'draw_quad');
+
+            quadsBlocks.forEach(quadBlock => {
+              if (quadBlock.getFieldValue('ID') === quadId) {
+                quadBlock.setFieldValue(newx1, 'X1');
+                quadBlock.setFieldValue(newy1, 'Y1');
+                quadBlock.setFieldValue(newx2, 'X2');
+                quadBlock.setFieldValue(newy2, 'Y2');
+                quadBlock.setFieldValue(newx3, 'X3');
+                quadBlock.setFieldValue(newy3, 'Y3');
+                quadBlock.setFieldValue(newx4, 'X4');
+                quadBlock.setFieldValue(newy4, 'Y4');
+              }
+            })
+          }
+        });
+
+      }
+    });
+  }
 
   function sketch(p5){
     p5.setup = (canvasParentRef) => {
@@ -484,19 +539,58 @@ function EscapeRoomEditor() {
             var obj = er.escapeRoom.objects[objectId]
             if (obj.currentView in obj.views){
               var view = obj.views[obj.currentView]
-              let changes = view.mouseReleased(p5.mouseX,p5.mouseY);
-              if (changes) {
-                let newPosx = view.position.x * 1/SCALE_EDIT;
-                let newPosy = (view.position.y* 1/SCALE_EDIT-HEIGHT_INV);
-                let newSizex = 0;
-                let newSizey = 0;
-                if(view.size.x !== 0){
-                  newSizex = view.size.x * 1/SCALE_EDIT;
+              if(view.constructor === View){
+                let changes = view.mouseReleased(p5.mouseX,p5.mouseY);
+                if (changes) {
+                  let newPosx = view.position.x * 1/SCALE_EDIT;
+                  let newPosy = (view.position.y* 1/SCALE_EDIT-HEIGHT_INV);
+                  let newSizex = 0;
+                  let newSizey = 0;
+                  if(view.size.x !== 0){
+                    newSizex = view.size.x * 1/SCALE_EDIT;
+                  }
+                  if(view.size.y !== 0){
+                    newSizey = view.size.y * 1/SCALE_EDIT;
+                  }
+                  updateViewPositionAndSize(objectId,obj.currentView,newPosx,newPosy,newSizex,newSizey);
                 }
-                if(view.size.y !== 0){
-                  newSizey = view.size.y * 1/SCALE_EDIT;
+              }
+              else if(view.constructor === ViewSketch){
+                for(var drawIndex in view.draws){
+                  var draw = view.draws[drawIndex];
+                  let changes = draw.mouseReleased(p5.mouseX,p5.mouseY);
+                  console.log(changes);
+                  if(changes){
+                    switch(draw.constructor){
+                      case Rect:
+                        let newx = draw.x* 1/SCALE_EDIT;
+                        let newy = draw.y* 1/SCALE_EDIT-HEIGHT_INV;
+                        let neww = 0;
+                        let newh = 0;
+                        if(draw.w !== 0){
+                          neww = draw.w * 1/SCALE_EDIT;
+                        }
+                        if(draw.h !== 0){
+                          newh = draw.h * 1/SCALE_EDIT;
+                        }
+                        updateRect(objectId,obj.currentView,draw.id,newx,newy,neww,newh);
+                        break;
+                      case Quad:
+                        let newx1 = draw.x1* 1/SCALE_EDIT;
+                        let newy1 = draw.y1* 1/SCALE_EDIT-HEIGHT_INV;
+                        let newx2 = draw.x2* 1/SCALE_EDIT;
+                        let newy2 = draw.y2* 1/SCALE_EDIT-HEIGHT_INV;
+                        let newx3 = draw.x3* 1/SCALE_EDIT;
+                        let newy3 = draw.y3* 1/SCALE_EDIT-HEIGHT_INV;
+                        let newx4 = draw.x4* 1/SCALE_EDIT;
+                        let newy4 = draw.y4* 1/SCALE_EDIT-HEIGHT_INV;
+                        updateQuad(objectId,obj.currentView,draw.id,newx1,newy1,newx2,newy2,newx3,newy3,newx4,newy4);
+                        break;
+                      default:
+                        break;
+                    }
+                  }
                 }
-                updateViewPositionAndSize(objectId,obj.currentView,newPosx,newPosy,newSizex,newSizey);
               }
             }
           }
@@ -581,14 +675,14 @@ function EscapeRoomEditor() {
     var btn = document.getElementById("showHitboxs-btn");
     var span = document.getElementById("showHitboxs-span");
     if (showHitboxs){
-      img.src = "/weberpl/icons/hitboxs.png";
+      img.src = "/weberpl/icons/hitboxes.png";
       btn.style.backgroundColor = "#17116e";
       span.textContent = "Show Hitboxes"
       span.style.color = "#f1d00c";
       setShowHitboxs(false);
     }
     else{
-      img.src = "/weberpl/icons/hitboxs_visible.png";
+      img.src = "/weberpl/icons/hitboxes_visible.png";
       btn.style.backgroundColor = "#f1d00c";
       span.textContent = "Hide Hitboxes"
       span.style.color = "#17116e";
@@ -655,7 +749,7 @@ function EscapeRoomEditor() {
                   <span id="showInvisible-span">Show Invisible Views (50%)</span>
                 </button>
                 <button className="play-btn" id="showHitboxs-btn" title="Show Hitboxs" onClick={enableHitboxs}>
-                  <img id="showHitboxs" src='/weberpl/icons/hitboxs.png'/>
+                  <img id="showHitboxs" src='/weberpl/icons/hitboxes.png'/>
                   <span id="showHitboxs-span">Show Hitboxs</span>
                 </button>
         </div>
