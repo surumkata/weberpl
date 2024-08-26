@@ -141,11 +141,9 @@ export class HitboxArc extends Hitbox {
             }
             let difAngle = angStop - this.arcStart;
             if(difAngle < Math.PI){
-                console.log("CHORD1")
                 return (inside && insideSlice && !insideTriangle)
             }
             else{
-                console.log("CHORD2")
                 return (inside && (insideSlice || insideTriangle))
             }
         }

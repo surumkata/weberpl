@@ -1097,6 +1097,12 @@ export class Arc extends DrawP5 {
     this.start = start * (Math.PI/180);
     this.stop = stop * (Math.PI/180);
     this.mode = mode;
+    this.hover = false;
+    this.pressed = false;
+    this.typePressed = null;
+    this.lastPosition = new Position(0,0);
+    this.p1 = this.pointOfEllipse(this.start);
+    this.p2 = this.pointOfEllipse(this.stop);
   }
 
   draw(p5){
@@ -1106,7 +1112,168 @@ export class Arc extends DrawP5 {
     else {
       p5.arc(this.x, this.y, this.w, this.h, this.start, this.stop);
     }
+    if(this.hover){
+      p5.push();
+      p5.fill(255,0,0);
+      p5.noStroke();
+      p5.circle(this.x+this.w/2,this.y,10);
+      p5.circle(this.x,this.y+this.h/2,10);
+      p5.circle(this.x-this.w/2,this.y,10);
+      p5.circle(this.x,this.y-this.h/2,10);
+      p5.stroke(255,0,0);
+      p5.strokeWeight(2);
+      p5.line(this.x,this.y,this.x+this.w/2,this.y);
+      p5.line(this.x,this.y,this.x,this.y+this.h/2);
+      p5.line(this.x,this.y,this.x-this.w/2,this.y);
+      p5.line(this.x,this.y,this.x,this.y-this.h/2);
+      p5.pop();
+    }
   }
+
+  pointOfEllipse(angle) {
+    // Semi-eixos da elipse
+    const a = this.w / 2; // Semi-eixo maior
+    const b = this.h / 2; // Semi-eixo menor
+
+    // Coordenadas do ponto na elipse
+    const x = this.x + a * Math.cos(angle);
+    const y = this.y + b * Math.sin(angle);
+
+    return { x: x, y: y };
+  }
+
+  collide(px, py){
+    const inside = collidePointEllipse(px,py,this.x,this.y,this.w,this.h);
+    if (!inside){return false;}
+  
+    const angle = (Math.atan2(py - this.y, px - this.x) + 2*Math.PI) % (2*Math.PI);
+    let insideSlice;
+    if(this.stop < this.start){
+        const angle2 = angle+2*Math.PI;
+        insideSlice = ((angle > this.start) && (angle < this.stop+2*Math.PI) || (angle2 > this.start) && (angle2 < this.stop+2*Math.PI)) ;
+    }
+    else {
+        insideSlice = (angle > this.start) && (angle < this.stop);
+    }
+
+    if (inside && (this.mode == 'chord' || this.mode == 'open')){
+        let p1 = this.pointOfEllipse(this.start);
+        let p2 = this.pointOfEllipse(this.stop);
+        
+        let insideTriangle = collidePointTriangle(px,py,this.x,this.y,p1.x,p1.y,p2.x,p2.y);
+
+        let angStop = this.stop
+        if (angStop < this.start){
+            angStop += Math.PI*2;
+        }
+        let difAngle = angStop - this.start;
+        if(difAngle < Math.PI){
+            return (inside && insideSlice && !insideTriangle)
+        }
+        else{
+            return (inside && (insideSlice || insideTriangle))
+        }
+    }
+  
+    return (inside && insideSlice);
+  }
+
+  mouseMoved(mX,mY) {
+    if(collidePointCircle(mX,mY,this.x+this.w/2,this.y,11)){
+      this.hover = true
+      document.documentElement.style.cursor = 'grab';
+    }
+    else if(collidePointCircle(mX,mY,this.x,this.y+this.h/2,11)){
+      this.hover = true
+      document.documentElement.style.cursor = 'grab';
+    }
+    else if(collidePointCircle(mX,mY,this.x-this.w/2,this.y,11)){
+      this.hover = true
+      document.documentElement.style.cursor = 'grab';
+    }
+    else if(collidePointCircle(mX,mY,this.x,this.y-this.h/2,11)){
+      this.hover = true
+      document.documentElement.style.cursor = 'grab';
+    }
+    else if (this.collide(mX,mY)){
+      this.hover = true
+      document.documentElement.style.cursor = 'move';
+    }
+    else {
+      this.hover = false
+      document.documentElement.style.cursor = 'default';
+    }
+    return this.hover
+  }
+
+  mousePressed(mX,mY) {
+    if(collidePointCircle(mX,mY,this.x+this.w/2,this.y,11)){
+      document.documentElement.style.cursor = 'grabbing';
+      this.pressed = true;
+      this.typePressed = "width"
+    }
+    else if(collidePointCircle(mX,mY,this.x,this.y+this.h/2,11)){
+      document.documentElement.style.cursor = 'grabbing';
+      this.pressed = true;
+      this.typePressed = "height"
+    }
+    else if(collidePointCircle(mX,mY,this.x-this.w/2,this.y,11)){
+      document.documentElement.style.cursor = 'grabbing';
+      this.pressed = true;
+      this.typePressed = "-width"
+    }
+    else if(collidePointCircle(mX,mY,this.x,this.y-this.h/2,11)){
+      document.documentElement.style.cursor = 'grabbing';
+      this.pressed = true;
+      this.typePressed = "-height"
+    }
+    else if (this.collide(mX,mY)){
+      this.pressed = true;
+      this.typePressed = "arc"
+    }
+    if(this.pressed){
+      this.lastPosition = new Position(mX,mY);
+    }
+    return this.pressed;
+  }
+
+  mouseDragged(mX,mY) {
+    let changeX = mX-this.lastPosition.x;
+    let changeY = mY-this.lastPosition.y;
+
+    if (this.pressed) {
+      switch(this.typePressed){
+        case "width":
+          this.w += changeX;
+          break;
+        case "height":
+          this.h += changeY;
+          break;
+        case "-width":
+          this.w -= changeX;
+          break;
+        case "-height":
+          this.h -= changeY;
+          break;
+        default:
+          this.x += changeX;
+          this.y += changeY;
+          break;
+      }
+      this.lastPosition = new Position(mX,mY);
+    }
+  }
+
+  mouseReleased(mX,mY) {
+    if (this.pressed){
+      this.pressed = false;
+      this.typePressed = null;
+      return true;
+    }
+    return false;
+  }
+
+
 }
 
 export class Circle extends DrawP5 {

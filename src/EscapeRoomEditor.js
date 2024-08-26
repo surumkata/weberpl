@@ -22,7 +22,7 @@ import './Navebar.css'
 import Footer from './Footer';
 
 import { jsPDF } from 'jspdf';
-import { Circle, Ellipse, Line, Point, Quad, Rect, Triangle, View, ViewSketch } from './components/model/view';
+import { Arc, Circle, Ellipse, Line, Point, Quad, Rect, Triangle, View, ViewSketch } from './components/model/view';
 
 function EscapeRoomEditor() {
 
@@ -538,6 +538,30 @@ function EscapeRoomEditor() {
 
     traverseBlocks(objectBlocks);
   }
+
+  const updateArc = (objectId,viewId,quadId,newx,newy,neww,newh) => {
+    const objectBlocks = workspaceRef.current.getBlocksByType('object');
+
+    const traverseBlocks = (blocks) => {
+      blocks.forEach(block => {
+        if (block.getFieldValue('ID') === objectId && block.type === 'object') {
+          traverseBlocks(block.getChildren(false)); // Recurse into child blocks
+        } else if (block.getFieldValue('ID') === viewId && block.type === 'view_draw') {
+          traverseBlocks(block.getChildren(false)); // Recurse into child blocks
+        } else if (block.getFieldValue('ID') === quadId && block.type === 'draw_arc') {
+          block.setFieldValue(newx, 'X');
+          block.setFieldValue(newy, 'Y');
+          block.setFieldValue(neww, 'W');
+          block.setFieldValue(newh, 'H');
+        } else {
+          // Continue traversing for other children
+          traverseBlocks(block.getChildren(false));
+        }
+      });
+    };
+
+    traverseBlocks(objectBlocks);
+  }
   
 
   function sketch(p5){
@@ -736,7 +760,12 @@ function EscapeRoomEditor() {
                         let circle_newd = draw.d* 1/SCALE_EDIT;
                         updateCircle(objectId,obj.currentView,draw.id,circle_newx,circle_newy,circle_newd);
                         break;
-                        break;
+                      case Arc:
+                        let arc_newx = draw.x* 1/SCALE_EDIT;
+                        let arc_newy = draw.y* 1/SCALE_EDIT-HEIGHT_INV;
+                        let arc_neww = draw.w* 1/SCALE_EDIT;
+                        let arc_newh = draw.h* 1/SCALE_EDIT;
+                        updateArc(objectId,obj.currentView,draw.id,arc_newx,arc_newy,arc_neww,arc_newh);
                       default:
                         break;
                     }
