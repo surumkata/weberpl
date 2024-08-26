@@ -336,7 +336,7 @@ javascriptGenerator.forBlock['view'] = function(block, generator) {
     "size" : sizeObject,
     "turn" : {"x" : false, "y" : false},
     "hitbox_type" : hitboxType,
-    "hitboxs" : hitboxObject
+    "hitboxes" : hitboxObject
   }
 
   return JSON.stringify(code, null, 2); // Retornar o JSON como string formatada

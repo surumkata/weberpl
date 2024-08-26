@@ -155,6 +155,7 @@ function loadSketch(id,draws){
 
 function loadAdvancedHitbox(draws){
     var hitboxes = []
+    console.log(draws);
     draws.forEach(hitbox => {
         switch(hitbox.type) {
             case "RECT":
@@ -197,6 +198,7 @@ function loadHitboxes(view){
         case "NO":
             break;
         case "ADVANCED":
+            console.log("ola")
             hitboxes = loadAdvancedHitbox(view.hitboxes);
             break;
         default:

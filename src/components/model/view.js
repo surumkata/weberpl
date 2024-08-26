@@ -182,12 +182,16 @@ export class ViewSketch {
   }
 
   mouseMoved(mX,mY) {
+    let hover = false;
     for (var draw in this.draws){
-      var hover = this.draws[draw].mouseMoved(mX,mY);
       if(hover){
-        return true;
+        this.draws[draw].setHoverFalse();
+      }
+      else {
+        hover = this.draws[draw].mouseMoved(mX,mY);
       }
     }
+    return hover;
   }
   mousePressed(mX,mY) {
     for (var draw in this.draws){
@@ -223,6 +227,7 @@ export class ViewSketch {
 export class DrawP5 {
   constructor(id){
     this.id = id;
+    this.hover = false;
   }
 
   draw(p5){
@@ -234,6 +239,9 @@ export class DrawP5 {
   mouseDragged(mX,mY) {}
   mouseReleased(mX,mY) {return false;}
   shiftReleased(){}
+  setHoverFalse(){
+    this.hover = false;
+  }
 }
 
 export class Rect extends DrawP5 {
@@ -805,13 +813,13 @@ export class Quad extends DrawP5 {
     this.y3 = y3;
     this.x4 = x4;
     this.y4 = y4;
-    this.hover = false;
     this.vertices = [
       {x:x1,y:y1},
       {x:x2,y:y2},
       {x:x3,y:y3},
       {x:x4,y:y4},
     ]
+    this.hover = false;
     this.pressed = false;
     this.typePressed = null;
     this.lastPosition = new Position(0,0);
@@ -969,10 +977,113 @@ export class Triangle extends DrawP5 {
     this.y2 = y2;
     this.x3 = x3;
     this.y3 = y3; 
+    this.hover = false;
+    this.pressed = false;
+    this.typePressed = null;
+    this.lastPosition = new Position(0,0);
   }
 
   draw(p5){
     p5.triangle(this.x1, this.y1, this.x2, this.y2, this.x3, this.y3);
+    if(this.hover){
+      p5.push();
+      p5.fill(255,0,0);
+      p5.noStroke();
+      p5.circle(this.x1,this.y1,10);
+      p5.circle(this.x2,this.y2,10);
+      p5.circle(this.x3,this.y3,10);
+      p5.pop();
+    }
+  }
+
+  mouseMoved(mX,mY) {
+    if(collidePointCircle(mX,mY,this.x1,this.y1,11)){
+      this.hover = true
+      document.documentElement.style.cursor = 'grab';
+    }
+    else if(collidePointCircle(mX,mY,this.x2,this.y2,11)){
+      this.hover = true
+      document.documentElement.style.cursor = 'grab';
+    }
+    else if(collidePointCircle(mX,mY,this.x3,this.y3,11)){
+      this.hover = true
+      document.documentElement.style.cursor = 'grab';
+    }
+    else if (collidePointTriangle(mX,mY,this.x1,this.y1,this.x2,this.y2,this.x3,this.y3)){
+      this.hover = true
+      document.documentElement.style.cursor = 'move';
+    }
+    else {
+      this.hover = false
+      document.documentElement.style.cursor = 'default';
+    }
+    return this.hover
+  }
+
+  mousePressed(mX,mY) {
+    if(collidePointCircle(mX,mY,this.x1,this.y1,11)){
+      document.documentElement.style.cursor = 'grabbing';
+      this.pressed = true;
+      this.typePressed = "point1"
+    }
+    else if(collidePointCircle(mX,mY,this.x2,this.y2,11)){
+      document.documentElement.style.cursor = 'grabbing';
+      this.pressed = true;
+      this.typePressed = "point2"
+    }
+    else if(collidePointCircle(mX,mY,this.x3,this.y3,11)){
+      document.documentElement.style.cursor = 'grabbing';
+      this.pressed = true;
+      this.typePressed = "point3"
+    }
+    else if (collidePointTriangle(mX,mY,this.x1,this.y1,this.x2,this.y2,this.x3,this.y3)){
+      this.pressed = true;
+      this.typePressed = "triangle"
+    }
+    if(this.pressed){
+      this.lastPosition = new Position(mX,mY);
+    }
+    return this.pressed;
+  }
+
+  mouseDragged(mX,mY) {
+    let changeX = mX-this.lastPosition.x;
+    let changeY = mY-this.lastPosition.y;
+
+    if (this.pressed) {
+      switch(this.typePressed){
+        case "point1":
+          this.x1 += changeX;
+          this.y1 += changeY;
+          break;
+        case "point2":
+          this.x2 += changeX;
+          this.y2 += changeY;
+          break;
+        case "point3":
+          this.x3 += changeX;
+          this.y3 += changeY;
+          break;
+        default:
+          this.x1 += changeX;
+          this.y1 += changeY;
+          this.x2 += changeX;
+          this.y2 += changeY;
+          this.x3 += changeX;
+          this.y3 += changeY;
+          break;
+      }
+      this.lastPosition = new Position(mX,mY);
+    }
+  }
+
+  mouseReleased(mX,mY) {
+    if (this.pressed){
+      this.pressed = false;
+      this.typePressed = null;
+      return true;
+    }
+    return false;
   }
 }
 
@@ -1004,10 +1115,125 @@ export class Circle extends DrawP5 {
     this.x = x;
     this.y = y;
     this.d = d;
+    this.hover = false;
+    this.pressed = false;
+    this.typePressed = null;
+    this.lastPosition = new Position(0,0);
   }
 
   draw(p5){
     p5.circle(this.x, this.y, this.d);
+    if(this.hover){
+      p5.push();
+      p5.fill(255,0,0);
+      p5.noStroke();
+      p5.circle(this.x+this.d/2,this.y,10);
+      p5.circle(this.x,this.y+this.d/2,10);
+      p5.circle(this.x-this.d/2,this.y,10);
+      p5.circle(this.x,this.y-this.d/2,10);
+      p5.stroke(255,0,0);
+      p5.strokeWeight(2);
+      p5.line(this.x,this.y,this.x+this.d/2,this.y);
+      p5.line(this.x,this.y,this.x,this.y+this.d/2);
+      p5.line(this.x,this.y,this.x-this.d/2,this.y);
+      p5.line(this.x,this.y,this.x,this.y-this.d/2);
+      p5.pop();
+    }
+  }
+
+  mouseMoved(mX,mY) {
+    if(collidePointCircle(mX,mY,this.x+this.d/2,this.y,11)){
+      this.hover = true
+      document.documentElement.style.cursor = 'grab';
+    }
+    else if(collidePointCircle(mX,mY,this.x,this.y+this.d/2,11)){
+      this.hover = true
+      document.documentElement.style.cursor = 'grab';
+    }
+    else if(collidePointCircle(mX,mY,this.x-this.d/2,this.y,11)){
+      this.hover = true
+      document.documentElement.style.cursor = 'grab';
+    }
+    else if(collidePointCircle(mX,mY,this.x,this.y-this.d/2,11)){
+      this.hover = true
+      document.documentElement.style.cursor = 'grab';
+    }
+    else if (collidePointCircle(mX,mY,this.x,this.y,this.d)){
+      this.hover = true
+      document.documentElement.style.cursor = 'move';
+    }
+    else {
+      this.hover = false
+      document.documentElement.style.cursor = 'default';
+    }
+    return this.hover
+  }
+
+  mousePressed(mX,mY) {
+    if(collidePointCircle(mX,mY,this.x+this.d/2,this.y,11)){
+      document.documentElement.style.cursor = 'grabbing';
+      this.pressed = true;
+      this.typePressed = "width"
+    }
+    else if(collidePointCircle(mX,mY,this.x,this.y+this.d/2,11)){
+      document.documentElement.style.cursor = 'grabbing';
+      this.pressed = true;
+      this.typePressed = "height"
+    }
+    else if(collidePointCircle(mX,mY,this.x-this.d/2,this.y,11)){
+      document.documentElement.style.cursor = 'grabbing';
+      this.pressed = true;
+      this.typePressed = "-width"
+    }
+    else if(collidePointCircle(mX,mY,this.x,this.y-this.d/2,11)){
+      document.documentElement.style.cursor = 'grabbing';
+      this.pressed = true;
+      this.typePressed = "-height"
+    }
+    else if (collidePointCircle(mX,mY,this.x,this.y,this.d)){
+      this.pressed = true;
+      this.typePressed = "circle"
+    }
+    if(this.pressed){
+      this.lastPosition = new Position(mX,mY);
+    }
+    return this.pressed;
+  }
+
+  mouseDragged(mX,mY) {
+    let changeX = mX-this.lastPosition.x;
+    let changeY = mY-this.lastPosition.y;
+
+    if (this.pressed) {
+      switch(this.typePressed){
+        case "width":
+          this.d += changeX;
+          break;
+        case "height":
+          this.d += changeY;
+          break;
+        case "-width":
+          this.d -= changeX;
+          break;
+        case "-height":
+          this.d -= changeY;
+          break;
+        default:
+          this.x += changeX;
+          this.y += changeY;
+          break;
+      }
+      this.lastPosition = new Position(mX,mY);
+    }
+  }
+
+  mouseReleased(mX,mY) {
+    if (this.pressed){
+      this.pressed = false;
+      this.typePressed = null;
+      return true;
+    }
+    return false;
   }
 }
 
@@ -1018,11 +1244,127 @@ export class Ellipse extends DrawP5 {
     this.y = y;
     this.w = w;
     this.h = h;
+    this.hover = false;
+    this.pressed = false;
+    this.typePressed = null;
+    this.lastPosition = new Position(0,0);
   }
 
   draw(p5){
     p5.ellipse(this.x, this.y, this.w, this.h);
+    if(this.hover){
+      p5.push();
+      p5.fill(255,0,0);
+      p5.noStroke();
+      p5.circle(this.x+this.w/2,this.y,10);
+      p5.circle(this.x,this.y+this.h/2,10);
+      p5.circle(this.x-this.w/2,this.y,10);
+      p5.circle(this.x,this.y-this.h/2,10);
+      p5.stroke(255,0,0);
+      p5.strokeWeight(2);
+      p5.line(this.x,this.y,this.x+this.w/2,this.y);
+      p5.line(this.x,this.y,this.x,this.y+this.h/2);
+      p5.line(this.x,this.y,this.x-this.w/2,this.y);
+      p5.line(this.x,this.y,this.x,this.y-this.h/2);
+      p5.pop();
+    }
   }
+
+  mouseMoved(mX,mY) {
+    if(collidePointCircle(mX,mY,this.x+this.w/2,this.y,11)){
+      this.hover = true
+      document.documentElement.style.cursor = 'grab';
+    }
+    else if(collidePointCircle(mX,mY,this.x,this.y+this.h/2,11)){
+      this.hover = true
+      document.documentElement.style.cursor = 'grab';
+    }
+    else if(collidePointCircle(mX,mY,this.x-this.w/2,this.y,11)){
+      this.hover = true
+      document.documentElement.style.cursor = 'grab';
+    }
+    else if(collidePointCircle(mX,mY,this.x,this.y-this.h/2,11)){
+      this.hover = true
+      document.documentElement.style.cursor = 'grab';
+    }
+    else if (collidePointEllipse(mX,mY,this.x,this.y,this.w,this.h)){
+      this.hover = true
+      document.documentElement.style.cursor = 'move';
+    }
+    else {
+      this.hover = false
+      document.documentElement.style.cursor = 'default';
+    }
+    return this.hover
+  }
+
+  mousePressed(mX,mY) {
+    if(collidePointCircle(mX,mY,this.x+this.w/2,this.y,11)){
+      document.documentElement.style.cursor = 'grabbing';
+      this.pressed = true;
+      this.typePressed = "width"
+    }
+    else if(collidePointCircle(mX,mY,this.x,this.y+this.h/2,11)){
+      document.documentElement.style.cursor = 'grabbing';
+      this.pressed = true;
+      this.typePressed = "height"
+    }
+    else if(collidePointCircle(mX,mY,this.x-this.w/2,this.y,11)){
+      document.documentElement.style.cursor = 'grabbing';
+      this.pressed = true;
+      this.typePressed = "-width"
+    }
+    else if(collidePointCircle(mX,mY,this.x,this.y-this.h/2,11)){
+      document.documentElement.style.cursor = 'grabbing';
+      this.pressed = true;
+      this.typePressed = "-height"
+    }
+    else if (collidePointEllipse(mX,mY,this.x,this.y,this.w,this.h)){
+      this.pressed = true;
+      this.typePressed = "ellipse"
+    }
+    if(this.pressed){
+      this.lastPosition = new Position(mX,mY);
+    }
+    return this.pressed;
+  }
+
+  mouseDragged(mX,mY) {
+    let changeX = mX-this.lastPosition.x;
+    let changeY = mY-this.lastPosition.y;
+
+    if (this.pressed) {
+      switch(this.typePressed){
+        case "width":
+          this.w += changeX;
+          break;
+        case "height":
+          this.h += changeY;
+          break;
+        case "-width":
+          this.w -= changeX;
+          break;
+        case "-height":
+          this.h -= changeY;
+          break;
+        default:
+          this.x += changeX;
+          this.y += changeY;
+          break;
+      }
+      this.lastPosition = new Position(mX,mY);
+    }
+  }
+
+  mouseReleased(mX,mY) {
+    if (this.pressed){
+      this.pressed = false;
+      this.typePressed = null;
+      return true;
+    }
+    return false;
+  }
+
 }
 
 export class Line extends DrawP5 {
@@ -1032,10 +1374,97 @@ export class Line extends DrawP5 {
     this.y1 = y1;
     this.x2 = x2;
     this.y2 = y2;
+    this.hover = false;
+    this.pressed = false;
+    this.typePressed = null;
+    this.lastPosition = new Position(0,0);
   }
 
   draw(p5){
     p5.line(this.x1, this.y1, this.x2, this.y2);
+    if(this.hover){
+      p5.push();
+      p5.fill(255,0,0);
+      p5.noStroke();
+      p5.circle(this.x1,this.y1,10);
+      p5.circle(this.x2,this.y2,10);
+      p5.pop();
+    }
+  }
+
+  mouseMoved(mX,mY) {
+    if(collidePointCircle(mX,mY,this.x1,this.y1,11)){
+      this.hover = true
+      document.documentElement.style.cursor = 'grab';
+    }
+    else if(collidePointCircle(mX,mY,this.x2,this.y2,11)){
+      this.hover = true
+      document.documentElement.style.cursor = 'grab';
+    }
+    else if (collidePointLine(mX,mY,this.x1,this.y1,this.x2,this.y2)){
+      this.hover = true
+      document.documentElement.style.cursor = 'move';
+    }
+    else {
+      this.hover = false
+      document.documentElement.style.cursor = 'default';
+    }
+    return this.hover
+  }
+
+  mousePressed(mX,mY) {
+    if(collidePointCircle(mX,mY,this.x1,this.y1,11)){
+      document.documentElement.style.cursor = 'grabbing';
+      this.pressed = true;
+      this.typePressed = "point1"
+    }
+    else if(collidePointCircle(mX,mY,this.x2,this.y2,11)){
+      document.documentElement.style.cursor = 'grabbing';
+      this.pressed = true;
+      this.typePressed = "point2"
+    }
+    else if (collidePointLine(mX,mY,this.x1,this.y1,this.x2,this.y2)){
+      this.pressed = true;
+      this.typePressed = "line"
+    }
+    if(this.pressed){
+      this.lastPosition = new Position(mX,mY);
+    }
+    return this.pressed;
+  }
+
+  mouseDragged(mX,mY) {
+    let changeX = mX-this.lastPosition.x;
+    let changeY = mY-this.lastPosition.y;
+
+    if (this.pressed) {
+      switch(this.typePressed){
+        case "point1":
+          this.x1 += changeX;
+          this.y1 += changeY;
+          break;
+        case "point2":
+          this.x2 += changeX;
+          this.y2 += changeY;
+          break;
+        default:
+          this.x1 += changeX;
+          this.y1 += changeY;
+          this.x2 += changeX;
+          this.y2 += changeY;
+          break;
+      }
+      this.lastPosition = new Position(mX,mY);
+    }
+  }
+
+  mouseReleased(mX,mY) {
+    if (this.pressed){
+      this.pressed = false;
+      this.typePressed = null;
+      return true;
+    }
+    return false;
   }
 }
 
@@ -1044,10 +1473,62 @@ export class Point extends DrawP5 {
     super(id);
     this.x = x;
     this.y = y;
+    this.hover = false;
+    this.pressed = false;
+    this.lastPosition = new Position(0,0);
   }
 
   draw(p5){
     p5.point(this.x, this.y);
+    if(this.hover){
+      p5.push();
+      p5.fill(255,0,0);
+      p5.noStroke();
+      p5.circle(this.x,this.y,10);
+      p5.pop();
+    }
+  }
+
+  mouseMoved(mX,mY) {
+    if(collidePointCircle(mX,mY,this.x,this.y,11)){
+      this.hover = true
+      document.documentElement.style.cursor = 'grab';
+    }
+    else {
+      this.hover = false
+      document.documentElement.style.cursor = 'default';
+    }
+    return this.hover
+  }
+
+  mousePressed(mX,mY) {
+    if(collidePointCircle(mX,mY,this.x,this.y,11)){
+      document.documentElement.style.cursor = 'grabbing';
+      this.pressed = true;
+    }
+    if(this.pressed){
+      this.lastPosition = new Position(mX,mY);
+    }
+    return this.pressed;
+  }
+
+  mouseDragged(mX,mY) {
+    let changeX = mX-this.lastPosition.x;
+    let changeY = mY-this.lastPosition.y;
+
+    if (this.pressed) {
+      this.x += changeX;
+      this.y += changeY;
+      this.lastPosition = new Position(mX,mY);
+    }
+  }
+
+  mouseReleased(mX,mY) {
+    if (this.pressed){
+      this.pressed = false;
+      return true;
+    }
+    return false;
   }
 }
 

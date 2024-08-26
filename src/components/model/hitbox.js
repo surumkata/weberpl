@@ -155,7 +155,7 @@ export class HitboxArc extends Hitbox {
 }
 
 export class HitboxCircle extends Hitbox {
-    constructor(id,x,y,d){
+    constructor(x,y,d){
         super("CIRCLE");
         this.x = x;
         this.y = y;
@@ -172,8 +172,8 @@ export class HitboxCircle extends Hitbox {
 }
 
 export class HitboxLine extends Hitbox {
-    constructor(id,x1,y1,x2,y2){
-        super(id);
+    constructor(x1,y1,x2,y2){
+        super('LINE');
         this.x1 = x1;
         this.y1 = y1;
         this.x2 = x2;
@@ -190,8 +190,8 @@ export class HitboxLine extends Hitbox {
 }
 
 export class HitboxPoint extends Hitbox {
-    constructor(id,x,y){
-        super(id);
+    constructor(x,y){
+        super('POINT');
         this.x = x;
         this.y = y;
     }
@@ -208,6 +208,7 @@ export class HitboxPoint extends Hitbox {
 
 export class HitboxEllipse extends Hitbox {
     constructor(x,y,w,h){
+        super('ELLIPSE');
         this.x = x;
         this.y = y;
         this.w = w;

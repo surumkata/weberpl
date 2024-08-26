@@ -22,7 +22,7 @@ import './Navebar.css'
 import Footer from './Footer';
 
 import { jsPDF } from 'jspdf';
-import { Quad, Rect, View, ViewSketch } from './components/model/view';
+import { Circle, Ellipse, Line, Point, Quad, Rect, Triangle, View, ViewSketch } from './components/model/view';
 
 function EscapeRoomEditor() {
 
@@ -135,8 +135,8 @@ function EscapeRoomEditor() {
             draw.y2 *= SCALE_EDIT;
             break;
           case "POINT":
-            draw.x1 *= SCALE_EDIT;
-            draw.y1 *= SCALE_EDIT;
+            draw.x *= SCALE_EDIT;
+            draw.y *= SCALE_EDIT;
             break;
           case "ARC":
             draw.x *= SCALE_EDIT;
@@ -420,6 +420,126 @@ function EscapeRoomEditor() {
     traverseBlocks(objectBlocks);
   }
 
+  const updateTriangle = (objectId,viewId,quadId,newx1,newy1,newx2,newy2,newx3,newy3) => {
+    const objectBlocks = workspaceRef.current.getBlocksByType('object');
+
+    const traverseBlocks = (blocks) => {
+      blocks.forEach(block => {
+        if (block.getFieldValue('ID') === objectId && block.type === 'object') {
+          traverseBlocks(block.getChildren(false)); // Recurse into child blocks
+        } else if (block.getFieldValue('ID') === viewId && block.type === 'view_draw') {
+          traverseBlocks(block.getChildren(false)); // Recurse into child blocks
+        } else if (block.getFieldValue('ID') === quadId && block.type === 'draw_triangle') {
+          block.setFieldValue(newx1, 'X1');
+          block.setFieldValue(newy1, 'Y1');
+          block.setFieldValue(newx2, 'X2');
+          block.setFieldValue(newy2, 'Y2');
+          block.setFieldValue(newx3, 'X3');
+          block.setFieldValue(newy3, 'Y3');
+        } else {
+          // Continue traversing for other children
+          traverseBlocks(block.getChildren(false));
+        }
+      });
+    };
+
+    traverseBlocks(objectBlocks);
+  }
+
+  const updateLine = (objectId,viewId,quadId,newx1,newy1,newx2,newy2) => {
+    const objectBlocks = workspaceRef.current.getBlocksByType('object');
+
+    const traverseBlocks = (blocks) => {
+      blocks.forEach(block => {
+        if (block.getFieldValue('ID') === objectId && block.type === 'object') {
+          traverseBlocks(block.getChildren(false)); // Recurse into child blocks
+        } else if (block.getFieldValue('ID') === viewId && block.type === 'view_draw') {
+          traverseBlocks(block.getChildren(false)); // Recurse into child blocks
+        } else if (block.getFieldValue('ID') === quadId && block.type === 'draw_line') {
+          block.setFieldValue(newx1, 'X1');
+          block.setFieldValue(newy1, 'Y1');
+          block.setFieldValue(newx2, 'X2');
+          block.setFieldValue(newy2, 'Y2');
+        } else {
+          // Continue traversing for other children
+          traverseBlocks(block.getChildren(false));
+        }
+      });
+    };
+
+    traverseBlocks(objectBlocks);
+  }
+
+  const updatePoint = (objectId,viewId,quadId,newx,newy) => {
+    const objectBlocks = workspaceRef.current.getBlocksByType('object');
+
+    const traverseBlocks = (blocks) => {
+      blocks.forEach(block => {
+        if (block.getFieldValue('ID') === objectId && block.type === 'object') {
+          traverseBlocks(block.getChildren(false)); // Recurse into child blocks
+        } else if (block.getFieldValue('ID') === viewId && block.type === 'view_draw') {
+          traverseBlocks(block.getChildren(false)); // Recurse into child blocks
+        } else if (block.getFieldValue('ID') === quadId && block.type === 'draw_point') {
+          block.setFieldValue(newx, 'X');
+          block.setFieldValue(newy, 'Y');
+        } else {
+          // Continue traversing for other children
+          traverseBlocks(block.getChildren(false));
+        }
+      });
+    };
+
+    traverseBlocks(objectBlocks);
+  }
+
+  const updateCircle = (objectId,viewId,quadId,newx,newy,newd) => {
+    const objectBlocks = workspaceRef.current.getBlocksByType('object');
+
+    const traverseBlocks = (blocks) => {
+      blocks.forEach(block => {
+        if (block.getFieldValue('ID') === objectId && block.type === 'object') {
+          traverseBlocks(block.getChildren(false)); // Recurse into child blocks
+        } else if (block.getFieldValue('ID') === viewId && block.type === 'view_draw') {
+          traverseBlocks(block.getChildren(false)); // Recurse into child blocks
+        } else if (block.getFieldValue('ID') === quadId && block.type === 'draw_circle') {
+          block.setFieldValue(newx, 'X');
+          block.setFieldValue(newy, 'Y');
+          block.setFieldValue(newd, 'D');
+        } else {
+          // Continue traversing for other children
+          traverseBlocks(block.getChildren(false));
+        }
+      });
+    };
+
+    traverseBlocks(objectBlocks);
+  }
+
+  const updateEllipse = (objectId,viewId,quadId,newx,newy,neww,newh) => {
+    const objectBlocks = workspaceRef.current.getBlocksByType('object');
+
+    const traverseBlocks = (blocks) => {
+      blocks.forEach(block => {
+        if (block.getFieldValue('ID') === objectId && block.type === 'object') {
+          traverseBlocks(block.getChildren(false)); // Recurse into child blocks
+        } else if (block.getFieldValue('ID') === viewId && block.type === 'view_draw') {
+          traverseBlocks(block.getChildren(false)); // Recurse into child blocks
+        } else if (block.getFieldValue('ID') === quadId && block.type === 'draw_ellipse') {
+          block.setFieldValue(newx, 'X');
+          block.setFieldValue(newy, 'Y');
+          block.setFieldValue(neww, 'W');
+          block.setFieldValue(newh, 'H');
+        } else {
+          // Continue traversing for other children
+          traverseBlocks(block.getChildren(false));
+        }
+      });
+    };
+
+    traverseBlocks(objectBlocks);
+  }
+  
+
   function sketch(p5){
     p5.setup = (canvasParentRef) => {
       p5.createCanvas(WIDTH * SCALE_EDIT, (HEIGHT+HEIGHT_INV) * SCALE_EDIT).parent(canvasParentRef);
@@ -573,15 +693,49 @@ function EscapeRoomEditor() {
                         updateRect(objectId,obj.currentView,draw.id,newx,newy,neww,newh);
                         break;
                       case Quad:
-                        let newx1 = draw.x1* 1/SCALE_EDIT;
-                        let newy1 = draw.y1* 1/SCALE_EDIT-HEIGHT_INV;
-                        let newx2 = draw.x2* 1/SCALE_EDIT;
-                        let newy2 = draw.y2* 1/SCALE_EDIT-HEIGHT_INV;
-                        let newx3 = draw.x3* 1/SCALE_EDIT;
-                        let newy3 = draw.y3* 1/SCALE_EDIT-HEIGHT_INV;
-                        let newx4 = draw.x4* 1/SCALE_EDIT;
-                        let newy4 = draw.y4* 1/SCALE_EDIT-HEIGHT_INV;
-                        updateQuad(objectId,obj.currentView,draw.id,newx1,newy1,newx2,newy2,newx3,newy3,newx4,newy4);
+                        let quad_newx1 = draw.x1* 1/SCALE_EDIT;
+                        let quad_newy1 = draw.y1* 1/SCALE_EDIT-HEIGHT_INV;
+                        let quad_newx2 = draw.x2* 1/SCALE_EDIT;
+                        let quad_newy2 = draw.y2* 1/SCALE_EDIT-HEIGHT_INV;
+                        let quad_newx3 = draw.x3* 1/SCALE_EDIT;
+                        let quad_newy3 = draw.y3* 1/SCALE_EDIT-HEIGHT_INV;
+                        let quad_newx4 = draw.x4* 1/SCALE_EDIT;
+                        let quad_newy4 = draw.y4* 1/SCALE_EDIT-HEIGHT_INV;
+                        updateQuad(objectId,obj.currentView,draw.id,quad_newx1,quad_newy1,quad_newx2,quad_newy2,quad_newx3,quad_newy3,quad_newx4,quad_newy4);
+                        break;
+                      case Triangle:
+                        let triangle_newx1 = draw.x1* 1/SCALE_EDIT;
+                        let triangle_newy1 = draw.y1* 1/SCALE_EDIT-HEIGHT_INV;
+                        let triangle_newx2 = draw.x2* 1/SCALE_EDIT;
+                        let triangle_newy2 = draw.y2* 1/SCALE_EDIT-HEIGHT_INV;
+                        let triangle_newx3 = draw.x3* 1/SCALE_EDIT;
+                        let triangle_newy3 = draw.y3* 1/SCALE_EDIT-HEIGHT_INV;
+                        updateTriangle(objectId,obj.currentView,draw.id,triangle_newx1,triangle_newy1,triangle_newx2,triangle_newy2,triangle_newx3,triangle_newy3);
+                        break;
+                      case Line:
+                        let line_newx1 = draw.x1* 1/SCALE_EDIT;
+                        let line_newy1 = draw.y1* 1/SCALE_EDIT-HEIGHT_INV;
+                        let line_newx2 = draw.x2* 1/SCALE_EDIT;
+                        let line_newy2 = draw.y2* 1/SCALE_EDIT-HEIGHT_INV;
+                        updateLine(objectId,obj.currentView,draw.id,line_newx1,line_newy1,line_newx2,line_newy2);
+                        break;
+                      case Point:
+                        let point_newx = draw.x* 1/SCALE_EDIT;
+                        let point_newy = draw.y* 1/SCALE_EDIT-HEIGHT_INV;
+                        updatePoint(objectId,obj.currentView,draw.id,point_newx,point_newy);
+                      case Ellipse:
+                        let ellipse_newx = draw.x* 1/SCALE_EDIT;
+                        let ellipse_newy = draw.y* 1/SCALE_EDIT-HEIGHT_INV;
+                        let ellipse_neww = draw.w* 1/SCALE_EDIT;
+                        let ellipse_newh = draw.h* 1/SCALE_EDIT;
+                        updateEllipse(objectId,obj.currentView,draw.id,ellipse_newx,ellipse_newy,ellipse_neww,ellipse_newh);
+                        break;
+                      case Circle:
+                        let circle_newx = draw.x* 1/SCALE_EDIT;
+                        let circle_newy = draw.y* 1/SCALE_EDIT-HEIGHT_INV;
+                        let circle_newd = draw.d* 1/SCALE_EDIT;
+                        updateCircle(objectId,obj.currentView,draw.id,circle_newx,circle_newy,circle_newd);
+                        break;
                         break;
                       default:
                         break;
