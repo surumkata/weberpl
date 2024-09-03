@@ -69,24 +69,17 @@ export class Object {
     }
     //TODO: draw hitboxes if true
     if (hitboxes){
-        p5.push();
-        let alpha = 0.5;
-        p5.fill(`rgba(0, 255, 0, ${alpha})`);
-        if (this.currentView !== null && this.currentView !== "null" && this.currentView in this.views){
-            this.views[this.currentView].drawHitbox(p5);
+        for (var view in this.views){
+            this.views[view].showHitboxes = true;
         }
-        if(invisibleViews!==0){
-            if(invisibleViews === 1){
-                alpha*=0.5;
+    }
+    else{
+        for (var view in this.views){
+            if(!this.views[view].showHitboxes){
+                break;
             }
-            p5.fill(`rgba(0, 255, 0, ${alpha})`);
-            for (var view in this.views){
-                if(view !== "null" && view !== null && view !== this.currentView){
-                    this.views[view].drawHitbox(p5);
-                }
-            }
+            this.views[view].showHitboxes = false;
         }
-        p5.pop();
     }
   }
 }

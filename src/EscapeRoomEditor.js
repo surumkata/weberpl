@@ -17,12 +17,13 @@ import { WIDTH,HEIGHT,HEIGHT_INV, SCALE_EDIT } from './components/model/utils';
 import { validate } from './components/validate';
 import { load } from './components/model/load';
 
-import { Link } from 'react-router-dom';
 import './Navebar.css'
 import Footer from './Footer';
 
 import { jsPDF } from 'jspdf';
-import { Arc, Circle, Ellipse, Line, Point, Quad, Rect, Triangle, View, ViewSketch } from './components/model/view';
+
+import { View, ViewSketch } from './components/model/view';
+import { updateView,updateViewSketch, updateHitbox } from './components/updateBlocks';
 
 function EscapeRoomEditor() {
 
@@ -35,7 +36,7 @@ function EscapeRoomEditor() {
   const [transitionsIds, setTransitionsIds] = useState([]);
   const [scenariosIds, setScenariosIds] = useState(["ROOM"]);
   const [showInvisible, setInvisibleViews] = useState(0);
-  const [showHitboxs, setShowHitboxs] = useState(false);
+  const [showHitboxes, setShowHitboxes] = useState(false);
   const inputFileXML = useRef(null);
   const [currentScenario, setCurrentScenario] = useState("ROOM");
   const [scenariosImgs, setScenariosImgs] = useState({});
@@ -63,7 +64,7 @@ function EscapeRoomEditor() {
     move: null,
     oneBasedIndex: null,
     readOnly: null,
-    renderer: null,
+    renderer: 'zelos',
     rendererOverrides: null,
     rtl: null,
     scrollbars: null,
@@ -73,7 +74,13 @@ function EscapeRoomEditor() {
     trashcan: null,
     maxTrashcanContents: null,
     plugins: null,
-    zoom: null,
+    zoom: {controls: true,
+     wheel: true,
+     startScale: 0.7,
+     maxScale: 3,
+     minScale: 0.3,
+     scaleSpeed: 1.2,
+     pinch: true},
     parentWorkspace: null,
   };
 
@@ -81,86 +88,167 @@ function EscapeRoomEditor() {
     workspaceRef.current = workspace;  // Guardar a referência do workspace
   }, []);
 
+  const scaleToEditHitbox = (hitbox) => {
+    switch(hitbox.type) {
+      case "RECT":
+        hitbox.x *= SCALE_EDIT;
+        hitbox.y *= SCALE_EDIT;
+        hitbox.w *= SCALE_EDIT;
+        hitbox.h *= SCALE_EDIT;
+        hitbox.tl *= SCALE_EDIT;
+        hitbox.tr *= SCALE_EDIT;
+        hitbox.br *= SCALE_EDIT;
+        hitbox.bl *= SCALE_EDIT;
+        break;
+      case "QUAD":
+        hitbox.x1 *= SCALE_EDIT;
+        hitbox.y1 *= SCALE_EDIT;
+        hitbox.x2 *= SCALE_EDIT;
+        hitbox.y2 *= SCALE_EDIT;
+        hitbox.x3 *= SCALE_EDIT;
+        hitbox.y3 *= SCALE_EDIT;
+        hitbox.x4 *= SCALE_EDIT;
+        hitbox.y4 *= SCALE_EDIT;
+        break;
+      case "SQUARE":
+        hitbox.x  *= SCALE_EDIT;
+        hitbox.y  *= SCALE_EDIT;
+        hitbox.s  *= SCALE_EDIT;
+        hitbox.tl *= SCALE_EDIT;
+        hitbox.tr *= SCALE_EDIT;
+        hitbox.br *= SCALE_EDIT;
+        hitbox.bl *= SCALE_EDIT;
+        break;
+      case "TRIANGLE":
+        hitbox.x1 *= SCALE_EDIT;
+        hitbox.y1 *= SCALE_EDIT;
+        hitbox.x2 *= SCALE_EDIT;
+        hitbox.y2 *= SCALE_EDIT;
+        hitbox.x3 *= SCALE_EDIT;
+        hitbox.y3 *= SCALE_EDIT; 
+        break;
+      case "LINE":
+        hitbox.x1 *= SCALE_EDIT;
+        hitbox.y1 *= SCALE_EDIT;
+        hitbox.x2 *= SCALE_EDIT;
+        hitbox.y2 *= SCALE_EDIT;
+        break;
+      case "POINT":
+        hitbox.x *= SCALE_EDIT;
+        hitbox.y *= SCALE_EDIT;
+        break;
+      case "ARC":
+        hitbox.x *= SCALE_EDIT;
+        hitbox.y *= SCALE_EDIT;
+        hitbox.w *= SCALE_EDIT;
+        hitbox.h *= SCALE_EDIT;
+        break;
+      case "CIRCLE":
+        hitbox.x *= SCALE_EDIT;
+        hitbox.y *= SCALE_EDIT;
+        hitbox.d *= SCALE_EDIT;
+        break;
+      case "ELLIPSE":
+        hitbox.x *= SCALE_EDIT;
+        hitbox.y *= SCALE_EDIT;
+        hitbox.w *= SCALE_EDIT;
+        hitbox.h *= SCALE_EDIT;
+        break;
+      default:
+        break;
+    }
+  }
+
+  const scaleToEditDraw = (draw) => {
+    switch(draw.type) {
+      case "RECT":
+        draw.x *= SCALE_EDIT;
+        draw.y *= SCALE_EDIT;
+        draw.w *= SCALE_EDIT;
+        draw.h *= SCALE_EDIT;
+        draw.tl *= SCALE_EDIT;
+        draw.tr *= SCALE_EDIT;
+        draw.br *= SCALE_EDIT;
+        draw.bl *= SCALE_EDIT;
+        break;
+      case "QUAD":
+        draw.x1 *= SCALE_EDIT;
+        draw.y1 *= SCALE_EDIT;
+        draw.x2 *= SCALE_EDIT;
+        draw.y2 *= SCALE_EDIT;
+        draw.x3 *= SCALE_EDIT;
+        draw.y3 *= SCALE_EDIT;
+        draw.x4 *= SCALE_EDIT;
+        draw.y4 *= SCALE_EDIT;
+        break;
+      case "SQUARE":
+        draw.x  *= SCALE_EDIT;
+        draw.y  *= SCALE_EDIT;
+        draw.s  *= SCALE_EDIT;
+        draw.tl *= SCALE_EDIT;
+        draw.tr *= SCALE_EDIT;
+        draw.br *= SCALE_EDIT;
+        draw.bl *= SCALE_EDIT;
+        break;
+      case "TRIANGLE":
+        draw.x1 *= SCALE_EDIT;
+        draw.y1 *= SCALE_EDIT;
+        draw.x2 *= SCALE_EDIT;
+        draw.y2 *= SCALE_EDIT;
+        draw.x3 *= SCALE_EDIT;
+        draw.y3 *= SCALE_EDIT; 
+        break;
+      case "LINE":
+        draw.x1 *= SCALE_EDIT;
+        draw.y1 *= SCALE_EDIT;
+        draw.x2 *= SCALE_EDIT;
+        draw.y2 *= SCALE_EDIT;
+        break;
+      case "POINT":
+        draw.x *= SCALE_EDIT;
+        draw.y *= SCALE_EDIT;
+        break;
+      case "ARC":
+        draw.x *= SCALE_EDIT;
+        draw.y *= SCALE_EDIT;
+        draw.w *= SCALE_EDIT;
+        draw.h *= SCALE_EDIT;
+        break;
+      case "CIRCLE":
+        draw.x *= SCALE_EDIT;
+        draw.y *= SCALE_EDIT;
+        draw.d *= SCALE_EDIT;
+        break;
+      case "ELLIPSE":
+        draw.x *= SCALE_EDIT;
+        draw.y *= SCALE_EDIT;
+        draw.w *= SCALE_EDIT;
+        draw.h *= SCALE_EDIT;
+        break;
+      case "STROKE":
+        draw.w *= SCALE_EDIT;
+        break;
+      default:
+        break;
+    }
+  }
+
   const scaleToEditView = (view) => {
     if (view.type == "VIEW_IMAGE"){
       view.position.x *= SCALE_EDIT;
       view.position.y *= SCALE_EDIT;
       view.size.x *= SCALE_EDIT;
       view.size.y *= SCALE_EDIT;
+      view.hitboxes.forEach(hitbox => {
+        scaleToEditHitbox(hitbox);
+      })
     }
     else if (view.type == "VIEW_SKETCH"){
       view.draws.forEach(draw => {
-        switch(draw.type) {
-          case "RECT":
-            draw.x *= SCALE_EDIT;
-            draw.y *= SCALE_EDIT;
-            draw.w *= SCALE_EDIT;
-            draw.h *= SCALE_EDIT;
-            draw.tl *= SCALE_EDIT;
-            draw.tr *= SCALE_EDIT;
-            draw.br *= SCALE_EDIT;
-            draw.bl *= SCALE_EDIT;
-            break;
-          case "QUAD":
-            draw.x1 *= SCALE_EDIT;
-            draw.y1 *= SCALE_EDIT;
-            draw.x2 *= SCALE_EDIT;
-            draw.y2 *= SCALE_EDIT;
-            draw.x3 *= SCALE_EDIT;
-            draw.y3 *= SCALE_EDIT;
-            draw.x4 *= SCALE_EDIT;
-            draw.y4 *= SCALE_EDIT;
-            break;
-          case "SQUARE":
-            draw.x  *= SCALE_EDIT;
-            draw.y  *= SCALE_EDIT;
-            draw.s  *= SCALE_EDIT;
-            draw.tl *= SCALE_EDIT;
-            draw.tr *= SCALE_EDIT;
-            draw.br *= SCALE_EDIT;
-            draw.bl *= SCALE_EDIT;
-            break;
-          case "TRIANGLE":
-            draw.x1 *= SCALE_EDIT;
-            draw.y1 *= SCALE_EDIT;
-            draw.x2 *= SCALE_EDIT;
-            draw.y2 *= SCALE_EDIT;
-            draw.x3 *= SCALE_EDIT;
-            draw.y3 *= SCALE_EDIT; 
-            break;
-          case "LINE":
-            draw.x1 *= SCALE_EDIT;
-            draw.y1 *= SCALE_EDIT;
-            draw.x2 *= SCALE_EDIT;
-            draw.y2 *= SCALE_EDIT;
-            break;
-          case "POINT":
-            draw.x *= SCALE_EDIT;
-            draw.y *= SCALE_EDIT;
-            break;
-          case "ARC":
-            draw.x *= SCALE_EDIT;
-            draw.y *= SCALE_EDIT;
-            draw.w *= SCALE_EDIT;
-            draw.h *= SCALE_EDIT;
-            break;
-          case "CIRCLE":
-            draw.x *= SCALE_EDIT;
-            draw.y *= SCALE_EDIT;
-            draw.d *= SCALE_EDIT;
-            break;
-          case "ELLIPSE":
-            draw.x *= SCALE_EDIT;
-            draw.y *= SCALE_EDIT;
-            draw.w *= SCALE_EDIT;
-            draw.h *= SCALE_EDIT;
-            break;
-          case "STROKE":
-            draw.w *= SCALE_EDIT;
-            break;
-          default:
-            break;
-        }
+        scaleToEditDraw(draw);
+      })
+      view.hitboxes.forEach(hitbox => {
+        scaleToEditHitbox(hitbox);
       })
     }
   }
@@ -330,240 +418,6 @@ function EscapeRoomEditor() {
     setEscapeRoom(null);
   }, []);
 
-  const updateViewPositionAndSize = (objectId, viewId, newPosx, newPosy, newSizex, newSizey) => {
-    const objectBlocks = workspaceRef.current.getBlocksByType('object');
-
-    objectBlocks.forEach(objectBlock => {
-      // 2. Verificar se este bloco 'object' tem o ID que estamos procurando
-      if (objectBlock.getFieldValue('ID') === objectId) {
-        // 3. Encontrar todos os sub-blocos do tipo 'view' dentro do bloco 'object'
-        var viewBlocks = objectBlock.getChildren(false).filter(childBlock => childBlock.type === 'view');
-        const turnBlocks = objectBlock.getChildren(false).filter(childBlock => childBlock.type === 'turn');
-
-
-        turnBlocks.forEach(turnBlock => {
-          const turnViewBlocks = turnBlock.getChildren(false).filter(childBlock => childBlock.type === 'view');
-          viewBlocks = viewBlocks.concat(turnViewBlocks);
-        });
-
-        viewBlocks.forEach(viewBlock => {
-          // 4. Verificar se este bloco 'view' tem o ID que estamos procurando
-          if (viewBlock.getFieldValue('ID') === viewId) {
-            // 5. Encontrar o sub-bloco 'position' dentro do bloco 'view'
-            const positionBlock = viewBlock.getChildren(false).find(childBlock => childBlock.type === 'position');
-            if (positionBlock) {
-              // 6. Alterar os valores dos campos 'x' e 'y'
-              positionBlock.setFieldValue(newPosx, 'x');
-              positionBlock.setFieldValue(newPosy, 'y');
-            }
-            const sizeBlock = viewBlock.getChildren(false).find(childBlock => childBlock.type === 'size');
-            if (sizeBlock) {
-              sizeBlock.setFieldValue(newSizex, 'x');
-              sizeBlock.setFieldValue(newSizey, 'y')
-            }
-          }
-        });
-
-      }
-    });
-  };
-
-  const updateRect = (objectId,viewId,rectId,newx,newy,neww,newh) => {
-    const objectBlocks = workspaceRef.current.getBlocksByType('object');
-
-    const traverseBlocks = (blocks) => {
-      blocks.forEach(block => {
-        if (block.getFieldValue('ID') === objectId && block.type === 'object') {
-          traverseBlocks(block.getChildren(false)); // Recurse into child blocks
-        } else if (block.getFieldValue('ID') === viewId && block.type === 'view_draw') {
-          traverseBlocks(block.getChildren(false)); // Recurse into child blocks
-        } else if (block.getFieldValue('ID') === rectId && block.type === 'draw_rect') {
-          block.setFieldValue(newx, 'X');
-          block.setFieldValue(newy, 'Y');
-          block.setFieldValue(neww, 'W');
-          block.setFieldValue(newh, 'H');
-        } else {
-          // Continue traversing for other children
-          traverseBlocks(block.getChildren(false));
-        }
-      });
-    };
-
-    traverseBlocks(objectBlocks);
-  }
-
-  const updateQuad = (objectId,viewId,quadId,newx1,newy1,newx2,newy2,newx3,newy3,newx4,newy4) => {
-    const objectBlocks = workspaceRef.current.getBlocksByType('object');
-
-    const traverseBlocks = (blocks) => {
-      blocks.forEach(block => {
-        if (block.getFieldValue('ID') === objectId && block.type === 'object') {
-          traverseBlocks(block.getChildren(false)); // Recurse into child blocks
-        } else if (block.getFieldValue('ID') === viewId && block.type === 'view_draw') {
-          traverseBlocks(block.getChildren(false)); // Recurse into child blocks
-        } else if (block.getFieldValue('ID') === quadId && block.type === 'draw_quad') {
-          block.setFieldValue(newx1, 'X1');
-          block.setFieldValue(newy1, 'Y1');
-          block.setFieldValue(newx2, 'X2');
-          block.setFieldValue(newy2, 'Y2');
-          block.setFieldValue(newx3, 'X3');
-          block.setFieldValue(newy3, 'Y3');
-          block.setFieldValue(newx4, 'X4');
-          block.setFieldValue(newy4, 'Y4');
-        } else {
-          // Continue traversing for other children
-          traverseBlocks(block.getChildren(false));
-        }
-      });
-    };
-
-    traverseBlocks(objectBlocks);
-  }
-
-  const updateTriangle = (objectId,viewId,quadId,newx1,newy1,newx2,newy2,newx3,newy3) => {
-    const objectBlocks = workspaceRef.current.getBlocksByType('object');
-
-    const traverseBlocks = (blocks) => {
-      blocks.forEach(block => {
-        if (block.getFieldValue('ID') === objectId && block.type === 'object') {
-          traverseBlocks(block.getChildren(false)); // Recurse into child blocks
-        } else if (block.getFieldValue('ID') === viewId && block.type === 'view_draw') {
-          traverseBlocks(block.getChildren(false)); // Recurse into child blocks
-        } else if (block.getFieldValue('ID') === quadId && block.type === 'draw_triangle') {
-          block.setFieldValue(newx1, 'X1');
-          block.setFieldValue(newy1, 'Y1');
-          block.setFieldValue(newx2, 'X2');
-          block.setFieldValue(newy2, 'Y2');
-          block.setFieldValue(newx3, 'X3');
-          block.setFieldValue(newy3, 'Y3');
-        } else {
-          // Continue traversing for other children
-          traverseBlocks(block.getChildren(false));
-        }
-      });
-    };
-
-    traverseBlocks(objectBlocks);
-  }
-
-  const updateLine = (objectId,viewId,quadId,newx1,newy1,newx2,newy2) => {
-    const objectBlocks = workspaceRef.current.getBlocksByType('object');
-
-    const traverseBlocks = (blocks) => {
-      blocks.forEach(block => {
-        if (block.getFieldValue('ID') === objectId && block.type === 'object') {
-          traverseBlocks(block.getChildren(false)); // Recurse into child blocks
-        } else if (block.getFieldValue('ID') === viewId && block.type === 'view_draw') {
-          traverseBlocks(block.getChildren(false)); // Recurse into child blocks
-        } else if (block.getFieldValue('ID') === quadId && block.type === 'draw_line') {
-          block.setFieldValue(newx1, 'X1');
-          block.setFieldValue(newy1, 'Y1');
-          block.setFieldValue(newx2, 'X2');
-          block.setFieldValue(newy2, 'Y2');
-        } else {
-          // Continue traversing for other children
-          traverseBlocks(block.getChildren(false));
-        }
-      });
-    };
-
-    traverseBlocks(objectBlocks);
-  }
-
-  const updatePoint = (objectId,viewId,quadId,newx,newy) => {
-    const objectBlocks = workspaceRef.current.getBlocksByType('object');
-
-    const traverseBlocks = (blocks) => {
-      blocks.forEach(block => {
-        if (block.getFieldValue('ID') === objectId && block.type === 'object') {
-          traverseBlocks(block.getChildren(false)); // Recurse into child blocks
-        } else if (block.getFieldValue('ID') === viewId && block.type === 'view_draw') {
-          traverseBlocks(block.getChildren(false)); // Recurse into child blocks
-        } else if (block.getFieldValue('ID') === quadId && block.type === 'draw_point') {
-          block.setFieldValue(newx, 'X');
-          block.setFieldValue(newy, 'Y');
-        } else {
-          // Continue traversing for other children
-          traverseBlocks(block.getChildren(false));
-        }
-      });
-    };
-
-    traverseBlocks(objectBlocks);
-  }
-
-  const updateCircle = (objectId,viewId,quadId,newx,newy,newd) => {
-    const objectBlocks = workspaceRef.current.getBlocksByType('object');
-
-    const traverseBlocks = (blocks) => {
-      blocks.forEach(block => {
-        if (block.getFieldValue('ID') === objectId && block.type === 'object') {
-          traverseBlocks(block.getChildren(false)); // Recurse into child blocks
-        } else if (block.getFieldValue('ID') === viewId && block.type === 'view_draw') {
-          traverseBlocks(block.getChildren(false)); // Recurse into child blocks
-        } else if (block.getFieldValue('ID') === quadId && block.type === 'draw_circle') {
-          block.setFieldValue(newx, 'X');
-          block.setFieldValue(newy, 'Y');
-          block.setFieldValue(newd, 'D');
-        } else {
-          // Continue traversing for other children
-          traverseBlocks(block.getChildren(false));
-        }
-      });
-    };
-
-    traverseBlocks(objectBlocks);
-  }
-
-  const updateEllipse = (objectId,viewId,quadId,newx,newy,neww,newh) => {
-    const objectBlocks = workspaceRef.current.getBlocksByType('object');
-
-    const traverseBlocks = (blocks) => {
-      blocks.forEach(block => {
-        if (block.getFieldValue('ID') === objectId && block.type === 'object') {
-          traverseBlocks(block.getChildren(false)); // Recurse into child blocks
-        } else if (block.getFieldValue('ID') === viewId && block.type === 'view_draw') {
-          traverseBlocks(block.getChildren(false)); // Recurse into child blocks
-        } else if (block.getFieldValue('ID') === quadId && block.type === 'draw_ellipse') {
-          block.setFieldValue(newx, 'X');
-          block.setFieldValue(newy, 'Y');
-          block.setFieldValue(neww, 'W');
-          block.setFieldValue(newh, 'H');
-        } else {
-          // Continue traversing for other children
-          traverseBlocks(block.getChildren(false));
-        }
-      });
-    };
-
-    traverseBlocks(objectBlocks);
-  }
-
-  const updateArc = (objectId,viewId,quadId,newx,newy,neww,newh) => {
-    const objectBlocks = workspaceRef.current.getBlocksByType('object');
-
-    const traverseBlocks = (blocks) => {
-      blocks.forEach(block => {
-        if (block.getFieldValue('ID') === objectId && block.type === 'object') {
-          traverseBlocks(block.getChildren(false)); // Recurse into child blocks
-        } else if (block.getFieldValue('ID') === viewId && block.type === 'view_draw') {
-          traverseBlocks(block.getChildren(false)); // Recurse into child blocks
-        } else if (block.getFieldValue('ID') === quadId && block.type === 'draw_arc') {
-          block.setFieldValue(newx, 'X');
-          block.setFieldValue(newy, 'Y');
-          block.setFieldValue(neww, 'W');
-          block.setFieldValue(newh, 'H');
-        } else {
-          // Continue traversing for other children
-          traverseBlocks(block.getChildren(false));
-        }
-      });
-    };
-
-    traverseBlocks(objectBlocks);
-  }
-  
-
   function sketch(p5){
     p5.setup = (canvasParentRef) => {
       p5.createCanvas(WIDTH * SCALE_EDIT, (HEIGHT+HEIGHT_INV) * SCALE_EDIT).parent(canvasParentRef);
@@ -591,7 +445,7 @@ function EscapeRoomEditor() {
     
 
       if(er !== null){
-        er.escapeRoom.draw(p5,er.gameState.currentScenario, showInvisible, showHitboxs);
+        er.escapeRoom.draw(p5,er.gameState.currentScenario, showInvisible, showHitboxes);
 
         if(!imgsLoaded){
           let canvas = document.querySelector('canvas');
@@ -680,94 +534,28 @@ function EscapeRoomEditor() {
             var obj = er.escapeRoom.objects[objectId]
             if (obj.currentView in obj.views){
               var view = obj.views[obj.currentView]
-              if(view.constructor === View){
-                let changes = view.mouseReleased(p5.mouseX,p5.mouseY);
-                if (changes) {
-                  let newPosx = view.position.x * 1/SCALE_EDIT;
-                  let newPosy = (view.position.y* 1/SCALE_EDIT-HEIGHT_INV);
-                  let newSizex = 0;
-                  let newSizey = 0;
-                  if(view.size.x !== 0){
-                    newSizex = view.size.x * 1/SCALE_EDIT;
+              if(showHitboxes){
+                for(var hitboxIndex in view.hitboxes){
+                  var hitbox = view.hitboxes[hitboxIndex];
+                  let changes = hitbox.mouseReleased();
+                  if(changes) {
+                    updateHitbox(workspaceRef,objectId,view.id,hitbox);
                   }
-                  if(view.size.y !== 0){
-                    newSizey = view.size.y * 1/SCALE_EDIT;
-                  }
-                  updateViewPositionAndSize(objectId,obj.currentView,newPosx,newPosy,newSizex,newSizey);
                 }
               }
-              else if(view.constructor === ViewSketch){
-                for(var drawIndex in view.draws){
-                  var draw = view.draws[drawIndex];
-                  let changes = draw.mouseReleased(p5.mouseX,p5.mouseY);
-                  console.log(changes);
-                  if(changes){
-                    switch(draw.constructor){
-                      case Rect:
-                        let newx = draw.x* 1/SCALE_EDIT;
-                        let newy = draw.y* 1/SCALE_EDIT-HEIGHT_INV;
-                        let neww = 0;
-                        let newh = 0;
-                        if(draw.w !== 0){
-                          neww = draw.w * 1/SCALE_EDIT;
-                        }
-                        if(draw.h !== 0){
-                          newh = draw.h * 1/SCALE_EDIT;
-                        }
-                        updateRect(objectId,obj.currentView,draw.id,newx,newy,neww,newh);
-                        break;
-                      case Quad:
-                        let quad_newx1 = draw.x1* 1/SCALE_EDIT;
-                        let quad_newy1 = draw.y1* 1/SCALE_EDIT-HEIGHT_INV;
-                        let quad_newx2 = draw.x2* 1/SCALE_EDIT;
-                        let quad_newy2 = draw.y2* 1/SCALE_EDIT-HEIGHT_INV;
-                        let quad_newx3 = draw.x3* 1/SCALE_EDIT;
-                        let quad_newy3 = draw.y3* 1/SCALE_EDIT-HEIGHT_INV;
-                        let quad_newx4 = draw.x4* 1/SCALE_EDIT;
-                        let quad_newy4 = draw.y4* 1/SCALE_EDIT-HEIGHT_INV;
-                        updateQuad(objectId,obj.currentView,draw.id,quad_newx1,quad_newy1,quad_newx2,quad_newy2,quad_newx3,quad_newy3,quad_newx4,quad_newy4);
-                        break;
-                      case Triangle:
-                        let triangle_newx1 = draw.x1* 1/SCALE_EDIT;
-                        let triangle_newy1 = draw.y1* 1/SCALE_EDIT-HEIGHT_INV;
-                        let triangle_newx2 = draw.x2* 1/SCALE_EDIT;
-                        let triangle_newy2 = draw.y2* 1/SCALE_EDIT-HEIGHT_INV;
-                        let triangle_newx3 = draw.x3* 1/SCALE_EDIT;
-                        let triangle_newy3 = draw.y3* 1/SCALE_EDIT-HEIGHT_INV;
-                        updateTriangle(objectId,obj.currentView,draw.id,triangle_newx1,triangle_newy1,triangle_newx2,triangle_newy2,triangle_newx3,triangle_newy3);
-                        break;
-                      case Line:
-                        let line_newx1 = draw.x1* 1/SCALE_EDIT;
-                        let line_newy1 = draw.y1* 1/SCALE_EDIT-HEIGHT_INV;
-                        let line_newx2 = draw.x2* 1/SCALE_EDIT;
-                        let line_newy2 = draw.y2* 1/SCALE_EDIT-HEIGHT_INV;
-                        updateLine(objectId,obj.currentView,draw.id,line_newx1,line_newy1,line_newx2,line_newy2);
-                        break;
-                      case Point:
-                        let point_newx = draw.x* 1/SCALE_EDIT;
-                        let point_newy = draw.y* 1/SCALE_EDIT-HEIGHT_INV;
-                        updatePoint(objectId,obj.currentView,draw.id,point_newx,point_newy);
-                      case Ellipse:
-                        let ellipse_newx = draw.x* 1/SCALE_EDIT;
-                        let ellipse_newy = draw.y* 1/SCALE_EDIT-HEIGHT_INV;
-                        let ellipse_neww = draw.w* 1/SCALE_EDIT;
-                        let ellipse_newh = draw.h* 1/SCALE_EDIT;
-                        updateEllipse(objectId,obj.currentView,draw.id,ellipse_newx,ellipse_newy,ellipse_neww,ellipse_newh);
-                        break;
-                      case Circle:
-                        let circle_newx = draw.x* 1/SCALE_EDIT;
-                        let circle_newy = draw.y* 1/SCALE_EDIT-HEIGHT_INV;
-                        let circle_newd = draw.d* 1/SCALE_EDIT;
-                        updateCircle(objectId,obj.currentView,draw.id,circle_newx,circle_newy,circle_newd);
-                        break;
-                      case Arc:
-                        let arc_newx = draw.x* 1/SCALE_EDIT;
-                        let arc_newy = draw.y* 1/SCALE_EDIT-HEIGHT_INV;
-                        let arc_neww = draw.w* 1/SCALE_EDIT;
-                        let arc_newh = draw.h* 1/SCALE_EDIT;
-                        updateArc(objectId,obj.currentView,draw.id,arc_newx,arc_newy,arc_neww,arc_newh);
-                      default:
-                        break;
+              else{
+                if(view.constructor === View){
+                  let changes = view.mouseReleased();
+                  if (changes) {
+                    updateView(workspaceRef,objectId,view);
+                  }
+                }
+                else if(view.constructor === ViewSketch){
+                  for(var drawIndex in view.draws){
+                    var draw = view.draws[drawIndex];
+                    let changes = draw.mouseReleased();
+                    if(changes){
+                      updateViewSketch(workspaceRef,objectId,view.id,draw);
                     }
                   }
                 }
@@ -851,22 +639,22 @@ function EscapeRoomEditor() {
   }
 
   const enableHitboxs = () => {
-    var img = document.getElementById("showHitboxs");
-    var btn = document.getElementById("showHitboxs-btn");
-    var span = document.getElementById("showHitboxs-span");
-    if (showHitboxs){
+    var img = document.getElementById("showHitboxes");
+    var btn = document.getElementById("showHitboxes-btn");
+    var span = document.getElementById("showHitboxes-span");
+    if (showHitboxes){
       img.src = "/weberpl/icons/hitboxes.png";
       btn.style.backgroundColor = "#17116e";
       span.textContent = "Show Hitboxes"
       span.style.color = "#f1d00c";
-      setShowHitboxs(false);
+      setShowHitboxes(false);
     }
     else{
       img.src = "/weberpl/icons/hitboxes_visible.png";
       btn.style.backgroundColor = "#f1d00c";
       span.textContent = "Hide Hitboxes"
       span.style.color = "#17116e";
-      setShowHitboxs(true);
+      setShowHitboxes(true);
     }
   }
 
@@ -928,9 +716,9 @@ function EscapeRoomEditor() {
                   <img id="showInvisible" src='/weberpl/icons/closed_eye.png'/>
                   <span id="showInvisible-span">Show Invisible Views (50%)</span>
                 </button>
-                <button className="play-btn" id="showHitboxs-btn" title="Show Hitboxs" onClick={enableHitboxs}>
-                  <img id="showHitboxs" src='/weberpl/icons/hitboxes.png'/>
-                  <span id="showHitboxs-span">Show Hitboxs</span>
+                <button className="play-btn" id="showHitboxes-btn" title="Show Hitboxs" onClick={enableHitboxs}>
+                  <img id="showHitboxes" src='/weberpl/icons/hitboxes.png'/>
+                  <span id="showHitboxes-span">Show Hitboxs</span>
                 </button>
         </div>
       </div>

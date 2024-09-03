@@ -3,7 +3,7 @@ import { collidePointCircle, collidePointEllipse, collidePointLine, collidePoint
 //import { Hitbox, HitboxRect } from "./hitbox";
 
 export class View {
-  constructor(p5,id, srcImages, size, position, timeSprite, repeate,turn,hitboxes) {
+  constructor(p5,id, srcImages, size, position, timeSprite, repeate,turn,hitboxes,hitboxesType) {
     this.id = id;
     this.position = position;
     this.size = size;
@@ -18,8 +18,11 @@ export class View {
     this.turnX = turn.x;
     this.turnY = turn.y;
     this.hitboxes = hitboxes;
+    this.hitboxesType = hitboxesType;
     this.hover = false;
     this.rect = new Rect(id,this.position.x,this.position.y,this.size.x,this.size.y,0,0,0,0);
+    this.showHitboxes = false;
+
 
     for (let i in this.srcImages){
       //TODO: colocar assets para funcionar :)
@@ -74,7 +77,7 @@ export class View {
     return false;
   }
 
-  drawHitbox(p5){
+  drawHitboxes(p5){
     this.hitboxes.forEach(hitbox => {
       hitbox.draw(p5);
     })
@@ -124,38 +127,114 @@ export class View {
       p5.circle(this.position.x+this.size.x,this.position.y+this.size.y,10);
       p5.pop();
     }
-  }
-  mouseMoved(mX,mY) {
-    if(this.rect.mouseMoved(mX,mY)){
-      this.hover = true;
+    if (this.showHitboxes){
+      p5.push();
+      let alpha = 0.5;
+      if(semi_opacity){
+        alpha*=0.5;
+      }
+      p5.fill(`rgba(0, 255, 0, ${alpha})`);
+      this.drawHitboxes(p5);
+      p5.pop();
     }
-    else {
+  }
+
+  mouseMoved(mX,mY) {
+    if(!this.showHitboxes){
+      if(this.rect.mouseMoved(mX,mY)){
+        this.hover = true;
+      }
+      else {
+        this.hover = false;
+      }
+    }
+    else{
       this.hover = false;
+      if(this.hitboxesType === 'ADVANCED'){
+        for (var index in this.hitboxes){
+          let hitbox = this.hitboxes[index];
+          if(hitbox.mouseMoved(mX,mY)){
+            return true;
+          }
+        }
+      }
+      return false;
     }
     return this.hover;
   }
+
   mousePressed(mX,mY) {
-    return this.rect.mousePressed(mX,mY);
+    if(!this.showHitboxes){
+      return this.rect.mousePressed(mX,mY);
+    }
+    else{
+      if(this.hitboxesType === 'ADVANCED'){
+        for (var index in this.hitboxes){
+          let hitbox = this.hitboxes[index];
+          if(hitbox.mousePressed(mX,mY)){
+            return true;
+          }
+        }
+      }
+      return false;
+    }
   }
   mouseDragged(mX,mY) {
-    this.rect.mouseDragged(mX,mY);
-    this.position.x = this.rect.x;
-    this.position.y = this.rect.y;
-    this.size.x = this.rect.w;
-    this.size.y = this.rect.h;
+    if(!this.showHitboxes){
+      this.rect.mouseDragged(mX,mY);
+      this.position.x = this.rect.x;
+      this.position.y = this.rect.y;
+      this.size.x = this.rect.w;
+      this.size.y = this.rect.h;
+    }
+    else{
+      for (var index in this.hitboxes){
+        let hitbox = this.hitboxes[index];
+        hitbox.mouseDragged(mX,mY)
+      }
+    }
   }
-  mouseReleased(mX,mY) {
-    return this.rect.mouseReleased(mX,mY);
+  mouseReleased() {
+    if(!this.showHitboxes){
+      return this.rect.mouseReleased();
+    }
+    else{
+      for (var index in this.hitboxes){
+        let hitbox = this.hitboxes[index];
+        if(hitbox.mouseReleased()){
+          return true;
+        }
+      }
+      return false;
+    }
   }
+
+  shiftPressed(){
+    if(!this.showHitboxes){
+      this.rect.shiftPressed();
+    }
+    else{
+
+    }
+  }
+
   shiftReleased(){
-    this.rect.shiftReleased();
+    if(!this.showHitboxes){
+      this.rect.shiftReleased();
+    }
+    else{
+      //TODO: shiftReleased hitboxes
+    }
   }
 }
 
 export class ViewSketch {
-  constructor(id){
+  constructor(id,hitboxes,hitboxesType){
     this.id = id;
     this.draws = [];
+    this.hitboxes = hitboxes;
+    this.hitboxesType = hitboxesType;
+    this.showHitboxes = false;
   }
 
   draw(p5, semi_opacity=false){
@@ -169,9 +248,19 @@ export class ViewSketch {
       draw.draw(p5,semi_opacity);
     })
     p5.pop()
+    if (this.showHitboxes){
+      p5.push();
+      let alpha = 0.5;
+      if(semi_opacity){
+        alpha*=0.5;
+      }
+      p5.fill(`rgba(0, 255, 0, ${alpha})`);
+      this.drawHitboxes(p5);
+      p5.pop();
+    }
   }
 
-  drawHitbox(p5){
+  drawHitboxes(p5){
     this.hitboxes.forEach(hitbox => {
       hitbox.draw(p5);
     })
@@ -183,42 +272,98 @@ export class ViewSketch {
 
   mouseMoved(mX,mY) {
     let hover = false;
-    for (var draw in this.draws){
-      if(hover){
+    if(!this.showHitboxes){
+      for (var draw in this.draws){
+        if(hover){
+          this.draws[draw].setHoverFalse();
+        }
+        else {
+          hover = this.draws[draw].mouseMoved(mX,mY);
+        }
+      }
+    }
+    else{
+      for(var draw in this.draws){
         this.draws[draw].setHoverFalse();
       }
-      else {
-        hover = this.draws[draw].mouseMoved(mX,mY);
+      if(this.hitboxesType === 'ADVANCED'){
+        for (var index in this.hitboxes){
+          let hitbox = this.hitboxes[index];
+          if(hitbox.mouseMoved(mX,mY)){
+            return true;
+          }
+        }
       }
+      return false;
     }
     return hover;
   }
+
   mousePressed(mX,mY) {
-    for (var draw in this.draws){
-      var pressed = this.draws[draw].mousePressed(mX,mY);
-      if(pressed){
-        return true;
+    if(!this.showHitboxes){
+      for (var draw in this.draws){
+        var pressed = this.draws[draw].mousePressed(mX,mY);
+        if(pressed){
+          return true;
+        }
       }
     }
-  }
-  mouseDragged(mX,mY) {
-    for (var draw in this.draws){
-      this.draws[draw].mouseDragged(mX,mY);
+    else{
+      if(this.hitboxesType === 'ADVANCED'){
+        for (var index in this.hitboxes){
+          let hitbox = this.hitboxes[index];
+          if(hitbox.mousePressed(mX,mY)){
+            return true;
+          }
+        }
+      }
+      return false;
     }
   }
 
-  mouseReleased(mX,mY) {
-    for (var draw in this.draws){
-      var released = this.draws[draw].mousePressed(mX,mY);
-      if(released){
-        return true;
+  mouseDragged(mX,mY) {
+    if(!this.showHitboxes){
+      for (var draw in this.draws){
+        this.draws[draw].mouseDragged(mX,mY);
       }
+    }
+    else{
+      for (var index in this.hitboxes){
+        let hitbox = this.hitboxes[index];
+        hitbox.mouseDragged(mX,mY)
+      }
+    }
+  }
+
+  mouseReleased() {
+    if(!this.showHitboxes){
+      for (var draw in this.draws){
+        var released = this.draws[draw].mouseReleased();
+        if(released){
+          return true;
+        }
+      }
+    }
+    else{
+      for (var index in this.hitboxes){
+        let hitbox = this.hitboxes[index];
+        if(hitbox.mouseReleased()){
+          return true;
+        }
+      }
+      return false;
     }
   }
 
   shiftReleased(){
     for (var draw in this.draws){
       this.draws[draw].shiftReleased();
+    }
+  }
+
+  shiftPressed(){
+    for (var draw in this.draws){
+      this.draws[draw].shiftPressed();
     }
   }
 }
@@ -237,8 +382,9 @@ export class DrawP5 {
   mouseMoved(mX,mY) {return false;}
   mousePressed(mX,mY) {return false;}
   mouseDragged(mX,mY) {}
-  mouseReleased(mX,mY) {return false;}
+  mouseReleased() {return false;}
   shiftReleased(){}
+  shiftPressed(){}
   setHoverFalse(){
     this.hover = false;
   }
@@ -261,6 +407,14 @@ export class Rect extends DrawP5 {
     this.lastPosition = new Position(0,0);
     this.typeResizing = "";
     this.hover = false;
+    this.shift = false;
+  }
+
+  shiftPressed(){
+    this.shift = true;
+  }
+
+  shiftReleased(){
     this.shift = false;
   }
 
@@ -791,7 +945,7 @@ export class Rect extends DrawP5 {
     }
   }
 
-  mouseReleased(mX,mY) {
+  mouseReleased() {
     if (this.isDragging || this.isResizing){
       this.isDragging = false;
       this.isResizing = false;
@@ -941,7 +1095,7 @@ export class Quad extends DrawP5 {
     }
   }
 
-  mouseReleased(mX,mY) {
+  mouseReleased() {
     if (this.pressed){
       this.pressed = false;
       this.typePressed = null;
@@ -1077,7 +1231,7 @@ export class Triangle extends DrawP5 {
     }
   }
 
-  mouseReleased(mX,mY) {
+  mouseReleased() {
     if (this.pressed){
       this.pressed = false;
       this.typePressed = null;
@@ -1264,7 +1418,7 @@ export class Arc extends DrawP5 {
     }
   }
 
-  mouseReleased(mX,mY) {
+  mouseReleased() {
     if (this.pressed){
       this.pressed = false;
       this.typePressed = null;
@@ -1394,7 +1548,7 @@ export class Circle extends DrawP5 {
     }
   }
 
-  mouseReleased(mX,mY) {
+  mouseReleased() {
     if (this.pressed){
       this.pressed = false;
       this.typePressed = null;
@@ -1523,7 +1677,7 @@ export class Ellipse extends DrawP5 {
     }
   }
 
-  mouseReleased(mX,mY) {
+  mouseReleased() {
     if (this.pressed){
       this.pressed = false;
       this.typePressed = null;
@@ -1625,7 +1779,7 @@ export class Line extends DrawP5 {
     }
   }
 
-  mouseReleased(mX,mY) {
+  mouseReleased() {
     if (this.pressed){
       this.pressed = false;
       this.typePressed = null;
@@ -1690,7 +1844,7 @@ export class Point extends DrawP5 {
     }
   }
 
-  mouseReleased(mX,mY) {
+  mouseReleased() {
     if (this.pressed){
       this.pressed = false;
       return true;

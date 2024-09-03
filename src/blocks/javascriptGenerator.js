@@ -152,30 +152,11 @@ javascriptGenerator.forBlock['event'] = function(block, generator) {
 
   var code = {
     "id" : text_id,
-    "preconditions" : ifObject,
-    "posconditions" : doObject,
+    "preConditions" : ifObject,
+    "posConditions" : doObject,
     "repetitions" : number_repetitions
   }
   return JSON.stringify(code, null, 2);
-};
-
-javascriptGenerator.forBlock['event_do'] = function(block, generator) {
-  var doString = generator.valueToCode(block, 'DO', Order.ATOMIC);
-
-  if (doString) {
-    doString = doString.slice(1,-1);
-    doString = "[" + doString + "]";
-  }
-  else {
-    doString = "[]"
-  }
-  var doObject = JSON.parse(doString);
-
-  var code = {
-    "posConditions" : doObject
-  }
-
-  return [JSON.stringify(code, null, 2), javascriptGenerator.ORDER_NONE];
 };
 
 //Transitions Array Block
@@ -1179,6 +1160,24 @@ javascriptGenerator.forBlock['view_draw'] = function(block,generator) {
   const text_id = block.getFieldValue('ID');
 
   var stringDraws = generator.statementToCode(block, 'DRAWS');
+  var hitboxType = block.getFieldValue('HITBOX_TYPE');
+
+  var hitboxString;
+  if (hitboxType === "ADVANCED"){
+    hitboxString = generator.statementToCode(block, 'ADVANCED_HITBOX');
+    if (hitboxString){
+      hitboxString = hitboxString.replaceAll(/}\s*{/g, "},{");
+      hitboxString = "[" + hitboxString + "]"
+    }
+    else {
+      hitboxString = "[]"
+    }
+  }
+  else {
+    hitboxString = "[]"
+  }
+
+  var hitboxObject = JSON.parse(hitboxString);
 
   if (stringDraws){
     stringDraws = stringDraws.replaceAll(/}\s*{/g, "},{");
@@ -1193,7 +1192,9 @@ javascriptGenerator.forBlock['view_draw'] = function(block,generator) {
   var code = {
     "id" : text_id,
     "type" : "VIEW_SKETCH",
-    "draws" : draws
+    "draws" : draws,
+    "hitbox_type" : hitboxType,
+    "hitboxes" : hitboxObject
   }
 
   return JSON.stringify(code, null, 2) 

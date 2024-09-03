@@ -12,7 +12,7 @@ import { Event } from './event.js';
 import { PreConditionOperatorAnd, PreConditionOperatorNot, PreConditionOperatorOr, PreConditionTree, PreConditionVar } from './precondition_tree.js';
 import { EventPreConditionAfterEvent,EventPreConditionAfterTime,EventPreConditionClickedNotObject,EventPreConditionClickedObject,EventPreConditionItemIsInUse,EventPreConditionWhenObjectIsView } from './precondition.js';
 import { EventPosConditionTransition, EventPosConditionConnections, EventPosConditionSequence, EventPosConditionQuestion, EventPosConditionChangeScenario,EventPosConditionDeleteItem,EventPosConditionEndGame,EventPosConditionMultipleChoice,EventPosConditionObjChangePosition,EventPosConditionObjChangeSize,EventPosConditionObjChangeState,EventPosConditionObjPutInventory,EventPosConditionPlaySound,EventPosConditionShowMessage } from './poscondition.js';
-import { Hitbox, HitboxArc, HitboxCircle, HitboxEllipse, HitboxLine, HitboxPoint, HitboxQuad, HitboxRect, HitboxSquare, HitboxTriangle } from './hitbox.js';
+import { HitboxArc, HitboxCircle, HitboxEllipse, HitboxLine, HitboxPoint, HitboxQuad, HitboxRect, HitboxSquare, HitboxTriangle } from './hitbox.js';
 import { Sound } from './sound.js';
 
 const load = (p5,json,edit=false) => {
@@ -84,8 +84,8 @@ function loadTransitions(p5,er,gs,transitions){
     })
 }
 
-function loadSketch(id,draws){
-    var sketch = new ViewSketch(id);
+function loadSketch(id,draws,hitboxes,hitboxesType){
+    var sketch = new ViewSketch(id,hitboxes,hitboxesType);
     draws.forEach(draw => {
         const type = draw.type;
         let drawView;
@@ -154,36 +154,35 @@ function loadSketch(id,draws){
 }
 
 function loadAdvancedHitbox(draws){
-    var hitboxes = []
-    console.log(draws);
+    var hitboxes = [];
     draws.forEach(hitbox => {
         switch(hitbox.type) {
             case "RECT":
-                hitboxes.push(new HitboxRect(hitbox.x,hitbox.y+HEIGHT_INV,hitbox.w,hitbox.h));
+                hitboxes.push(new HitboxRect(hitbox.id,hitbox.x,hitbox.y+HEIGHT_INV,hitbox.w,hitbox.h));
                 break;
             case "QUAD":
-                hitboxes.push(new HitboxQuad(hitbox.x1,hitbox.y1,hitbox.x2,hitbox.y2,hitbox.x3,hitbox.y3,hitbox.x4,hitbox.y4));
+                hitboxes.push(new HitboxQuad(hitbox.id,hitbox.x1,hitbox.y1+HEIGHT_INV,hitbox.x2,hitbox.y2+HEIGHT_INV,hitbox.x3,hitbox.y3+HEIGHT_INV,hitbox.x4,hitbox.y4+HEIGHT_INV));
                 break;
             case "SQUARE":
-                hitboxes.push(new HitboxSquare(hitbox.x,hitbox.y+HEIGHT_INV,hitbox.s));
+                hitboxes.push(new HitboxSquare(hitbox.id,hitbox.x,hitbox.y+HEIGHT_INV,hitbox.s));
                 break;
             case "TRIANGLE":
-                hitboxes.push(new HitboxTriangle(hitbox.x1,hitbox.y1+HEIGHT_INV,hitbox.x2,hitbox.y2+HEIGHT_INV,hitbox.x3,hitbox.y3+HEIGHT_INV));
+                hitboxes.push(new HitboxTriangle(hitbox.id,hitbox.x1,hitbox.y1+HEIGHT_INV,hitbox.x2,hitbox.y2+HEIGHT_INV,hitbox.x3,hitbox.y3+HEIGHT_INV));
                 break;
             case "LINE":
-                hitboxes.push(new HitboxLine(hitbox.x1,hitbox.y1+HEIGHT_INV,hitbox.x2,hitbox.y2+HEIGHT_INV));
+                hitboxes.push(new HitboxLine(hitbox.id,hitbox.x1,hitbox.y1+HEIGHT_INV,hitbox.x2,hitbox.y2+HEIGHT_INV));
                 break;
             case "POINT":
-                hitboxes.push(new HitboxPoint(hitbox.x,hitbox.y+HEIGHT_INV));
+                hitboxes.push(new HitboxPoint(hitbox.id,hitbox.x,hitbox.y+HEIGHT_INV));
                 break;
             case "ARC":
-                hitboxes.push(new HitboxArc(hitbox.x,hitbox.y+HEIGHT_INV,hitbox.w,hitbox.h,hitbox.start,hitbox.stop,hitbox.mode));
+                hitboxes.push(new HitboxArc(hitbox.id,hitbox.x,hitbox.y+HEIGHT_INV,hitbox.w,hitbox.h,hitbox.start,hitbox.stop,hitbox.mode));
                 break;
             case "CIRCLE":
-                hitboxes.push(new HitboxCircle(hitbox.x,hitbox.y+HEIGHT_INV,hitbox.d));
+                hitboxes.push(new HitboxCircle(hitbox.id,hitbox.x,hitbox.y+HEIGHT_INV,hitbox.d));
                 break;
             case "ELLIPSE":
-                hitboxes.push(new HitboxEllipse(hitbox.x, hitbox.y+HEIGHT_INV, hitbox.w, hitbox.h));
+                hitboxes.push(new HitboxEllipse(hitbox.id,hitbox.x, hitbox.y+HEIGHT_INV, hitbox.w, hitbox.h));
                 break;
             default:
                 break;
@@ -198,13 +197,12 @@ function loadHitboxes(view){
         case "NO":
             break;
         case "ADVANCED":
-            console.log("ola")
             hitboxes = loadAdvancedHitbox(view.hitboxes);
             break;
         default:
             switch(view.type){
                 case "VIEW_IMAGE":
-                    hitboxes.push(new HitboxRect(view.position.x,view.position.y+HEIGHT_INV,view.size.x,view.size.y));
+                    hitboxes.push(new HitboxRect(view.id,view.position.x,view.position.y+HEIGHT_INV,view.size.x,view.size.y));
                     break;
                 case "VIEW_SKETCH":
                     hitboxes = loadAdvancedHitbox(view.draws);
@@ -219,9 +217,9 @@ function loadView(p5,view){
     let hitboxes = loadHitboxes(view);
     switch(view.type){
         case "VIEW_IMAGE":
-            return new View(p5,view.id,[view.src],new Size(view.size.x,view.size.y), new Position (view.position.x,view.position.y+HEIGHT_INV),0,0,view.turn,hitboxes);
+            return new View(p5,view.id,[view.src],new Size(view.size.x,view.size.y), new Position (view.position.x,view.position.y+HEIGHT_INV),0,0,view.turn,hitboxes,view.hitbox_type);
         case "VIEW_SKETCH":
-            return loadSketch(view.id,view.draws);
+            return loadSketch(view.id,view.draws,hitboxes,view.hitbox_type);
         default:
             return null;
     }
@@ -419,8 +417,8 @@ function loadEvents(dataEvents) {
 
     dataEvents.forEach(dataEvent => {
         const id = dataEvent.id;
-        const dataPreconditions = dataEvent.preconditions || {};
-        const dataPosconditions = dataEvent.posconditions;
+        const dataPreconditions = dataEvent.preConditions || {};
+        const dataPosconditions = dataEvent.posConditions;
         const repetitions = dataEvent.repetitions || Infinity;
         const preConditions = new PreConditionTree(loadPreconditions(dataPreconditions));
         const posConditions = loadPosconditions(dataPosconditions);

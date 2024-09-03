@@ -16,12 +16,12 @@ Blockly.Blocks['escape_room'] = {
         .setCheck("scenario");
     this.appendDummyInput()
         .setAlign(Blockly.inputs.Align.CENTRE)
-        .appendField("EVENTS");
+        .appendField("EVENTS:");
     this.appendStatementInput("EVENTS")
         .setCheck("event");
     this.appendDummyInput()
         .setAlign(Blockly.inputs.Align.CENTRE)
-        .appendField("TRANSITIONS");
+        .appendField("TRANSITIONS:");
     this.appendStatementInput("TRANSITIONS")
         .setCheck("transition");
     this.appendDummyInput()
@@ -146,7 +146,7 @@ Blockly.Blocks['event'] = {
     this.appendDummyInput()
         .setAlign(Blockly.inputs.Align.CENTRE)
         .appendField("Event")
-        .appendField(new Blockly.FieldTextInput("EVENT_1"), "ID");
+        .appendField(new Blockly.FieldTextInput("EVENT"), "ID");
     this.appendDummyInput()
         .setAlign(Blockly.inputs.Align.CENTRE)
         .appendField("can be repeated")
@@ -161,20 +161,6 @@ Blockly.Blocks['event'] = {
     this.setPreviousStatement(true, "event");
     this.setNextStatement(true, "event");
     this.setColour(315);
- this.setTooltip("");
- this.setHelpUrl("");
-  }
-};
-
-Blockly.Blocks['event_do'] = {
-  init: function() {
-    this.appendDummyInput()
-        .appendField("Event");
-    this.appendValueInput("DO")
-        .setCheck("action")
-        .appendField("do");
-    this.setOutput(true, null);
-    this.setColour(60);
  this.setTooltip("");
  this.setHelpUrl("");
   }
@@ -302,6 +288,7 @@ Blockly.Blocks['view'] = {
     // Adiciona o campo se a opção for "ADVANCED"
     if (option === 'ADVANCED') {
       this.appendDummyInput('ADVANCED_HITBOX_LABEL')
+        .setAlign(Blockly.inputs.Align.CENTRE)
         .appendField('ADVANCED HITBOX:');
       this.appendStatementInput('ADVANCED_HITBOX')
         .setCheck('hitbox');
@@ -643,10 +630,10 @@ init: function() {
       .appendField("answer :")
       .appendField(new Blockly.FieldTextInput("answer"), "ANSWER");
   this.appendValueInput("SUCESS")
-      .setCheck("event_do")
+      .setCheck("action")
       .appendField("sucess :");
   this.appendValueInput("FAIL")
-      .setCheck("event_do")
+      .setCheck("action")
       .appendField("fail : ");
   this.setOutput(true, "challenge");
   this.setColour(345);
@@ -667,10 +654,10 @@ init: function() {
       .appendField("trigger_object")
       .appendField(new Blockly.FieldTextInput("object_id"), "TRIGGER_OBJECT");
   this.appendValueInput("SUCESS")
-      .setCheck("event_do")
+      .setCheck("action")
       .appendField("sucess :");
   this.appendValueInput("FAIL")
-      .setCheck("event_do")
+      .setCheck("action")
       .appendField("fail : ");
   this.setOutput(true, "challenge");
   this.setColour(345);
@@ -699,10 +686,10 @@ init: function() {
       .appendField("wrong answer 3")
       .appendField(new Blockly.FieldTextInput("answer"), "WRONG_ANSWER_3");
   this.appendValueInput("SUCESS")
-      .setCheck("event_do")
+      .setCheck("action")
       .appendField("sucess :");
   this.appendValueInput("FAIL")
-      .setCheck("event_do")
+      .setCheck("action")
       .appendField("fail : ");
   this.setOutput(true, "challenge");
   this.setColour(345);
@@ -735,10 +722,10 @@ init: function() {
       .appendField(new Blockly.FieldTextInput("a4"), "A4")
       .appendField(new Blockly.FieldTextInput("b4"), "B4");
   this.appendValueInput("SUCESS")
-      .setCheck("event_do")
+      .setCheck("action")
       .appendField("sucess :");
   this.appendValueInput("FAIL")
-      .setCheck("event_do")
+      .setCheck("action")
       .appendField("fail : ");
   this.setOutput(true, "challenge");
   this.setColour(345);
@@ -764,10 +751,10 @@ init: function() {
       .appendField(">>")
       .appendField(new Blockly.FieldTextInput("a4"), "A4");
   this.appendValueInput("SUCESS")
-      .setCheck("event_do")
+      .setCheck("action")
       .appendField("sucess :");
   this.appendValueInput("FAIL")
-      .setCheck("event_do")
+      .setCheck("action")
       .appendField("fail : ");
   this.setOutput(true, "challenge");
   this.setColour(345);
@@ -779,13 +766,12 @@ this.setHelpUrl("");
 Blockly.Blocks['custom_dropdown_block'] = {
     init: function() {
       this.appendDummyInput()
-          .appendField("Opção 1")
+          .appendField("image: ")
           .appendField(new Blockly.FieldDropdown([
             ["porta", "PORTA"],
             ["chave", "CHAVE"],
             ["cofre", "COFRE"]
           ], this.updateOptions.bind(this)), 'OPCAO1')
-          .appendField("Opção 2")
           .appendField(new Blockly.FieldDropdown(this.getSecondOptions.bind(this)), 'OPCAO2');
       this.setColour(230);
       this.setOutput(true, null);
@@ -854,15 +840,15 @@ Blockly.Blocks['draw_rect'] = {
     this.appendDummyInput('XY')
     .setAlign(Blockly.inputs.Align.CENTRE)
       .appendField('x:')
-      .appendField(new Blockly.FieldNumber(0), 'X')
+      .appendField(new Blockly.FieldNumber(100), 'X')
       .appendField('y:')
-      .appendField(new Blockly.FieldNumber(0), 'Y');
+      .appendField(new Blockly.FieldNumber(100), 'Y');
     this.appendDummyInput('WH')
     .setAlign(Blockly.inputs.Align.CENTRE)
       .appendField('w:')
-      .appendField(new Blockly.FieldNumber(0), 'W')
+      .appendField(new Blockly.FieldNumber(100), 'W')
       .appendField('h:')
-      .appendField(new Blockly.FieldNumber(0), 'H');
+      .appendField(new Blockly.FieldNumber(100), 'H');
     this.appendDummyInput('RADIUS-BORDER')
     .setAlign(Blockly.inputs.Align.CENTRE)
       .appendField('tl:')
@@ -889,27 +875,27 @@ Blockly.Blocks['draw_quad'] = {
     this.appendDummyInput('P1')
     .setAlign(Blockly.inputs.Align.CENTRE)
       .appendField('x1:')
-      .appendField(new Blockly.FieldNumber(0), 'X1')
+      .appendField(new Blockly.FieldNumber(100), 'X1')
       .appendField('y1:')
-      .appendField(new Blockly.FieldNumber(0), 'Y1');
+      .appendField(new Blockly.FieldNumber(100), 'Y1');
     this.appendDummyInput('P2')
     .setAlign(Blockly.inputs.Align.CENTRE)
       .appendField('x2:')
-      .appendField(new Blockly.FieldNumber(0), 'X2')
+      .appendField(new Blockly.FieldNumber(100), 'X2')
       .appendField('y2:')
-      .appendField(new Blockly.FieldNumber(0), 'Y2');
+      .appendField(new Blockly.FieldNumber(200), 'Y2');
     this.appendDummyInput('P3')
     .setAlign(Blockly.inputs.Align.CENTRE)
       .appendField('x3:')
-      .appendField(new Blockly.FieldNumber(0), 'X3')
+      .appendField(new Blockly.FieldNumber(200), 'X3')
       .appendField('y3:')
-      .appendField(new Blockly.FieldNumber(0), 'Y3');
+      .appendField(new Blockly.FieldNumber(200), 'Y3');
     this.appendDummyInput('P4')
     .setAlign(Blockly.inputs.Align.CENTRE)
       .appendField('x4:')
-      .appendField(new Blockly.FieldNumber(0), 'X4')
+      .appendField(new Blockly.FieldNumber(200), 'X4')
       .appendField('y4:')
-      .appendField(new Blockly.FieldNumber(0), 'Y4');
+      .appendField(new Blockly.FieldNumber(100), 'Y4');
     this.setPreviousStatement(true, 'draw');
     this.setNextStatement(true, 'draw');
     this.setTooltip('');
@@ -926,11 +912,11 @@ Blockly.Blocks['draw_square'] = {
     this.appendDummyInput('XY')
     .setAlign(Blockly.inputs.Align.CENTRE)
       .appendField('x:')
-      .appendField(new Blockly.FieldNumber(0), 'X')
+      .appendField(new Blockly.FieldNumber(100), 'X')
       .appendField('y:')
-      .appendField(new Blockly.FieldNumber(0), 'Y')
+      .appendField(new Blockly.FieldNumber(100), 'Y')
       .appendField('s:')
-      .appendField(new Blockly.FieldNumber(0), 'S');
+      .appendField(new Blockly.FieldNumber(100), 'S');
     this.appendDummyInput('RADIUS-BORDER')
     .setAlign(Blockly.inputs.Align.CENTRE)
       .appendField('tl:')
@@ -957,21 +943,21 @@ Blockly.Blocks['draw_triangle'] = {
     this.appendDummyInput('P1')
     .setAlign(Blockly.inputs.Align.CENTRE)
       .appendField('x1:')
-      .appendField(new Blockly.FieldNumber(0), 'X1')
+      .appendField(new Blockly.FieldNumber(100), 'X1')
       .appendField('y1:')
-      .appendField(new Blockly.FieldNumber(0), 'Y1');
+      .appendField(new Blockly.FieldNumber(100), 'Y1');
     this.appendDummyInput('P2')
     .setAlign(Blockly.inputs.Align.CENTRE)
       .appendField('x2:')
-      .appendField(new Blockly.FieldNumber(0), 'X2')
+      .appendField(new Blockly.FieldNumber(100), 'X2')
       .appendField('y2:')
-      .appendField(new Blockly.FieldNumber(0), 'Y2');
+      .appendField(new Blockly.FieldNumber(200), 'Y2');
     this.appendDummyInput('P3')
     .setAlign(Blockly.inputs.Align.CENTRE)
       .appendField('x3:')
-      .appendField(new Blockly.FieldNumber(0), 'X3')
+      .appendField(new Blockly.FieldNumber(200), 'X3')
       .appendField('y3:')
-      .appendField(new Blockly.FieldNumber(0), 'Y3');
+      .appendField(new Blockly.FieldNumber(200), 'Y3');
     this.setPreviousStatement(true, 'draw');
     this.setNextStatement(true, 'draw');
     this.setTooltip('');
@@ -988,15 +974,15 @@ Blockly.Blocks['draw_line']  = {
     this.appendDummyInput('P1')
     .setAlign(Blockly.inputs.Align.CENTRE)
       .appendField('x1:')
-      .appendField(new Blockly.FieldNumber(0), 'X1')
+      .appendField(new Blockly.FieldNumber(100), 'X1')
       .appendField('y1:')
-      .appendField(new Blockly.FieldNumber(0), 'Y1');
+      .appendField(new Blockly.FieldNumber(100), 'Y1');
     this.appendDummyInput('P2')
     .setAlign(Blockly.inputs.Align.CENTRE)
       .appendField('x2:')
-      .appendField(new Blockly.FieldNumber(0), 'X2')
+      .appendField(new Blockly.FieldNumber(200), 'X2')
       .appendField('y2:')
-      .appendField(new Blockly.FieldNumber(0), 'Y2');
+      .appendField(new Blockly.FieldNumber(200), 'Y2');
     this.setPreviousStatement(true, 'draw');
     this.setNextStatement(true, 'draw');
     this.setTooltip('');
@@ -1013,9 +999,9 @@ Blockly.Blocks['draw_point'] = {
     this.appendDummyInput('P')
     .setAlign(Blockly.inputs.Align.CENTRE)
       .appendField('x:')
-      .appendField(new Blockly.FieldNumber(0), 'X')
+      .appendField(new Blockly.FieldNumber(100), 'X')
       .appendField('y:')
-      .appendField(new Blockly.FieldNumber(0), 'Y');
+      .appendField(new Blockly.FieldNumber(100), 'Y');
     this.setPreviousStatement(true, 'draw');
     this.setNextStatement(true, 'draw');
     this.setTooltip('');
@@ -1033,19 +1019,19 @@ Blockly.Blocks['draw_arc'] = {
     this.appendDummyInput('XY')
     .setAlign(Blockly.inputs.Align.CENTRE)
       .appendField('x:')
-      .appendField(new Blockly.FieldNumber(0), 'X')
+      .appendField(new Blockly.FieldNumber(100), 'X')
       .appendField('y:')
-      .appendField(new Blockly.FieldNumber(0), 'Y');
+      .appendField(new Blockly.FieldNumber(100), 'Y');
     this.appendDummyInput('WH')
     .setAlign(Blockly.inputs.Align.CENTRE)
       .appendField('w:')
-      .appendField(new Blockly.FieldNumber(0), 'W')
+      .appendField(new Blockly.FieldNumber(100), 'W')
       .appendField('h:')
-      .appendField(new Blockly.FieldNumber(0), 'H');
+      .appendField(new Blockly.FieldNumber(100), 'H');
     this.appendDummyInput('start_stop')
     .setAlign(Blockly.inputs.Align.CENTRE)
       .appendField('start:')
-      .appendField(new FieldAngle(90), 'START')
+      .appendField(new FieldAngle(0), 'START')
       .appendField('stop:')
       .appendField(new FieldAngle(90), 'STOP');
     this.appendDummyInput('mode')
@@ -1074,11 +1060,11 @@ Blockly.Blocks['draw_circle'] = {
     this.appendDummyInput('XYD')
     .setAlign(Blockly.inputs.Align.CENTRE)
       .appendField('x:')
-      .appendField(new Blockly.FieldNumber(0), 'X')
+      .appendField(new Blockly.FieldNumber(100), 'X')
       .appendField('y:')
-      .appendField(new Blockly.FieldNumber(0), 'Y')
+      .appendField(new Blockly.FieldNumber(100), 'Y')
       .appendField('d:')
-      .appendField(new Blockly.FieldNumber(0), 'D');
+      .appendField(new Blockly.FieldNumber(100), 'D');
     this.setPreviousStatement(true, 'draw');
     this.setNextStatement(true, 'draw');
     this.setTooltip('');
@@ -1096,13 +1082,13 @@ Blockly.Blocks['draw_ellipse']  = {
     this.appendDummyInput('XYWH')
     .setAlign(Blockly.inputs.Align.CENTRE)
       .appendField('x:')
-      .appendField(new Blockly.FieldNumber(0), 'X')
+      .appendField(new Blockly.FieldNumber(100), 'X')
       .appendField('y:')
-      .appendField(new Blockly.FieldNumber(0), 'Y')
+      .appendField(new Blockly.FieldNumber(100), 'Y')
       .appendField('w:')
-      .appendField(new Blockly.FieldNumber(0), 'W')
+      .appendField(new Blockly.FieldNumber(100), 'W')
       .appendField('h:')
-      .appendField(new Blockly.FieldNumber(0), 'H');
+      .appendField(new Blockly.FieldNumber(100), 'H');
     this.setPreviousStatement(true, 'draw');
     this.setNextStatement(true, 'draw');
     this.setTooltip('');
@@ -1224,13 +1210,51 @@ Blockly.Blocks['view_draw'] = {
     this.appendDummyInput('NAME')
       .appendField('VIEW SKETCH')
       .appendField(new Blockly.FieldTextInput('SKETCH'), 'ID');
+    this.appendDummyInput('HITBOX')
+      .setAlign(Blockly.inputs.Align.CENTRE)
+      .appendField('HITBOX:')
+      .appendField(new Blockly.FieldDropdown([
+        ['default', 'DEFAULT'],
+        ['no', 'NO'],
+        ['advanced', 'ADVANCED']
+      ], this.onHitboxChange.bind(this)), 'HITBOX_TYPE');  // Associa a função de mudança
+    this.appendDummyInput('DRAWS_TITLE')
+      .setAlign(Blockly.inputs.Align.CENTRE)
+      .appendField('DRAWS:')
     this.appendStatementInput('DRAWS')
-    .setCheck('draw');
+      .setCheck('draw');
     this.setPreviousStatement(true, 'view');
     this.setNextStatement(true, 'view');
     this.setTooltip('');
     this.setHelpUrl('');
     this.setColour(60);
+  },
+
+  onHitboxChange: function(newValue) {
+    this.updateAdvancedHitbox(newValue);
+  },
+
+  updateAdvancedHitbox: function(option) {
+    // Remove o campo de advanced hitbox, se existir
+    if (this.getInput('ADVANCED_HITBOX')) {
+      this.removeInput('ADVANCED_HITBOX');
+      this.removeInput('ADVANCED_HITBOX_LABEL');
+    }
+
+    // Adiciona o campo se a opção for "ADVANCED"
+    if (option === 'ADVANCED') {
+      this.appendDummyInput('ADVANCED_HITBOX_LABEL')
+        .setAlign(Blockly.inputs.Align.CENTRE)
+        .appendField('ADVANCED HITBOX:');
+      this.appendStatementInput('ADVANCED_HITBOX')
+        .setCheck('hitbox');
+
+      this.moveInputBefore('ADVANCED_HITBOX', 'DRAWS_TITLE');
+      this.moveInputBefore('ADVANCED_HITBOX_LABEL', 'ADVANCED_HITBOX');
+    }
+
+    // Atualiza o layout do bloco
+    this.render();
   }
 };
 
@@ -1243,15 +1267,15 @@ Blockly.Blocks['hitbox_rect'] = {
     this.appendDummyInput('XY')
     .setAlign(Blockly.inputs.Align.CENTRE)
       .appendField('x:')
-      .appendField(new Blockly.FieldNumber(0), 'X')
+      .appendField(new Blockly.FieldNumber(100), 'X')
       .appendField('y:')
-      .appendField(new Blockly.FieldNumber(0), 'Y');
+      .appendField(new Blockly.FieldNumber(100), 'Y');
     this.appendDummyInput('WH')
     .setAlign(Blockly.inputs.Align.CENTRE)
       .appendField('w:')
-      .appendField(new Blockly.FieldNumber(0), 'W')
+      .appendField(new Blockly.FieldNumber(100), 'W')
       .appendField('h:')
-      .appendField(new Blockly.FieldNumber(0), 'H');
+      .appendField(new Blockly.FieldNumber(100), 'H');
     this.setPreviousStatement(true, 'hitbox');
     this.setNextStatement(true, 'hitbox');
     this.setTooltip('');
@@ -1268,27 +1292,27 @@ Blockly.Blocks['hitbox_quad'] = {
     this.appendDummyInput('P1')
     .setAlign(Blockly.inputs.Align.CENTRE)
       .appendField('x1:')
-      .appendField(new Blockly.FieldNumber(0), 'X1')
+      .appendField(new Blockly.FieldNumber(100), 'X1')
       .appendField('y1:')
-      .appendField(new Blockly.FieldNumber(0), 'Y1');
+      .appendField(new Blockly.FieldNumber(100), 'Y1');
     this.appendDummyInput('P2')
     .setAlign(Blockly.inputs.Align.CENTRE)
       .appendField('x2:')
-      .appendField(new Blockly.FieldNumber(0), 'X2')
+      .appendField(new Blockly.FieldNumber(100), 'X2')
       .appendField('y2:')
-      .appendField(new Blockly.FieldNumber(0), 'Y2');
+      .appendField(new Blockly.FieldNumber(200), 'Y2');
     this.appendDummyInput('P3')
     .setAlign(Blockly.inputs.Align.CENTRE)
       .appendField('x3:')
-      .appendField(new Blockly.FieldNumber(0), 'X3')
+      .appendField(new Blockly.FieldNumber(200), 'X3')
       .appendField('y3:')
-      .appendField(new Blockly.FieldNumber(0), 'Y3');
+      .appendField(new Blockly.FieldNumber(200), 'Y3');
     this.appendDummyInput('P4')
     .setAlign(Blockly.inputs.Align.CENTRE)
       .appendField('x4:')
-      .appendField(new Blockly.FieldNumber(0), 'X4')
+      .appendField(new Blockly.FieldNumber(200), 'X4')
       .appendField('y4:')
-      .appendField(new Blockly.FieldNumber(0), 'Y4');
+      .appendField(new Blockly.FieldNumber(100), 'Y4');
       this.setPreviousStatement(true, 'hitbox');
       this.setNextStatement(true, 'hitbox');
     this.setTooltip('');
@@ -1305,11 +1329,11 @@ Blockly.Blocks['hitbox_square'] = {
     this.appendDummyInput('XY')
     .setAlign(Blockly.inputs.Align.CENTRE)
       .appendField('x:')
-      .appendField(new Blockly.FieldNumber(0), 'X')
+      .appendField(new Blockly.FieldNumber(100), 'X')
       .appendField('y:')
-      .appendField(new Blockly.FieldNumber(0), 'Y')
+      .appendField(new Blockly.FieldNumber(100), 'Y')
       .appendField('s:')
-      .appendField(new Blockly.FieldNumber(0), 'S');
+      .appendField(new Blockly.FieldNumber(100), 'S');
     this.setPreviousStatement(true, 'hitbox');
     this.setNextStatement(true, 'hitbox');
     this.setTooltip('');
@@ -1326,21 +1350,21 @@ Blockly.Blocks['hitbox_triangle'] = {
     this.appendDummyInput('P1')
     .setAlign(Blockly.inputs.Align.CENTRE)
       .appendField('x1:')
-      .appendField(new Blockly.FieldNumber(0), 'X1')
+      .appendField(new Blockly.FieldNumber(100), 'X1')
       .appendField('y1:')
-      .appendField(new Blockly.FieldNumber(0), 'Y1');
+      .appendField(new Blockly.FieldNumber(100), 'Y1');
     this.appendDummyInput('P2')
     .setAlign(Blockly.inputs.Align.CENTRE)
       .appendField('x2:')
-      .appendField(new Blockly.FieldNumber(0), 'X2')
+      .appendField(new Blockly.FieldNumber(100), 'X2')
       .appendField('y2:')
-      .appendField(new Blockly.FieldNumber(0), 'Y2');
+      .appendField(new Blockly.FieldNumber(200), 'Y2');
     this.appendDummyInput('P3')
     .setAlign(Blockly.inputs.Align.CENTRE)
       .appendField('x3:')
-      .appendField(new Blockly.FieldNumber(0), 'X3')
+      .appendField(new Blockly.FieldNumber(200), 'X3')
       .appendField('y3:')
-      .appendField(new Blockly.FieldNumber(0), 'Y3');
+      .appendField(new Blockly.FieldNumber(200), 'Y3');
     this.setPreviousStatement(true, 'hitbox');
     this.setNextStatement(true, 'hitbox');
     this.setTooltip('');
@@ -1357,15 +1381,15 @@ Blockly.Blocks['hitbox_line']  = {
     this.appendDummyInput('P1')
     .setAlign(Blockly.inputs.Align.CENTRE)
       .appendField('x1:')
-      .appendField(new Blockly.FieldNumber(0), 'X1')
+      .appendField(new Blockly.FieldNumber(100), 'X1')
       .appendField('y1:')
-      .appendField(new Blockly.FieldNumber(0), 'Y1');
+      .appendField(new Blockly.FieldNumber(100), 'Y1');
     this.appendDummyInput('P2')
     .setAlign(Blockly.inputs.Align.CENTRE)
       .appendField('x2:')
-      .appendField(new Blockly.FieldNumber(0), 'X2')
+      .appendField(new Blockly.FieldNumber(200), 'X2')
       .appendField('y2:')
-      .appendField(new Blockly.FieldNumber(0), 'Y2');
+      .appendField(new Blockly.FieldNumber(200), 'Y2');
     this.setPreviousStatement(true, 'hitbox');
     this.setNextStatement(true, 'hitbox');
     this.setTooltip('');
@@ -1382,9 +1406,9 @@ Blockly.Blocks['hitbox_point'] = {
     this.appendDummyInput('P')
     .setAlign(Blockly.inputs.Align.CENTRE)
       .appendField('x:')
-      .appendField(new Blockly.FieldNumber(0), 'X')
+      .appendField(new Blockly.FieldNumber(100), 'X')
       .appendField('y:')
-      .appendField(new Blockly.FieldNumber(0), 'Y');
+      .appendField(new Blockly.FieldNumber(100), 'Y');
     this.setPreviousStatement(true, 'hitbox');
     this.setNextStatement(true, 'hitbox');
     this.setTooltip('');
@@ -1402,19 +1426,19 @@ Blockly.Blocks['hitbox_arc'] = {
     this.appendDummyInput('XY')
     .setAlign(Blockly.inputs.Align.CENTRE)
       .appendField('x:')
-      .appendField(new Blockly.FieldNumber(0), 'X')
+      .appendField(new Blockly.FieldNumber(100), 'X')
       .appendField('y:')
-      .appendField(new Blockly.FieldNumber(0), 'Y');
+      .appendField(new Blockly.FieldNumber(100), 'Y');
     this.appendDummyInput('WH')
     .setAlign(Blockly.inputs.Align.CENTRE)
       .appendField('w:')
-      .appendField(new Blockly.FieldNumber(0), 'W')
+      .appendField(new Blockly.FieldNumber(100), 'W')
       .appendField('h:')
-      .appendField(new Blockly.FieldNumber(0), 'H');
+      .appendField(new Blockly.FieldNumber(100), 'H');
     this.appendDummyInput('start_stop')
     .setAlign(Blockly.inputs.Align.CENTRE)
       .appendField('start:')
-      .appendField(new FieldAngle(90), 'START')
+      .appendField(new FieldAngle(0), 'START')
       .appendField('stop:')
       .appendField(new FieldAngle(90), 'STOP');
     this.appendDummyInput('mode')
@@ -1443,11 +1467,11 @@ Blockly.Blocks['hitbox_circle'] = {
     this.appendDummyInput('XYD')
     .setAlign(Blockly.inputs.Align.CENTRE)
       .appendField('x:')
-      .appendField(new Blockly.FieldNumber(0), 'X')
+      .appendField(new Blockly.FieldNumber(100), 'X')
       .appendField('y:')
-      .appendField(new Blockly.FieldNumber(0), 'Y')
+      .appendField(new Blockly.FieldNumber(100), 'Y')
       .appendField('d:')
-      .appendField(new Blockly.FieldNumber(0), 'D');
+      .appendField(new Blockly.FieldNumber(100), 'D');
     this.setPreviousStatement(true, 'hitbox');
     this.setNextStatement(true, 'hitbox');
     this.setTooltip('');
@@ -1465,35 +1489,17 @@ Blockly.Blocks['hitbox_ellipse']  = {
     this.appendDummyInput('XYWH')
     .setAlign(Blockly.inputs.Align.CENTRE)
       .appendField('x:')
-      .appendField(new Blockly.FieldNumber(0), 'X')
+      .appendField(new Blockly.FieldNumber(100), 'X')
       .appendField('y:')
-      .appendField(new Blockly.FieldNumber(0), 'Y')
+      .appendField(new Blockly.FieldNumber(100), 'Y')
       .appendField('w:')
-      .appendField(new Blockly.FieldNumber(0), 'W')
+      .appendField(new Blockly.FieldNumber(100), 'W')
       .appendField('h:')
-      .appendField(new Blockly.FieldNumber(0), 'H');
+      .appendField(new Blockly.FieldNumber(100), 'H');
     this.setPreviousStatement(true, 'hitbox');
     this.setNextStatement(true, 'hitbox');
     this.setTooltip('');
     this.setHelpUrl('');
     this.setColour(100);
-  }
-};
-
-Blockly.Blocks['test_block'] = {
-  init: function() {
-    this.appendStatementInput("FIRST")
-        .setCheck(null)
-        .appendField("First Statement");
-    this.appendDummyInput()
-        .appendField("Intermediate Input"); // Este DummyInput pode ajudar
-    this.appendStatementInput("SECOND")
-        .setCheck(null)
-        .appendField("Second Statement");
-    this.setPreviousStatement(true, null);
-    this.setNextStatement(true, null);
-    this.setColour(160);
-    this.setTooltip("");
-    this.setHelpUrl("");
   }
 };
