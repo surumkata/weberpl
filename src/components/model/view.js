@@ -270,6 +270,14 @@ export class ViewSketch {
     this.draws.push(draw);
   }
 
+  collide(px,py){
+    var collide = false;
+    this.hitboxes.forEach(hitbox => {
+      collide = collide || hitbox.collide(px,py);
+    })
+    return collide;
+  }
+
   mouseMoved(mX,mY) {
     let hover = false;
     if(!this.showHitboxes){
