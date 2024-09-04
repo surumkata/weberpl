@@ -229,12 +229,95 @@ export class View {
 }
 
 export class ViewSketch {
-  constructor(id,hitboxes,hitboxesType){
+  constructor(id,hitboxes,hitboxesType, bbox){
     this.id = id;
     this.draws = [];
     this.hitboxes = hitboxes;
     this.hitboxesType = hitboxesType;
     this.showHitboxes = false;
+  }
+
+  makeBBox(){
+    let xmin = WIDTH;
+    let ymin = HEIGHT;
+    let xmax = 0;
+    let ymax = 0;
+
+    this.draws.forEach(draw => {
+        let draw_xmin = WIDTH;
+        let draw_ymin = HEIGHT;
+        let draw_xmax = 0;
+        let draw_ymax = 0;
+        switch(draw.constructor) {
+            case Rect:
+                draw_xmin = draw.x;
+                draw_ymin = draw.y;
+                draw_xmax = draw.x+draw.w;
+                draw_ymax = draw.y+draw.h;
+                break;
+            case Quad:
+                draw_xmin = Math.min(draw.x1,draw.x2,draw.x3,draw.x4);
+                draw_ymin = Math.min(draw.y1,draw.y2,draw.y3,draw.y4);
+                draw_xmax = Math.max(draw.x1,draw.x2,draw.x3,draw.x4);
+                draw_ymax = Math.min(draw.y1,draw.y2,draw.y3,draw.y4);
+                break;
+            case Square:
+                draw_xmin = draw.x;
+                draw_ymin = draw.y;
+                draw_xmax = draw.x + draw.s;
+                draw_ymax = draw.y + draw.s;
+                break;
+            case Triangle:
+                draw_xmin = Math.min(draw.x1,draw.x2,draw.x3);
+                draw_ymin = Math.min(draw.y1,draw.y2,draw.y3);
+                draw_xmax = Math.max(draw.x1,draw.x2,draw.x3);
+                draw_ymax = Math.min(draw.y1,draw.y2,draw.y3);
+                break;
+            case Line:
+                draw_xmin = Math.min(draw.x1,draw.x2);
+                draw_ymin = Math.min(draw.y1,draw.y2);
+                draw_xmax = Math.max(draw.x1,draw.x2);
+                draw_ymax = Math.min(draw.y1,draw.y2);
+                break;
+            case Point:
+                draw_xmin = draw.x
+                draw_ymin = draw.y
+                draw_xmax = draw.x
+                draw_ymax = draw.y
+                break;
+            case Arc:
+                draw_xmin = draw.x - draw.w/2;
+                draw_ymin = draw.y - draw.h/2;
+                draw_xmax = draw.x + draw.w/2;
+                draw_ymax = draw.y + draw.h/2;
+                break;
+            case Circle:
+                draw_xmin = draw.x - draw.d/2;
+                draw_ymin = draw.y - draw.d/2;
+                draw_xmax = draw.x + draw.d/2;
+                draw_ymax = draw.y + draw.d/2;
+                break;
+            case Ellipse:
+                draw_xmin = draw.x - draw.w/2;
+                draw_ymin = draw.y - draw.h/2;
+                draw_xmax = draw.x + draw.w/2;
+                draw_ymax = draw.y + draw.h/2;
+                break;
+            default:
+                break;
+        }
+        xmin = Math.min(xmin,draw_xmin);
+        ymin = Math.min(ymin,draw_ymin);
+        xmax = Math.max(xmax,draw_xmax);
+        ymax = Math.max(ymax,draw_ymax);
+    })
+
+    this.bb = {
+        xmin : xmin,
+        ymin : ymin,
+        xmax : xmax,
+        ymax : ymax
+    }
   }
 
   draw(p5, semi_opacity=false){
@@ -258,6 +341,11 @@ export class ViewSketch {
       this.drawHitboxes(p5);
       p5.pop();
     }
+    //debug 
+    //p5.push();
+    //p5.fill(0,255,0);
+    //p5.quad(this.bb.xmin,this.bb.ymin,this.bb.xmax,this.bb.ymin,this.bb.xmax,this.bb.ymax,this.bb.xmin,this.bb.ymax);
+    //p5.pop();
   }
 
   drawHitboxes(p5){
@@ -268,6 +356,141 @@ export class ViewSketch {
 
   addDraw(draw){
     this.draws.push(draw);
+  }
+
+  scale(scale){
+    this.draws.forEach(draw => {
+      switch(draw.constructor) {
+        case Rect:
+          draw.x  *=  scale;
+          draw.y  *=  scale;
+          draw.w  *=  scale;
+          draw.h  *=  scale;
+          draw.tl *= scale;
+          draw.tr *= scale;
+          draw.br *= scale;
+          draw.bl *= scale;
+          break;
+        case Quad:
+          draw.x1 *= scale;
+          draw.y1 *= scale;
+          draw.x2 *= scale;
+          draw.y2 *= scale;
+          draw.x3 *= scale;
+          draw.y3 *= scale;
+          draw.x4 *= scale;
+          draw.y4 *= scale;
+          break;
+        case Square:
+          draw.x  *= scale;
+          draw.y  *= scale;
+          draw.s  *= scale;
+          draw.tl *= scale;
+          draw.tr *= scale;
+          draw.br *= scale;
+          draw.bl *= scale;
+          break;
+        case Triangle:
+          draw.x1 *= scale;
+          draw.y1 *= scale;
+          draw.x2 *= scale;
+          draw.y2 *= scale;
+          draw.x3 *= scale;
+          draw.y3 *= scale; 
+          break;
+        case Line:
+          draw.x1 *= scale;
+          draw.y1 *= scale;
+          draw.x2 *= scale;
+          draw.y2 *= scale;
+          break;
+        case Point:
+          draw.x *= scale;
+          draw.y *= scale;
+          break;
+        case Arc:
+          draw.x *= scale;
+          draw.y *= scale;
+          draw.w *= scale;
+          draw.h *= scale;
+          break;
+        case Circle:
+          draw.x *= scale;
+          draw.y *= scale;
+          draw.d *= scale;
+          break;
+        case Ellipse:
+          draw.x *= scale;
+          draw.y *= scale;
+          draw.w *= scale;
+          draw.h *= scale;
+          break;
+        case Stroke:
+          draw.w *= scale;
+          break;
+        default:
+          break;
+      }
+    })
+    this.makeBBox();
+  }
+
+  translate(tx,ty){
+    this.draws.forEach(draw => {
+      switch(draw.constructor) {
+        case Rect:
+          draw.x  +=  tx;
+          draw.y  +=  ty;
+          break;
+        case Quad:
+          draw.x1 += tx;
+          draw.y1 += ty;
+          draw.x2 += tx;
+          draw.y2 += ty;
+          draw.x3 += tx;
+          draw.y3 += ty;
+          draw.x4 += tx;
+          draw.y4 += ty;
+          break;
+        case Square:
+          draw.x  += tx;
+          draw.y  += ty;
+          break;
+        case Triangle:
+          draw.x1 += tx;
+          draw.y1 += ty;
+          draw.x2 += tx;
+          draw.y2 += ty;
+          draw.x3 += tx;
+          draw.y3 += ty; 
+          break;
+        case Line:
+          draw.x1 += tx;
+          draw.y1 += ty;
+          draw.x2 += tx;
+          draw.y2 += ty;
+          break;
+        case Point:
+          draw.x += tx;
+          draw.y += ty;
+          break;
+        case Arc:
+          draw.x += tx;
+          draw.y += ty;
+          break;
+        case Circle:
+          draw.x += tx;
+          draw.y += ty;
+          break;
+        case Ellipse:
+          draw.x += tx;
+          draw.y += ty;
+          break;
+        default:
+          break;
+      }
+    })
+    this.makeBBox();
   }
 
   collide(px,py){

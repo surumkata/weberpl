@@ -84,8 +84,8 @@ function loadTransitions(p5,er,gs,transitions){
     })
 }
 
-function loadSketch(id,draws,hitboxes,hitboxesType){
-    var sketch = new ViewSketch(id,hitboxes,hitboxesType);
+function loadSketch(id,draws,hitboxes,hitboxesType,bbox){
+    var sketch = new ViewSketch(id,hitboxes,hitboxesType,bbox);
     draws.forEach(draw => {
         const type = draw.type;
         let drawView;
@@ -150,6 +150,7 @@ function loadSketch(id,draws,hitboxes,hitboxesType){
             sketch.addDraw(drawView);
         }
     })
+    sketch.makeBBox();
     return sketch;
 }
 
@@ -212,6 +213,8 @@ function loadHitboxes(view){
     
     return hitboxes;
 }
+
+
 
 function loadView(p5,view){
     let hitboxes = loadHitboxes(view);

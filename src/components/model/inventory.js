@@ -1,4 +1,5 @@
 import {  Position, Size, WIDTH, HEIGHT_INV} from './utils';
+import { View, ViewSketch } from './view';
 
 let SQUARE_SIZE = 80
 
@@ -11,20 +12,55 @@ export class Item {
 
     this.slotPosition = slotPosition;
 
-    let padding = 10
-    let objSize = SQUARE_SIZE - padding*2
+    let padding = 10;
+    let objSize = SQUARE_SIZE - padding*2;
 
-    if (size.x >= size.y) {
-      this.size.x = objSize;
-      this.size.y = size.y * objSize / size.x;
-    } else {
-      this.size.y = objSize;
-      this.size.x = size.x * objSize / size.y;
+    if(view.constructor === View){
+        if (size.x >= size.y) {
+          this.size.x = objSize;
+          this.size.y = size.y * objSize / size.x;
+        } else {
+          this.size.y = objSize;
+          this.size.x = size.x * objSize / size.y;
+        }
+        if(this.size.x === objSize){
+            this.position.x = this.slotPosition.x + padding;
+            this.position.y = this.slotPosition.y + SQUARE_SIZE/2 - this.size.y/2;
+        }
+        else {
+            this.position.x = this.slotPosition.x + SQUARE_SIZE/2 - this.size.x/2;
+            this.position.y = this.slotPosition.y + padding;
+        }
+        view.changeSize(this.size);
+        view.changePosition(this.position);
+    }
+    else if(view.constructor === ViewSketch){
+        let width = view.bb.xmax - view.bb.xmin;
+        let height = view.bb.ymax - view.bb.ymin;
+        if(width >= height){
+            this.size.x = objSize;
+            this.size.y = height * objSize/width;
+        }
+        else {
+            this.size.y = objSize;
+            this.size.x = width * objSize/height;
+        }
+        if(this.size.x === objSize){
+            this.position.x = this.slotPosition.x + padding;
+            this.position.y = this.slotPosition.y + SQUARE_SIZE/2 - this.size.y/2;
+        }
+        else {
+            this.position.x = this.slotPosition.x + SQUARE_SIZE/2 - this.size.x/2;
+            this.position.y = this.slotPosition.y + padding;
+        }
+        let scale = this.size.x/width;
+        view.scale(scale);
+        let translateX = (this.position.x-view.bb.xmin);
+        let translateY = (this.position.y-view.bb.ymin);
+        view.translate(translateX,translateY);
     }
 
-    this.position.x = this.slotPosition.x + padding;
-    this.position.y = this.slotPosition.y + this.size.y/2;
-    view.changeSize(this.size);
+
     this.view = view;
     this.inUse = false;
     this.hover = false;
@@ -56,7 +92,14 @@ export class Item {
     }
     p5.pop();
     // Desenha a imagem na posição especificada
-    p5.image(this.view.images[0],this.position.x,this.position.y,this.size.x,this.size.y);
+    //p5.image(this.view.images[0],this.position.x,this.position.y,this.size.x,this.size.y);
+    this.view.draw(p5);
+
+    //debug
+    //p5.push();
+    //p5.fill(255,0,0);
+    //p5.rect(this.position.x,this.position.y,this.size.x,this.size.y);
+    //p5.pop();
   }
 
   mouseMoved(e) {
