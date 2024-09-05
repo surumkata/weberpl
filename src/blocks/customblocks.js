@@ -7,12 +7,12 @@ Blockly.Msg.ESCAPE_ROOM = '#17116e';
 Blockly.Msg.SCENARIOS = 200;
 Blockly.Msg.TRANSITIONS = 200;
 Blockly.Msg.OBJECTS = 140;
-Blockly.Msg.EVENTS = 0;
+Blockly.Msg.EVENTS = 300;
 Blockly.Msg.VIEWS = 80;
 Blockly.Msg.SOUNDS = 260;
 Blockly.Msg.TRIGGERS = 42;
 Blockly.Msg.ACTIONS = 82;
-Blockly.Msg.HITBOXES = 30;
+Blockly.Msg.HITBOXES = 345;
 Blockly.Msg.DRAWS = 120;
 Blockly.Msg.UTILS = 20;
 Blockly.Msg.CHALLENGES = 285;
@@ -114,7 +114,7 @@ Blockly.Blocks['scenario'] = {
         .appendField(new Blockly.FieldTextInput("SCENARIO"), "ID");
     this.appendDummyInput()
         .setAlign(Blockly.inputs.Align.CENTRE)
-        .appendField("INITIAL_VIEW:")
+        .appendField("INITIAL VIEW:")
         .appendField(new Blockly.FieldTextInput("VIEW"), "initial_view");
     this.appendDummyInput()
         .setAlign(Blockly.inputs.Align.CENTRE)
@@ -152,10 +152,10 @@ Blockly.Blocks['event'] = {
         .appendField("TIMES");
     this.appendValueInput("IF")
         .setCheck("trigger")
-        .appendField("if");
+        .appendField("IF");
     this.appendValueInput("DO")
         .setCheck("action")
-        .appendField("do");
+        .appendField("DO");
     this.setPreviousStatement(true, "event");
     this.setNextStatement(true, "event");
     this.setColour('%{BKY_EVENTS}');
@@ -176,10 +176,11 @@ Blockly.Blocks['transition'] = {
     this.appendValueInput("VIEW")
         .setCheck("view")
         .appendField("VIEW:");
+    this.appendEndRowInput('END');
     this.appendDummyInput()
         .appendField("NEXT ")
         .appendField(new Blockly.FieldDropdown([["TRANSITION","TRANSITION"], ["SCENARIO","SCENARIO"]]), "TYPE")
-        .appendField(new Blockly.FieldTextInput("id"), "NEXT");
+        .appendField(new Blockly.FieldTextInput("ID"), "NEXT");
     this.setPreviousStatement(true, "transition");
     this.setNextStatement(true, "transition");
     this.setColour('%{BKY_TRANSITIONS}');
@@ -196,7 +197,7 @@ Blockly.Blocks['object'] = {
         .appendField(new Blockly.FieldTextInput("OBJECT"), "ID");
     this.appendDummyInput()
         .setAlign(Blockly.inputs.Align.CENTRE)
-        .appendField("INITIAL_VIEW:")
+        .appendField("INITIAL VIEW:")
         .appendField(new Blockly.FieldTextInput("VIEW"), "initial_view");
     this.appendDummyInput()
         .setAlign(Blockly.inputs.Align.CENTRE)
@@ -248,9 +249,9 @@ Blockly.Blocks['view'] = {
     .setAlign(Blockly.inputs.Align.CENTRE)
     .appendField('HITBOX:')
     .appendField(new Blockly.FieldDropdown([
-        ['default', 'DEFAULT'],
-        ['no', 'NO'],
-        ['advanced', 'ADVANCED']
+        ['DEFAULT', 'DEFAULT'],
+        ['NO', 'NO'],
+        ['ADVANCED', 'ADVANCED']
       ], this.onHitboxChange.bind(this)), 'HITBOX_TYPE');  // Associa a função de mudança
     this.appendValueInput('IMAGE')
       .setAlign(Blockly.inputs.Align.CENTRE)
@@ -444,7 +445,7 @@ init: function() {
   this.appendValueInput("POSITION")
       .setCheck("point")
       .appendField("SHOW MESSAGE")
-      .appendField(new Blockly.FieldTextInput("message"), "MESSAGE")
+      .appendField(new Blockly.FieldTextInput("MESSAGE"), "MESSAGE")
       .appendField("IN");
   this.setOutput(true, "action");
   this.setColour('%{BKY_ACTIONS}');
@@ -631,10 +632,10 @@ init: function() {
       .appendField(new Blockly.FieldTextInput("ANSWER"), "ANSWER");
   this.appendValueInput("SUCESS")
       .setCheck("action")
-      .appendField("SUCESS:");
+      .appendField("IF SUCESS DO:");
   this.appendValueInput("FAIL")
       .setCheck("action")
-      .appendField("FAIL: ");
+      .appendField("IF FAIL DO: ");
   this.setOutput(true, "challenge");
   this.setColour('%{BKY_CHALLENGES}');
 this.setTooltip("");
@@ -655,10 +656,10 @@ init: function() {
       .appendField(new Blockly.FieldTextInput("OBJECT"), "TRIGGER_OBJECT");
   this.appendValueInput("SUCESS")
       .setCheck("action")
-      .appendField("SUCESS:");
+      .appendField("IF SUCESS DO:");
   this.appendValueInput("FAIL")
       .setCheck("action")
-      .appendField("FAIL:");
+      .appendField("IF FAIL DO:");
   this.setOutput(true, "challenge");
   this.setColour('%{BKY_CHALLENGES}');
 this.setTooltip("");
@@ -687,10 +688,10 @@ init: function() {
       .appendField(new Blockly.FieldTextInput("ANSWER"), "WRONG_ANSWER_3");
   this.appendValueInput("SUCESS")
       .setCheck("action")
-      .appendField("SUCESS:");
+      .appendField("IF SUCESS DO:");
   this.appendValueInput("FAIL")
       .setCheck("action")
-      .appendField("FAIL:");
+      .appendField("IF FAIL DO:");
   this.setOutput(true, "challenge");
   this.setColour('%{BKY_CHALLENGES}');
 this.setTooltip("");
@@ -723,10 +724,10 @@ init: function() {
       .appendField(new Blockly.FieldTextInput("B4"), "B4");
   this.appendValueInput("SUCESS")
       .setCheck("action")
-      .appendField("SUCESS:");
+      .appendField("IF SUCESS DO:");
   this.appendValueInput("FAIL")
       .setCheck("action")
-      .appendField("FAIL: ");
+      .appendField("IF FAIL DO: ");
   this.setOutput(true, "challenge");
   this.setColour('%{BKY_CHALLENGES}');
 this.setTooltip("");
@@ -752,10 +753,10 @@ init: function() {
       .appendField(new Blockly.FieldTextInput("A4"), "A4");
   this.appendValueInput("SUCESS")
       .setCheck("action")
-      .appendField("SUCESS:");
+      .appendField("IF SUCESS DO:");
   this.appendValueInput("FAIL")
       .setCheck("action")
-      .appendField("FAIL: ");
+      .appendField("IF FAIL DO: ");
   this.setOutput(true, "challenge");
   this.setColour('%{BKY_CHALLENGES}');
 this.setTooltip("");
@@ -789,23 +790,23 @@ Blockly.Blocks['custom_dropdown_block'] = {
       switch(option1) {
         case 'PORTA':
           return [
-            ["aberta", "ABERTA"],
-            ["fechada", "FECHADA"]
+            ["ABERTA", "ABERTA"],
+            ["FECHADA", "FECHADA"]
           ];
         case 'CHAVE':
           return [
-            ["normal", "NORMAL"],
-            ["ativa", "ATIVA"]
+            ["NORMAL", "NORMAL"],
+            ["ATIVA", "ATIVA"]
           ];
         case 'COFRE':
           return [
-            ["aberto", "ABERTO"],
-            ["fechado", "FECHADO"]
+            ["ABERTO", "ABERTO"],
+            ["FECHADO", "FECHADO"]
           ];
         default:
           return [
-            ["aberta", "ABERTA"],
-            ["fechada", "FECHADA"]
+            ["ABERTA", "ABERTA"],
+            ["FECHADA", "FECHADA"]
           ];
       }
     }
@@ -1038,10 +1039,10 @@ Blockly.Blocks['draw_arc'] = {
     .setAlign(Blockly.inputs.Align.CENTRE)
       .appendField('mode:')
       .appendField(new Blockly.FieldDropdown([
-          ['default', 'default'],
-          ['open', 'open'],
-          ['chord', 'chord'],
-          ['pie', 'pie']
+          ['DEFAULT', 'default'],
+          ['OPEN', 'open'],
+          ['CHORD', 'chord'],
+          ['PIE', 'pie']
         ]), 'MODE');
     this.setPreviousStatement(true, 'draw');
     this.setNextStatement(true, 'draw');
@@ -1214,9 +1215,9 @@ Blockly.Blocks['view_draw'] = {
       .setAlign(Blockly.inputs.Align.CENTRE)
       .appendField('HITBOX:')
       .appendField(new Blockly.FieldDropdown([
-        ['default', 'DEFAULT'],
-        ['no', 'NO'],
-        ['advanced', 'ADVANCED']
+        ['DEFAULT', 'DEFAULT'],
+        ['NO', 'NO'],
+        ['ADVANCED', 'ADVANCED']
       ], this.onHitboxChange.bind(this)), 'HITBOX_TYPE');  // Associa a função de mudança
     this.appendDummyInput('DRAWS_TITLE')
       .setAlign(Blockly.inputs.Align.CENTRE)
@@ -1445,10 +1446,10 @@ Blockly.Blocks['hitbox_arc'] = {
     .setAlign(Blockly.inputs.Align.CENTRE)
       .appendField('mode:')
       .appendField(new Blockly.FieldDropdown([
-          ['default', 'default'],
-          ['open', 'open'],
-          ['chord', 'chord'],
-          ['pie', 'pie']
+          ['DEFAULT', 'default'],
+          ['OPEN', 'open'],
+          ['CHORD', 'chord'],
+          ['PIE', 'pie']
         ]), 'MODE');
     this.setPreviousStatement(true, 'hitbox');
     this.setNextStatement(true, 'hitbox');

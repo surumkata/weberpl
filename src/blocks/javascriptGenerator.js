@@ -293,11 +293,12 @@ javascriptGenerator.forBlock['view'] = function(block, generator) {
   else {
     sizeString = '{"x":0,"y":0}'
   }
+  let posStringSliced;
   if (posString) {
-    posString = posString.slice(1, -1);
+    posStringSliced = posString.slice(1, -1);
   }
   else {
-    posString = '{"x":0,"y":0}'
+    posStringSliced = '{"x":0,"y":0}'
   }
   if (value_image) {
     value_image = value_image.slice(1,-1);
@@ -307,7 +308,13 @@ javascriptGenerator.forBlock['view'] = function(block, generator) {
   }
   // Converter a string para objeto JSON
   var sizeObject = JSON.parse(sizeString);
-  var posObject = JSON.parse(posString);
+  console.log(posString);
+  try{
+    var posObject = JSON.parse(posStringSliced);
+  }
+  catch{
+    var posObject = JSON.parse(`"VAR_${posString}"`);
+  }
 
   var code = {
     "id" : text_id,

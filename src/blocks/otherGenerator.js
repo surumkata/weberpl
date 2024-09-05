@@ -18,3 +18,19 @@ pythonGenerator.forBlock['escape_room'] = function(block, generator) {
 phpGenerator.forBlock['escape_room'] = function(block, generator) {
     return "\n";
    };
+
+dartGenerator.forBlock['point'] = function(block, generator) {
+    return ['\n', dartGenerator.ORDER_NONE];
+};
+
+luaGenerator.forBlock['point'] = function(block, generator) {
+    return ['\n', luaGenerator.ORDER_NONE];
+};
+
+pythonGenerator.forBlock['point'] = function(block, generator) {
+    return ['\n', pythonGenerator.ORDER_NONE];
+};
+
+phpGenerator.forBlock['point'] = function(block, generator) {
+    return ['\n', phpGenerator.ORDER_NONE];
+   };
