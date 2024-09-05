@@ -45,7 +45,7 @@ javascriptGenerator.forBlock['escape_room'] = function(block, generator) {
   return JSON.stringify(code, null, 2); // Retornar o JSON como string formatada
 };
 
-javascriptGenerator.forBlock['size'] = function(block, generator) {
+javascriptGenerator.forBlock['point'] = function(block, generator) {
   var x = block.getFieldValue('x');
   var y = block.getFieldValue('y');
   // Criar um objeto JSON com os valores x e y
@@ -524,7 +524,7 @@ return [JSON.stringify(code, null, 2), javascriptGenerator.ORDER_NONE];
 
 javascriptGenerator.forBlock['poscond_mostra_msg'] = function(block, generator) {
 var message = block.getFieldValue('MESSAGE');
-var positionString = generator.valueToCode(block, 'NAME', Order.ATOMIC);
+var positionString = generator.valueToCode(block, 'POSITION', Order.ATOMIC);
 
 positionString = positionString.slice(1,-1);
 var positionObject = JSON.parse(positionString);
@@ -542,7 +542,7 @@ return [JSON.stringify(code, null, 2), javascriptGenerator.ORDER_NONE];
 
 javascriptGenerator.forBlock['poscond_obj_muda_tam'] = function(block, generator) {
 var object_id = block.getFieldValue('OBJECT_ID');
-var sizeString = generator.valueToCode(block, 'NAME', Order.ATOMIC);
+var sizeString = generator.valueToCode(block, 'SIZE', Order.ATOMIC);
 
 sizeString = sizeString.slice(1,-1);
 var sizeObject = JSON.parse(sizeString);
@@ -559,7 +559,7 @@ return [JSON.stringify(code, null, 2), javascriptGenerator.ORDER_NONE];
 
 javascriptGenerator.forBlock['poscond_obj_muda_pos'] = function(block, generator) {
 var object_id = block.getFieldValue('OBJECT_ID');
-var positionString = generator.valueToCode(block, 'NAME', Order.ATOMIC);
+var positionString = generator.valueToCode(block, 'POSITION', Order.ATOMIC);
 
 positionString = positionString.slice(1,-1);
 var positionObject = JSON.parse(positionString);

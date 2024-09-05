@@ -3,6 +3,20 @@ import {registerFieldAngle} from '@blockly/field-angle';
 import { FieldAngle } from '@blockly/field-angle';
 import {FieldColourHsvSliders} from '@blockly/field-colour-hsv-sliders';
 
+Blockly.Msg.ESCAPE_ROOM = '#17116e';
+Blockly.Msg.SCENARIOS = 200;
+Blockly.Msg.TRANSITIONS = 200;
+Blockly.Msg.OBJECTS = 140;
+Blockly.Msg.EVENTS = 0;
+Blockly.Msg.VIEWS = 80;
+Blockly.Msg.SOUNDS = 260;
+Blockly.Msg.TRIGGERS = 42;
+Blockly.Msg.ACTIONS = 82;
+Blockly.Msg.HITBOXES = 30;
+Blockly.Msg.DRAWS = 120;
+Blockly.Msg.UTILS = 20;
+Blockly.Msg.CHALLENGES = 285;
+
 Blockly.Blocks['escape_room'] = {
   init: function() {
     this.appendDummyInput()
@@ -28,39 +42,23 @@ Blockly.Blocks['escape_room'] = {
         .appendField("STARTS WITH")
         .appendField(new Blockly.FieldDropdown([["TRANSITION","TRANSITION"], ["SCENARIO","SCENARIO"]]), "TYPE")
         .appendField(new Blockly.FieldTextInput("ID"), "START");
-    this.setColour(250);
+    this.setColour('%{BKY_ESCAPE_ROOM}');
  this.setTooltip("");
  this.setHelpUrl("");
   }
 };
 
-Blockly.Blocks['size'] = {
+Blockly.Blocks['point'] = {
   init: function() {
     this.appendDummyInput()
-        .appendField("Size (")
+        .appendField("(")
         .appendField(new Blockly.FieldNumber(0, -10000), "x")
         .appendField(",")
         .appendField(new Blockly.FieldNumber(0, -10000), "y")
         .appendField(")");
     this.setInputsInline(false);
-    this.setOutput(true, "size");
-    this.setColour(20);
- this.setTooltip("");
- this.setHelpUrl("");
-  }
-};
-
-Blockly.Blocks['position'] = {
-  init: function() {
-    this.appendDummyInput()
-        .appendField("Position (")
-        .appendField(new Blockly.FieldNumber(0, 0, 1280), "x")
-        .appendField(",")
-        .appendField(new Blockly.FieldNumber(0, 0, 720), "y")
-        .appendField(")");
-    this.setInputsInline(false);
-    this.setOutput(true, "position");
-    this.setColour(20);
+    this.setOutput(true, "point");
+    this.setColour('%{BKY_UTILS}');
  this.setTooltip("");
  this.setHelpUrl("");
   }
@@ -74,7 +72,7 @@ Blockly.Blocks['url'] = {
         .appendField(")");
     this.setInputsInline(false);
     this.setOutput(true, "url");
-    this.setColour(20);
+    this.setColour('%{BKY_UTILS}');
  this.setTooltip("");
  this.setHelpUrl("");
   }
@@ -83,11 +81,11 @@ Blockly.Blocks['url'] = {
 Blockly.Blocks['image'] = {
     init: function() {
       this.appendDummyInput()
-          .appendField("image")
+          .appendField("IMAGE")
           .appendField(new Blockly.FieldDropdown([["room","room"],["safe","cofre"], ["open_safe","open_cofre"], ["door","door"], ["open_door","open_door"], ["key","key"], ["active_key","active_key"], ["note","nota"], ["note_zoom","nota_nova"], ["magnifying_glass","lupa"], ["active_magnifying glass","active_lupa"]]), "IMAGE");
       this.setInputsInline(false);
       this.setOutput(true, "url");
-      this.setColour(20);
+      this.setColour('%{BKY_UTILS}');
    this.setTooltip("");
    this.setHelpUrl("");
     }
@@ -102,7 +100,7 @@ Blockly.Blocks['story'] = {
     this.setInputsInline(false);
     this.setPreviousStatement(true, null);
     this.setNextStatement(true, null);
-    this.setColour(20);
+    this.setColour('%{BKY_UTILS}');
  this.setTooltip("");
  this.setHelpUrl("");
   }
@@ -113,11 +111,11 @@ Blockly.Blocks['scenario'] = {
     this.appendDummyInput()
         .setAlign(Blockly.inputs.Align.CENTRE)
         .appendField("SCENARIO")
-        .appendField(new Blockly.FieldTextInput("SCENARIO_1"), "ID");
+        .appendField(new Blockly.FieldTextInput("SCENARIO"), "ID");
     this.appendDummyInput()
         .setAlign(Blockly.inputs.Align.CENTRE)
         .appendField("INITIAL_VIEW:")
-        .appendField(new Blockly.FieldTextInput("VIEW_1"), "initial_view");
+        .appendField(new Blockly.FieldTextInput("VIEW"), "initial_view");
     this.appendDummyInput()
         .setAlign(Blockly.inputs.Align.CENTRE)
         .appendField("VIEWS:");
@@ -135,7 +133,7 @@ Blockly.Blocks['scenario'] = {
         .setCheck("sound");
     this.setPreviousStatement(true, "scenario");
     this.setNextStatement(true, "scenario");
-    this.setColour(200);
+    this.setColour('%{BKY_SCENARIOS}');
  this.setTooltip("");
  this.setHelpUrl("");
   }
@@ -145,13 +143,13 @@ Blockly.Blocks['event'] = {
   init: function() {
     this.appendDummyInput()
         .setAlign(Blockly.inputs.Align.CENTRE)
-        .appendField("Event")
+        .appendField("EVENT")
         .appendField(new Blockly.FieldTextInput("EVENT"), "ID");
     this.appendDummyInput()
         .setAlign(Blockly.inputs.Align.CENTRE)
-        .appendField("can be repeated")
+        .appendField("CAN BE REPEATED")
         .appendField(new Blockly.FieldNumber(1,1,Infinity,1), "REPETITIONS")
-        .appendField("times");
+        .appendField("TIMES");
     this.appendValueInput("IF")
         .setCheck("trigger")
         .appendField("if");
@@ -160,7 +158,7 @@ Blockly.Blocks['event'] = {
         .appendField("do");
     this.setPreviousStatement(true, "event");
     this.setNextStatement(true, "event");
-    this.setColour(315);
+    this.setColour('%{BKY_EVENTS}');
  this.setTooltip("");
  this.setHelpUrl("");
   }
@@ -169,23 +167,22 @@ Blockly.Blocks['event'] = {
 Blockly.Blocks['transition'] = {
   init: function() {
     this.appendDummyInput()
-        .appendField("Transition");
-    this.appendDummyInput()
-        .appendField(new Blockly.FieldTextInput("My Transition"), "ID");
+        .setAlign(Blockly.inputs.Align.CENTRE)
+        .appendField("TRANSITION")
+        .appendField(new Blockly.FieldTextInput("TRANSITION"), "ID");
     this.appendStatementInput("STORY")
         .setCheck("story")
-        .appendField("story : ");
+        .appendField("STORY: ");
     this.appendValueInput("VIEW")
         .setCheck("view")
-        .appendField("view :");
+        .appendField("VIEW:");
     this.appendDummyInput()
-        .appendField("next ")
-        .appendField(new Blockly.FieldDropdown([["transition","TRANSITION"], ["scenario","SCENARIO"]]), "TYPE")
-        .appendField(":")
+        .appendField("NEXT ")
+        .appendField(new Blockly.FieldDropdown([["TRANSITION","TRANSITION"], ["SCENARIO","SCENARIO"]]), "TYPE")
         .appendField(new Blockly.FieldTextInput("id"), "NEXT");
     this.setPreviousStatement(true, "transition");
     this.setNextStatement(true, "transition");
-    this.setColour(60);
+    this.setColour('%{BKY_TRANSITIONS}');
  this.setTooltip("");
  this.setHelpUrl("");
   }
@@ -196,11 +193,11 @@ Blockly.Blocks['object'] = {
     this.appendDummyInput()
         .setAlign(Blockly.inputs.Align.CENTRE)
         .appendField("OBJECT")
-        .appendField(new Blockly.FieldTextInput("OBJECT_1"), "ID");
+        .appendField(new Blockly.FieldTextInput("OBJECT"), "ID");
     this.appendDummyInput()
         .setAlign(Blockly.inputs.Align.CENTRE)
         .appendField("INITIAL_VIEW:")
-        .appendField(new Blockly.FieldTextInput("VIEW_1"), "initial_view");
+        .appendField(new Blockly.FieldTextInput("VIEW"), "initial_view");
     this.appendDummyInput()
         .setAlign(Blockly.inputs.Align.CENTRE)
         .appendField("VIEWS:");
@@ -213,7 +210,7 @@ Blockly.Blocks['object'] = {
         .setCheck("sound");
     this.setPreviousStatement(true, "object");
     this.setNextStatement(true, "object");
-    this.setColour(270);
+    this.setColour('%{BKY_OBJECTS}');
  this.setTooltip("");
  this.setHelpUrl("");
   }
@@ -227,17 +224,17 @@ Blockly.Blocks['sound'] = {
       .appendField(new Blockly.FieldTextInput('SOUND'), 'ID');
     this.appendDummyInput('NAME')
     .setAlign(Blockly.inputs.Align.CENTRE)
-      .appendField('loop:')
+      .appendField('LOOP:')
       .appendField(new Blockly.FieldCheckbox('FALSE'), 'LOOP');
     this.appendValueInput('SRC')
     .setAlign(Blockly.inputs.Align.CENTRE)
     .setCheck('url')
-      .appendField('src:');
+      .appendField('SOURCE:');
     this.setPreviousStatement(true, 'sound');
     this.setNextStatement(true, 'sound');
     this.setTooltip('');
     this.setHelpUrl('');
-    this.setColour(195);
+    this.setColour('%{BKY_SOUNDS}');
   }
 };
 
@@ -246,7 +243,7 @@ Blockly.Blocks['view'] = {
     this.appendDummyInput('ID')
       .setAlign(Blockly.inputs.Align.CENTRE)
       .appendField('VIEW')
-      .appendField(new Blockly.FieldTextInput('VIEW_1'), 'ID');
+      .appendField(new Blockly.FieldTextInput('VIEW'), 'ID');
     this.appendDummyInput('HITBOX')
     .setAlign(Blockly.inputs.Align.CENTRE)
     .appendField('HITBOX:')
@@ -261,17 +258,17 @@ Blockly.Blocks['view'] = {
       .appendField('IMAGE:');
     this.appendValueInput('POSITION')
       .setAlign(Blockly.inputs.Align.CENTRE)
-      .setCheck('position')
+      .setCheck('point')
       .appendField('POSITION:');
     this.appendValueInput('SIZE')
       .setAlign(Blockly.inputs.Align.CENTRE)
-      .setCheck('size')
+      .setCheck('point')
       .appendField('SIZE:');
     this.setPreviousStatement(true, 'view');
     this.setNextStatement(true, 'view');
     this.setTooltip('');
     this.setHelpUrl('');
-    this.setColour(60);
+    this.setColour('%{BKY_VIEWS}');
   },
 
   onHitboxChange: function(newValue) {
@@ -306,23 +303,23 @@ Blockly.Blocks['view'] = {
 Blockly.Blocks['view2'] = {
   init: function() {
     this.appendDummyInput()
-        .appendField("View");
-    this.appendDummyInput()
-        .appendField(new Blockly.FieldTextInput("My View"), "ID");
+      .setAlign(Blockly.inputs.Align.CENTRE)
+      .appendField("VIEW")
+      .appendField(new Blockly.FieldTextInput("VIEW"), "ID");
     this.appendValueInput("IMAGE")
         .setCheck("url")
         .setAlign(Blockly.inputs.Align.RIGHT)
-        .appendField("image :");
+        .appendField("IMAGE:");
     this.appendValueInput("POSITION")
-        .setCheck("position")
+        .setCheck("point")
         .setAlign(Blockly.inputs.Align.RIGHT)
-        .appendField("position :");
+        .appendField("POSITION:");
     this.appendValueInput("SIZE")
-        .setCheck("size")
+        .setCheck("point")
         .setAlign(Blockly.inputs.Align.RIGHT)
-        .appendField("size :");
+        .appendField("SIZE:");
     this.setOutput(true, "view");
-    this.setColour(60);
+    this.setColour('%{BKY_VIEWS}');
  this.setTooltip("");
  this.setHelpUrl("");
   }
@@ -335,9 +332,9 @@ Blockly.Blocks['not'] = {
 init: function() {
   this.appendValueInput("TRIGGER1")
       .setCheck("trigger")
-      .appendField("not");
+      .appendField("NOT");
   this.setOutput(true, "trigger");
-  this.setColour(270);
+  this.setColour('%{BKY_TRIGGERS}');
 this.setTooltip("");
 this.setHelpUrl("");
 }
@@ -349,9 +346,10 @@ init: function() {
       .setCheck("action");
   this.appendValueInput("ACTION2")
       .setCheck("action")
-      .appendField("and");
+      .appendField("AND");
+  this.appendEndRowInput('END');
   this.setOutput(true, "action");
-  this.setColour(180);
+  this.setColour('%{BKY_ACTIONS}');
 this.setTooltip("");
 this.setHelpUrl("");
 }
@@ -364,9 +362,10 @@ init: function() {
       .setCheck("trigger");
   this.appendValueInput("TRIGGER2")
       .setCheck("trigger")
-      .appendField("and");
+      .appendField("AND");
+  this.appendEndRowInput('END');
   this.setOutput(true, "trigger");
-  this.setColour(270);
+  this.setColour('%{BKY_TRIGGERS}');
 this.setTooltip("");
 this.setHelpUrl("");
 }
@@ -376,11 +375,12 @@ Blockly.Blocks['or'] = {
 init: function() {
   this.appendValueInput("TRIGGER1")
       .setCheck("trigger");
-  this.appendValueInput("TRIGGER1")
+  this.appendValueInput("TRIGGER2")
       .setCheck("trigger")
-      .appendField("or");
+      .appendField("OR");
+  this.appendEndRowInput('END');
   this.setOutput(true, "trigger");
-  this.setColour(270);
+  this.setColour('%{BKY_TRIGGERS}');
 this.setTooltip("");
 this.setHelpUrl("");
 }
@@ -394,7 +394,7 @@ init: function() {
   this.appendEndRowInput()
       .appendField(")");
   this.setOutput(true, null);
-  this.setColour(270);
+  this.setColour('%{BKY_TRIGGERS}');
 this.setTooltip("");
 this.setHelpUrl("");
 }
@@ -405,11 +405,11 @@ this.setHelpUrl("");
 Blockly.Blocks['poscond_obj_muda_view'] = {
 init: function() {
   this.appendDummyInput()
-      .appendField(new Blockly.FieldTextInput("object_id"), "OBJECT")
-      .appendField("change to")
-      .appendField(new Blockly.FieldTextInput("view_id"), "VIEW");
+      .appendField(new Blockly.FieldTextInput("OBJECT"), "OBJECT")
+      .appendField("CHANGE TO")
+      .appendField(new Blockly.FieldTextInput("VIEW"), "VIEW");
   this.setOutput(true, "action");
-  this.setColour(180);
+  this.setColour('%{BKY_ACTIONS}');
 this.setTooltip("");
 this.setHelpUrl("");
 }
@@ -419,10 +419,10 @@ this.setHelpUrl("");
 Blockly.Blocks['poscond_obj_vai_inv'] = {
 init: function() {
   this.appendDummyInput()
-      .appendField(new Blockly.FieldTextInput("object_id"), "OBJECT")
-      .appendField("goes to inventory");
+      .appendField(new Blockly.FieldTextInput("OBJECT"), "OBJECT")
+      .appendField("GOES TO INVENTORY");
   this.setOutput(true, "action");
-  this.setColour(180);
+  this.setColour('%{BKY_ACTIONS}');
 this.setTooltip("");
 this.setHelpUrl("");
 }
@@ -431,9 +431,9 @@ this.setHelpUrl("");
 Blockly.Blocks['poscond_fim_de_jogo'] = {
 init: function() {
   this.appendDummyInput()
-      .appendField("end of game");
+      .appendField("END OF GAME");
   this.setOutput(true, "action");
-  this.setColour(180);
+  this.setColour('%{BKY_ACTIONS}');
 this.setTooltip("");
 this.setHelpUrl("");
 }
@@ -441,13 +441,13 @@ this.setHelpUrl("");
 
 Blockly.Blocks['poscond_mostra_msg'] = {
 init: function() {
-  this.appendValueInput("NAME")
-      .setCheck("position")
-      .appendField("show message")
+  this.appendValueInput("POSITION")
+      .setCheck("point")
+      .appendField("SHOW MESSAGE")
       .appendField(new Blockly.FieldTextInput("message"), "MESSAGE")
-      .appendField("in");
+      .appendField("IN");
   this.setOutput(true, "action");
-  this.setColour(180);
+  this.setColour('%{BKY_ACTIONS}');
 this.setTooltip("");
 this.setHelpUrl("");
 }
@@ -455,12 +455,12 @@ this.setHelpUrl("");
 
 Blockly.Blocks['poscond_obj_muda_tam'] = {
 init: function() {
-  this.appendValueInput("NAME")
-      .setCheck("size")
-      .appendField(new Blockly.FieldTextInput("object_id"), "OBJECT_ID")
-      .appendField("change size to");
+  this.appendValueInput("SIZE")
+      .setCheck("point")
+      .appendField(new Blockly.FieldTextInput("OBJECT"), "OBJECT_ID")
+      .appendField("CHANGE SIZE TO");
   this.setOutput(true, "action");
-  this.setColour(180);
+  this.setColour('%{BKY_ACTIONS}');
 this.setTooltip("");
 this.setHelpUrl("");
 }
@@ -468,12 +468,12 @@ this.setHelpUrl("");
 
 Blockly.Blocks['poscond_obj_muda_pos'] = {
 init: function() {
-  this.appendValueInput("NAME")
-      .setCheck("position")
-      .appendField(new Blockly.FieldTextInput("object_id"), "OBJECT_ID")
-      .appendField("move to");
+  this.appendValueInput("POSITION")
+      .setCheck("point")
+      .appendField(new Blockly.FieldTextInput("OBJECT"), "OBJECT_ID")
+      .appendField("MOVE TO");
   this.setOutput(true, "action");
-  this.setColour(180);
+  this.setColour('%{BKY_ACTIONS}');
 this.setTooltip("");
 this.setHelpUrl("");
 }
@@ -482,10 +482,10 @@ this.setHelpUrl("");
 Blockly.Blocks['poscond_muda_cena'] = {
 init: function() {
   this.appendDummyInput()
-      .appendField("change to scenario")
-      .appendField(new Blockly.FieldTextInput("scenario_id"), "SCENARIO_ID");
+      .appendField("CHANGE TO SCENARIO")
+      .appendField(new Blockly.FieldTextInput("SCENARIO"), "SCENARIO_ID");
   this.setOutput(true, "action");
-  this.setColour(180);
+  this.setColour('%{BKY_ACTIONS}');
 this.setTooltip("");
 this.setHelpUrl("");
 }
@@ -494,10 +494,10 @@ this.setHelpUrl("");
 Blockly.Blocks['poscond_remove_obj'] = {
 init: function() {
   this.appendDummyInput()
-      .appendField(new Blockly.FieldTextInput("object_id"), "OBJECT_ID")
-      .appendField("is removed");
+      .appendField(new Blockly.FieldTextInput("OBJECT"), "OBJECT_ID")
+      .appendField("IS REMOVED");
   this.setOutput(true, "action");
-  this.setColour(180);
+  this.setColour('%{BKY_ACTIONS}');
 this.setTooltip("");
 this.setHelpUrl("");
 }
@@ -507,9 +507,9 @@ Blockly.Blocks['poscond_comeca_des'] = {
 init: function() {
   this.appendValueInput("CHALLENGE")
       .setCheck("challenge")
-      .appendField("start challenge");
+      .appendField("START CHALLENGE");
   this.setOutput(true, "action");
-  this.setColour(180);
+  this.setColour('%{BKY_ACTIONS}');
 this.setTooltip("");
 this.setHelpUrl("");
 }
@@ -518,10 +518,10 @@ this.setHelpUrl("");
 Blockly.Blocks['poscond_trans'] = {
 init: function() {
   this.appendDummyInput()
-      .appendField("transition")
-      .appendField(new Blockly.FieldTextInput("transition_id"), "TRANSITION_ID");
+      .appendField("CHANGE TO TRANSITION")
+      .appendField(new Blockly.FieldTextInput("TRANSITION"), "TRANSITION_ID");
   this.setOutput(true, "action");
-  this.setColour(180);
+  this.setColour('%{BKY_ACTIONS}');
 this.setTooltip("");
 this.setHelpUrl("");
 }
@@ -530,13 +530,13 @@ this.setHelpUrl("");
 Blockly.Blocks['poscond_play_sound'] = {
 init: function() {
   this.appendDummyInput()
-      .appendField("play")
-      .appendField(new Blockly.FieldTextInput("sound_id"), "SOUND_ID")
-      .appendField("of")
+      .appendField("PLAY")
+      .appendField(new Blockly.FieldTextInput("SOUND"), "SOUND_ID")
+      .appendField("OF")
       .appendField(new Blockly.FieldDropdown([["OBJECT","OBJECT"], ["SCENARIO","SCENARIO"]]), "SRC_TYPE")
       .appendField(new Blockly.FieldTextInput("ID"), "SRC");
   this.setOutput(true, "action");
-  this.setColour(180);
+  this.setColour('%{BKY_ACTIONS}');
 this.setTooltip("");
 this.setHelpUrl("");
 }
@@ -547,10 +547,10 @@ this.setHelpUrl("");
 Blockly.Blocks['precond_click_obj'] = {
 init: function() {
   this.appendDummyInput()
-      .appendField("click")
-      .appendField(new Blockly.FieldTextInput("object_id"), "OBJECT_ID");
+      .appendField("CLICK")
+      .appendField(new Blockly.FieldTextInput("OBJECT"), "OBJECT_ID");
   this.setOutput(true, "trigger");
-  this.setColour(270);
+  this.setColour('%{BKY_TRIGGERS}');
 this.setTooltip("");
 this.setHelpUrl("");
 }
@@ -559,10 +559,10 @@ this.setHelpUrl("");
 Blockly.Blocks['precond_click_not_obj'] = {
 init: function() {
   this.appendDummyInput()
-      .appendField("click not")
-      .appendField(new Blockly.FieldTextInput("object_id"), "OBJECT_ID");
+      .appendField("CLICK NOT")
+      .appendField(new Blockly.FieldTextInput("OBJECT"), "OBJECT_ID");
   this.setOutput(true, "trigger");
-  this.setColour(270);
+  this.setColour('%{BKY_TRIGGERS}');
 this.setTooltip("");
 this.setHelpUrl("");
 }
@@ -571,11 +571,11 @@ this.setHelpUrl("");
 Blockly.Blocks['precond_obj_is_view'] = {
 init: function() {
   this.appendDummyInput()
-      .appendField(new Blockly.FieldTextInput("object_id"), "OBJECT_ID")
-      .appendField("is")
-      .appendField(new Blockly.FieldTextInput("view_id"), "VIEW_ID");
+      .appendField(new Blockly.FieldTextInput("OBJECT"), "OBJECT_ID")
+      .appendField("IS")
+      .appendField(new Blockly.FieldTextInput("VIEW"), "VIEW_ID");
   this.setOutput(true, "trigger");
-  this.setColour(270);
+  this.setColour('%{BKY_TRIGGERS}');
 this.setTooltip("");
 this.setHelpUrl("");
 }
@@ -584,10 +584,10 @@ this.setHelpUrl("");
 Blockly.Blocks['precond_ev_already_hap'] = {
 init: function() {
   this.appendDummyInput()
-      .appendField(new Blockly.FieldTextInput("event_id"), "EVENT_ID")
-      .appendField("already happened");
+      .appendField(new Blockly.FieldTextInput("EVENT"), "EVENT_ID")
+      .appendField("ALREADY HAPPENED");
   this.setOutput(true, "trigger");
-  this.setColour(270);
+  this.setColour('%{BKY_TRIGGERS}');
 this.setTooltip("");
 this.setHelpUrl("");
 }
@@ -596,10 +596,10 @@ this.setHelpUrl("");
 Blockly.Blocks['precond_obj_in_use'] = {
 init: function() {
   this.appendDummyInput()
-      .appendField(new Blockly.FieldTextInput("object_id"), "OBJECT_ID")
-      .appendField("is in use");
+      .appendField(new Blockly.FieldTextInput("OBJECT"), "OBJECT_ID")
+      .appendField("IS IN USE");
   this.setOutput(true, "trigger");
-  this.setColour(270);
+  this.setColour('%{BKY_TRIGGERS}');
 this.setTooltip("");
 this.setHelpUrl("");
 }
@@ -609,9 +609,9 @@ Blockly.Blocks['precond_already_passed'] = {
 init: function() {
   this.appendDummyInput()
       .appendField(new Blockly.FieldNumber(0, 0), "SECONDS")
-      .appendField("seconds have already passed");
+      .appendField("SECONDS HAVE ALREADY PASSED");
   this.setOutput(true, "trigger");
-  this.setColour(270);
+  this.setColour('%{BKY_TRIGGERS}');
 this.setTooltip("");
 this.setHelpUrl("");
 }
@@ -622,21 +622,21 @@ this.setHelpUrl("");
 Blockly.Blocks['challenge_question'] = {
 init: function() {
   this.appendDummyInput()
-      .appendField("Challenge Question");
+      .appendField("CHALLENGE QUESTION");
   this.appendDummyInput()
-      .appendField("question :")
-      .appendField(new Blockly.FieldTextInput("question"), "QUESTION");
+      .appendField("QUESTION:")
+      .appendField(new Blockly.FieldTextInput("QUESTION"), "QUESTION");
   this.appendDummyInput()
-      .appendField("answer :")
-      .appendField(new Blockly.FieldTextInput("answer"), "ANSWER");
+      .appendField("ANSWER:")
+      .appendField(new Blockly.FieldTextInput("ANSWER"), "ANSWER");
   this.appendValueInput("SUCESS")
       .setCheck("action")
-      .appendField("sucess :");
+      .appendField("SUCESS:");
   this.appendValueInput("FAIL")
       .setCheck("action")
-      .appendField("fail : ");
+      .appendField("FAIL: ");
   this.setOutput(true, "challenge");
-  this.setColour(345);
+  this.setColour('%{BKY_CHALLENGES}');
 this.setTooltip("");
 this.setHelpUrl("");
 }
@@ -646,21 +646,21 @@ this.setHelpUrl("");
 Blockly.Blocks['challenge_motion'] = {
 init: function() {
   this.appendDummyInput()
-      .appendField("Challenge Motion");
+      .appendField("CHALLENGE MOTION");
   this.appendDummyInput()
-      .appendField("motion_object")
-      .appendField(new Blockly.FieldTextInput("object_id"), "MOTION_OBJECT");
+      .appendField("MOTION OBJECT:")
+      .appendField(new Blockly.FieldTextInput("OBJECT"), "MOTION_OBJECT");
   this.appendDummyInput()
-      .appendField("trigger_object")
-      .appendField(new Blockly.FieldTextInput("object_id"), "TRIGGER_OBJECT");
+      .appendField("TRIGGER OBJECT:")
+      .appendField(new Blockly.FieldTextInput("OBJECT"), "TRIGGER_OBJECT");
   this.appendValueInput("SUCESS")
       .setCheck("action")
-      .appendField("sucess :");
+      .appendField("SUCESS:");
   this.appendValueInput("FAIL")
       .setCheck("action")
-      .appendField("fail : ");
+      .appendField("FAIL:");
   this.setOutput(true, "challenge");
-  this.setColour(345);
+  this.setColour('%{BKY_CHALLENGES}');
 this.setTooltip("");
 this.setHelpUrl("");
 }
@@ -669,30 +669,30 @@ this.setHelpUrl("");
 Blockly.Blocks['challenge_multiple_choice'] = {
 init: function() {
   this.appendDummyInput()
-      .appendField("Challenge Multiple Choice");
+      .appendField("CHALLENGE MULTIPLE CHOICE");
   this.appendDummyInput()
-      .appendField("question :")
-      .appendField(new Blockly.FieldTextInput("question"), "QUESTION");
+      .appendField("QUESTON:")
+      .appendField(new Blockly.FieldTextInput("QUESTION"), "QUESTION");
   this.appendDummyInput()
-      .appendField("correct answer")
-      .appendField(new Blockly.FieldTextInput("answer"), "CORRECT_ANSWER");
+      .appendField("CORRECT ANSWER:")
+      .appendField(new Blockly.FieldTextInput("ANSWER"), "CORRECT_ANSWER");
   this.appendDummyInput()
-      .appendField("wrong answer 1")
-      .appendField(new Blockly.FieldTextInput("answer"), "WRONG_ANSWER_1");
+      .appendField("WRONG ANSWER 1")
+      .appendField(new Blockly.FieldTextInput("ANSWER"), "WRONG_ANSWER_1");
   this.appendDummyInput()
-      .appendField("wrong answer 2")
-      .appendField(new Blockly.FieldTextInput("answer"), "WRONG_ANSWER_2");
+      .appendField("WRONG ANSWER 2")
+      .appendField(new Blockly.FieldTextInput("ANSWER"), "WRONG_ANSWER_2");
   this.appendDummyInput()
-      .appendField("wrong answer 3")
-      .appendField(new Blockly.FieldTextInput("answer"), "WRONG_ANSWER_3");
+      .appendField("WRONG ANSWER 3")
+      .appendField(new Blockly.FieldTextInput("ANSWER"), "WRONG_ANSWER_3");
   this.appendValueInput("SUCESS")
       .setCheck("action")
-      .appendField("sucess :");
+      .appendField("SUCESS:");
   this.appendValueInput("FAIL")
       .setCheck("action")
-      .appendField("fail : ");
+      .appendField("FAIL:");
   this.setOutput(true, "challenge");
-  this.setColour(345);
+  this.setColour('%{BKY_CHALLENGES}');
 this.setTooltip("");
 this.setHelpUrl("");
 }
@@ -701,34 +701,34 @@ this.setHelpUrl("");
 Blockly.Blocks['challenge_connection'] = {
 init: function() {
   this.appendDummyInput()
-      .appendField("Challenge Connection");
+      .appendField("CHALLENGE CONNECTION");
   this.appendDummyInput()
-      .appendField("question :")
-      .appendField(new Blockly.FieldTextInput("question"), "QUESTION");
+      .appendField("QUESTION:")
+      .appendField(new Blockly.FieldTextInput("QUESTION"), "QUESTION");
   this.appendDummyInput()
-      .appendField("connect 1 :")
-      .appendField(new Blockly.FieldTextInput("a1"), "A1")
-      .appendField(new Blockly.FieldTextInput("b1"), "B1");
+      .appendField("CONNECT 1:")
+      .appendField(new Blockly.FieldTextInput("A1"), "A1")
+      .appendField(new Blockly.FieldTextInput("B1"), "B1");
   this.appendDummyInput()
-      .appendField("connect 2 :")
-      .appendField(new Blockly.FieldTextInput("a2"), "A2")
-      .appendField(new Blockly.FieldTextInput("b2"), "B2");
+      .appendField("CONNECT 2:")
+      .appendField(new Blockly.FieldTextInput("A2"), "A2")
+      .appendField(new Blockly.FieldTextInput("B2"), "B2");
   this.appendDummyInput()
-      .appendField("connect 3 :")
-      .appendField(new Blockly.FieldTextInput("a3"), "A3")
-      .appendField(new Blockly.FieldTextInput("b3"), "B3");
+      .appendField("CONNECT 3:")
+      .appendField(new Blockly.FieldTextInput("A3"), "A3")
+      .appendField(new Blockly.FieldTextInput("B3"), "B3");
   this.appendDummyInput()
-      .appendField("connect 4 :")
-      .appendField(new Blockly.FieldTextInput("a4"), "A4")
-      .appendField(new Blockly.FieldTextInput("b4"), "B4");
+      .appendField("CONNECT 4:")
+      .appendField(new Blockly.FieldTextInput("A4"), "A4")
+      .appendField(new Blockly.FieldTextInput("B4"), "B4");
   this.appendValueInput("SUCESS")
       .setCheck("action")
-      .appendField("sucess :");
+      .appendField("SUCESS:");
   this.appendValueInput("FAIL")
       .setCheck("action")
-      .appendField("fail : ");
+      .appendField("FAIL: ");
   this.setOutput(true, "challenge");
-  this.setColour(345);
+  this.setColour('%{BKY_CHALLENGES}');
 this.setTooltip("");
 this.setHelpUrl("");
 }
@@ -737,27 +737,27 @@ this.setHelpUrl("");
 Blockly.Blocks['challenge_sequence'] = {
 init: function() {
   this.appendDummyInput()
-      .appendField("Challenge Sequence");
+      .appendField("CHALLENGE SEQUENCE");
   this.appendDummyInput()
-      .appendField("question :")
-      .appendField(new Blockly.FieldTextInput("question"), "QUESTION");
+      .appendField("QUESTION:")
+      .appendField(new Blockly.FieldTextInput("QUESTION"), "QUESTION");
   this.appendDummyInput()
-      .appendField("sequence :")
-      .appendField(new Blockly.FieldTextInput("a1"), "A1")
+      .appendField("SEQUENCE:")
+      .appendField(new Blockly.FieldTextInput("A1"), "A1")
       .appendField(">>")
-      .appendField(new Blockly.FieldTextInput("a2"), "A2")
+      .appendField(new Blockly.FieldTextInput("A2"), "A2")
       .appendField(">>")
-      .appendField(new Blockly.FieldTextInput("a3"), "A3")
+      .appendField(new Blockly.FieldTextInput("A3"), "A3")
       .appendField(">>")
-      .appendField(new Blockly.FieldTextInput("a4"), "A4");
+      .appendField(new Blockly.FieldTextInput("A4"), "A4");
   this.appendValueInput("SUCESS")
       .setCheck("action")
-      .appendField("sucess :");
+      .appendField("SUCESS:");
   this.appendValueInput("FAIL")
       .setCheck("action")
-      .appendField("fail : ");
+      .appendField("FAIL: ");
   this.setOutput(true, "challenge");
-  this.setColour(345);
+  this.setColour('%{BKY_CHALLENGES}');
 this.setTooltip("");
 this.setHelpUrl("");
 }
@@ -766,14 +766,14 @@ this.setHelpUrl("");
 Blockly.Blocks['custom_dropdown_block'] = {
     init: function() {
       this.appendDummyInput()
-          .appendField("image: ")
+          .appendField("IMAGE")
           .appendField(new Blockly.FieldDropdown([
             ["porta", "PORTA"],
             ["chave", "CHAVE"],
             ["cofre", "COFRE"]
           ], this.updateOptions.bind(this)), 'OPCAO1')
           .appendField(new Blockly.FieldDropdown(this.getSecondOptions.bind(this)), 'OPCAO2');
-      this.setColour(230);
+      this.setColour('%{BKY_UTILS}');
       this.setOutput(true, null);
       this.setTooltip('');
       this.setHelpUrl('');
@@ -816,14 +816,14 @@ Blockly.Blocks['custom_dropdown_block'] = {
 Blockly.Blocks['turn'] = {
   init: function() {
     this.appendDummyInput()
-        .appendField("turn")
-        .appendField(new Blockly.FieldDropdown([["horizontally","HORIZONTALLY"], ["vertically","VERTICALLY"], ["vertically and horizontally","VERTICALLY_HORIZONTALLY"]]), "direction");
+        .appendField("TURN")
+        .appendField(new Blockly.FieldDropdown([["HORIZONTALLY","HORIZONTALLY"], ["VERTICALLY","VERTICALLY"], ["VERTICALLY AND HORIZONTALLY","VERTICALLY_HORIZONTALLY"]]), "direction");
     this.appendStatementInput("VIEWS")
         .setCheck("view")
-        .appendField("view:");
+        .appendField("VIEW:");
     this.setPreviousStatement(true, "view");
     this.setNextStatement(true, "view");
-    this.setColour(330);
+    this.setColour('%{BKY_UTILS}');
  this.setTooltip("");
  this.setHelpUrl("");
   }
@@ -863,7 +863,7 @@ Blockly.Blocks['draw_rect'] = {
     this.setNextStatement(true, 'draw');
     this.setTooltip('');
     this.setHelpUrl('');
-    this.setColour(315);
+    this.setColour('%{BKY_DRAWS}');
   }
 };
 
@@ -900,7 +900,7 @@ Blockly.Blocks['draw_quad'] = {
     this.setNextStatement(true, 'draw');
     this.setTooltip('');
     this.setHelpUrl('');
-    this.setColour(315);
+    this.setColour('%{BKY_DRAWS}');
   }
 };
 
@@ -931,7 +931,7 @@ Blockly.Blocks['draw_square'] = {
     this.setNextStatement(true, 'draw');
     this.setTooltip('');
     this.setHelpUrl('');
-    this.setColour(315);
+    this.setColour('%{BKY_DRAWS}');
   }
 };
 
@@ -962,7 +962,7 @@ Blockly.Blocks['draw_triangle'] = {
     this.setNextStatement(true, 'draw');
     this.setTooltip('');
     this.setHelpUrl('');
-    this.setColour(315);
+    this.setColour('%{BKY_DRAWS}');
   }
 };
 
@@ -987,7 +987,7 @@ Blockly.Blocks['draw_line']  = {
     this.setNextStatement(true, 'draw');
     this.setTooltip('');
     this.setHelpUrl('');
-    this.setColour(315);
+    this.setColour('%{BKY_DRAWS}');
   }
 };
 
@@ -1006,7 +1006,7 @@ Blockly.Blocks['draw_point'] = {
     this.setNextStatement(true, 'draw');
     this.setTooltip('');
     this.setHelpUrl('');
-    this.setColour(315);
+    this.setColour('%{BKY_DRAWS}');
   }
 };
 
@@ -1047,7 +1047,7 @@ Blockly.Blocks['draw_arc'] = {
     this.setNextStatement(true, 'draw');
     this.setTooltip('');
     this.setHelpUrl('');
-    this.setColour(315);
+    this.setColour('%{BKY_DRAWS}');
   }
 };
 
@@ -1069,7 +1069,7 @@ Blockly.Blocks['draw_circle'] = {
     this.setNextStatement(true, 'draw');
     this.setTooltip('');
     this.setHelpUrl('');
-    this.setColour(315);
+    this.setColour('%{BKY_DRAWS}');
   }
 };
 
@@ -1093,7 +1093,7 @@ Blockly.Blocks['draw_ellipse']  = {
     this.setNextStatement(true, 'draw');
     this.setTooltip('');
     this.setHelpUrl('');
-    this.setColour(315);
+    this.setColour('%{BKY_DRAWS}');
   }
 };
 
@@ -1105,7 +1105,7 @@ Blockly.Blocks['begin_clip']  = {
     this.setNextStatement(true, 'draw');
     this.setTooltip('');
     this.setHelpUrl('');
-    this.setColour(345);
+    this.setColour('%{BKY_DRAWS}');
   }
 };
 
@@ -1117,7 +1117,7 @@ Blockly.Blocks['end_clip']  = {
     this.setNextStatement(true, 'draw');
     this.setTooltip('');
     this.setHelpUrl('');
-    this.setColour(345);
+    this.setColour('%{BKY_DRAWS}');
   }
 };
 
@@ -1129,7 +1129,7 @@ Blockly.Blocks['no_fill']  = {
     this.setNextStatement(true, 'draw');
     this.setTooltip('');
     this.setHelpUrl('');
-    this.setColour(345);
+    this.setColour('%{BKY_DRAWS}');
   }
 };
 
@@ -1141,7 +1141,7 @@ Blockly.Blocks['no_stroke']  = {
     this.setNextStatement(true, 'draw');
     this.setTooltip('');
     this.setHelpUrl('');
-    this.setColour(345);
+    this.setColour('%{BKY_DRAWS}');
   }
 };
 
@@ -1154,7 +1154,7 @@ Blockly.Blocks['no_erase']  = {
     this.setNextStatement(true, 'draw');
     this.setTooltip('');
     this.setHelpUrl('');
-    this.setColour(345);
+    this.setColour('%{BKY_DRAWS}');
   }
 };
 
@@ -1166,7 +1166,7 @@ Blockly.Blocks['erase']  = {
     this.setNextStatement(true, 'draw');
     this.setTooltip('');
     this.setHelpUrl('');
-    this.setColour(345);
+    this.setColour('%{BKY_DRAWS}');
   }
 };
 
@@ -1182,7 +1182,7 @@ Blockly.Blocks['fill'] = {
     this.setNextStatement(true, 'draw');
     this.setTooltip('');
     this.setHelpUrl('');
-    this.setColour(345);
+    this.setColour('%{BKY_DRAWS}');
   },
 };
 
@@ -1200,7 +1200,7 @@ Blockly.Blocks['stroke'] = {
     this.setNextStatement(true, 'draw');
     this.setTooltip('');
     this.setHelpUrl('');
-    this.setColour(345);
+    this.setColour('%{BKY_DRAWS}');
   },
 };
 
@@ -1227,7 +1227,7 @@ Blockly.Blocks['view_draw'] = {
     this.setNextStatement(true, 'view');
     this.setTooltip('');
     this.setHelpUrl('');
-    this.setColour(60);
+    this.setColour('%{BKY_VIEWS}');
   },
 
   onHitboxChange: function(newValue) {
@@ -1280,7 +1280,7 @@ Blockly.Blocks['hitbox_rect'] = {
     this.setNextStatement(true, 'hitbox');
     this.setTooltip('');
     this.setHelpUrl('');
-    this.setColour(100);
+    this.setColour('%{BKY_HITBOXES}');
   }
 };
 
@@ -1317,7 +1317,7 @@ Blockly.Blocks['hitbox_quad'] = {
       this.setNextStatement(true, 'hitbox');
     this.setTooltip('');
     this.setHelpUrl('');
-    this.setColour(100);
+    this.setColour('%{BKY_HITBOXES}');
   }
 };
 
@@ -1338,7 +1338,7 @@ Blockly.Blocks['hitbox_square'] = {
     this.setNextStatement(true, 'hitbox');
     this.setTooltip('');
     this.setHelpUrl('');
-    this.setColour(100);
+    this.setColour('%{BKY_HITBOXES}');
   }
 };
 
@@ -1369,7 +1369,7 @@ Blockly.Blocks['hitbox_triangle'] = {
     this.setNextStatement(true, 'hitbox');
     this.setTooltip('');
     this.setHelpUrl('');
-    this.setColour(100);
+    this.setColour('%{BKY_HITBOXES}');
   }
 };
 
@@ -1394,7 +1394,7 @@ Blockly.Blocks['hitbox_line']  = {
     this.setNextStatement(true, 'hitbox');
     this.setTooltip('');
     this.setHelpUrl('');
-    this.setColour(100);
+    this.setColour('%{BKY_HITBOXES}');
   }
 };
 
@@ -1413,7 +1413,7 @@ Blockly.Blocks['hitbox_point'] = {
     this.setNextStatement(true, 'hitbox');
     this.setTooltip('');
     this.setHelpUrl('');
-    this.setColour(100);
+    this.setColour('%{BKY_HITBOXES}');
   }
 };
 
@@ -1454,7 +1454,7 @@ Blockly.Blocks['hitbox_arc'] = {
     this.setNextStatement(true, 'hitbox');
     this.setTooltip('');
     this.setHelpUrl('');
-    this.setColour(100);
+    this.setColour('%{BKY_HITBOXES}');
   }
 };
 
@@ -1476,7 +1476,7 @@ Blockly.Blocks['hitbox_circle'] = {
     this.setNextStatement(true, 'hitbox');
     this.setTooltip('');
     this.setHelpUrl('');
-    this.setColour(100);
+    this.setColour('%{BKY_HITBOXES}');
   }
 };
 
@@ -1500,6 +1500,6 @@ Blockly.Blocks['hitbox_ellipse']  = {
     this.setNextStatement(true, 'hitbox');
     this.setTooltip('');
     this.setHelpUrl('');
-    this.setColour(100);
+    this.setColour('%{BKY_HITBOXES}');
   }
 };

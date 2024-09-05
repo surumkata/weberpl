@@ -12,13 +12,13 @@ const INITIAL =
             <block type="view">
               <field name="ID">WALL</field>
               <value name="SIZE">
-                <block type="size">
+                <block type="point">
                   <field name="x">1280</field>
                   <field name="y">720</field>
                 </block>
               </value>
               <value name="POSITION">
-                <block type="position">
+                <block type="point">
                   <field name="x">0</field>
                   <field name="y">0</field>
                 </block>
@@ -37,13 +37,13 @@ const INITIAL =
                   <block type="view">
                     <field name="ID">CLOSED DOOR</field>
                     <value name="SIZE">
-                      <block type="size">
+                      <block type="point">
                         <field name="x">225</field>
                         <field name="y">300</field>
                       </block>
                     </value>
                     <value name="POSITION">
-                      <block type="position">
+                      <block type="point">
                         <field name="x">480</field>
                         <field name="y">360</field>
                       </block>
@@ -74,8 +74,7 @@ const TOOLBOX =
   '    <block type="sound"></block>\n' +
   '  </category>\n' +
   '  <category name="Utils" colour="#5C81A6">\n' +
-  '    <block type="size"></block>\n' +
-  '    <block type="position"></block>\n' +
+  '    <block type="point"></block>\n' +
   '    <block type="url"></block>\n' +
   '    <block type="image"></block>\n' +
   '    <block type="story"></block>\n' +

@@ -111,43 +111,44 @@ export const updateViewSketch = (workspaceRef,objectId,viewId,draw) => {
       }
 }
 
-const updateViewPositionAndSize = (workspaceRef,objectId, viewId, newPosx, newPosy, newSizex, newSizey) => {
-    const objectBlocks = workspaceRef.current.getBlocksByType('object');
+const updateViewPositionAndSize = (workspaceRef, objectId, viewId, newPosx, newPosy, newSizex, newSizey) => {
+  const objectBlocks = workspaceRef.current.getBlocksByType('object');
 
-    objectBlocks.forEach(objectBlock => {
-      // 2. Verificar se este bloco 'object' tem o ID que estamos procurando
-      if (objectBlock.getFieldValue('ID') === objectId) {
-        // 3. Encontrar todos os sub-blocos do tipo 'view' dentro do bloco 'object'
-        var viewBlocks = objectBlock.getChildren(false).filter(childBlock => childBlock.type === 'view');
-        const turnBlocks = objectBlock.getChildren(false).filter(childBlock => childBlock.type === 'turn');
+  objectBlocks.forEach(objectBlock => {
+    // Verificar se este bloco 'object' tem o ID que estamos procurando
+    if (objectBlock.getFieldValue('ID') === objectId) {
+      // Encontrar todos os sub-blocos do tipo 'view' dentro do bloco 'object'
+      let viewBlocks = objectBlock.getChildren(false).filter(childBlock => childBlock.type === 'view');
+      const turnBlocks = objectBlock.getChildren(false).filter(childBlock => childBlock.type === 'turn');
 
+      turnBlocks.forEach(turnBlock => {
+        const turnViewBlocks = turnBlock.getChildren(false).filter(childBlock => childBlock.type === 'view');
+        viewBlocks = viewBlocks.concat(turnViewBlocks);
+      });
 
-        turnBlocks.forEach(turnBlock => {
-          const turnViewBlocks = turnBlock.getChildren(false).filter(childBlock => childBlock.type === 'view');
-          viewBlocks = viewBlocks.concat(turnViewBlocks);
-        });
-
-        viewBlocks.forEach(viewBlock => {
-          // 4. Verificar se este bloco 'view' tem o ID que estamos procurando
-          if (viewBlock.getFieldValue('ID') === viewId) {
-            // 5. Encontrar o sub-bloco 'position' dentro do bloco 'view'
-            const positionBlock = viewBlock.getChildren(false).find(childBlock => childBlock.type === 'position');
-            if (positionBlock) {
-              // 6. Alterar os valores dos campos 'x' e 'y'
-              positionBlock.setFieldValue(newPosx, 'x');
-              positionBlock.setFieldValue(newPosy, 'y');
-            }
-            const sizeBlock = viewBlock.getChildren(false).find(childBlock => childBlock.type === 'size');
-            if (sizeBlock) {
-              sizeBlock.setFieldValue(newSizex, 'x');
-              sizeBlock.setFieldValue(newSizey, 'y')
-            }
+      viewBlocks.forEach(viewBlock => {
+        // Verificar se este bloco 'view' tem o ID que estamos procurando
+        if (viewBlock.getFieldValue('ID') === viewId) {
+          // Encontrar o sub-bloco 'position' dentro do bloco 'view'
+          const positionBlock = viewBlock.getInputTargetBlock('POSITION');
+          if (positionBlock && positionBlock.type === 'point') {
+            // Alterar os valores dos campos 'x' e 'y' para o bloco 'position'
+            positionBlock.setFieldValue(newPosx, 'x');
+            positionBlock.setFieldValue(newPosy, 'y');
           }
-        });
-
-      }
-    });
-  };
+          
+          // Encontrar o sub-bloco 'size' dentro do bloco 'view'
+          const sizeBlock = viewBlock.getInputTargetBlock('SIZE');
+          if (sizeBlock && sizeBlock.type === 'point') {
+            // Alterar os valores dos campos 'x' e 'y' para o bloco 'size'
+            sizeBlock.setFieldValue(newSizex, 'x');
+            sizeBlock.setFieldValue(newSizey, 'y');
+          }
+        }
+      });
+    }
+  });
+};
 
   const updateRect = (workspaceRef,objectId,viewId,rectId,newx,newy,neww,newh) => {
     const objectBlocks = workspaceRef.current.getBlocksByType('object');
