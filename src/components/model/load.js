@@ -11,7 +11,7 @@ import {Transition } from './transition.js';
 import { Event } from './event.js';
 import { PreConditionOperatorAnd, PreConditionOperatorNot, PreConditionOperatorOr, PreConditionTree, PreConditionVar } from './precondition_tree.js';
 import { EventPreConditionAfterEvent,EventPreConditionAfterTime,EventPreConditionClickedNotObject,EventPreConditionClickedObject,EventPreConditionItemIsInUse,EventPreConditionWhenObjectIsView } from './precondition.js';
-import { EventPosConditionTransition, EventPosConditionConnections, EventPosConditionSequence, EventPosConditionQuestion, EventPosConditionChangeScenario,EventPosConditionDeleteItem,EventPosConditionEndGame,EventPosConditionMultipleChoice,EventPosConditionObjChangePosition,EventPosConditionObjChangeSize,EventPosConditionObjChangeState,EventPosConditionObjPutInventory,EventPosConditionPlaySound,EventPosConditionShowMessage } from './poscondition.js';
+import { EventPosConditionTransition, EventPosConditionConnections, EventPosConditionSequence, EventPosConditionQuestion, EventPosConditionChangeScenario,EventPosConditionRemoveObj,EventPosConditionEndGame,EventPosConditionMultipleChoice,EventPosConditionObjChangePosition,EventPosConditionObjChangeSize,EventPosConditionObjChangeState,EventPosConditionObjPutInventory,EventPosConditionPlaySound,EventPosConditionShowMessage } from './poscondition.js';
 import { HitboxArc, HitboxCircle, HitboxEllipse, HitboxLine, HitboxPoint, HitboxQuad, HitboxRect, HitboxSquare, HitboxTriangle } from './hitbox.js';
 import { Sound } from './sound.js';
 
@@ -284,8 +284,8 @@ function loadPrecondition(precondition) {
             const afterEventId = precondition.event;
             eventPrecondition = new EventPreConditionAfterEvent(afterEventId);
             break;
-        case "ITEM_IS_IN_USE":
-            const itemInUseId = precondition.item;
+        case "OBJ_IS_IN_USE":
+            const itemInUseId = precondition.object;
             eventPrecondition = new EventPreConditionItemIsInUse(itemInUseId);
             break;
         case "AFTER_TIME":
@@ -360,9 +360,9 @@ function loadPosconditions(dataPosconditions) {
                 const scenarioId = dataAction.scenario;
                 eventPoscondition = new EventPosConditionChangeScenario(scenarioId);
                 break;
-            case "DELETE_ITEM":
-                const itemId = dataAction.item;
-                eventPoscondition = new EventPosConditionDeleteItem(itemId);
+            case "REMOVE_OBJ":
+                const objId = dataAction.object;
+                eventPoscondition = new EventPosConditionRemoveObj(objId);
                 break;
             case "PLAY_SOUND":
                 const soundId = dataAction.sound;
@@ -403,6 +403,7 @@ function loadPosconditions(dataPosconditions) {
             case "TRANSITION":
                 const transition_id = dataAction.transition;
                 eventPoscondition = new EventPosConditionTransition(transition_id);
+                break;
             default:
                 break;
         }

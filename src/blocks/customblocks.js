@@ -30,14 +30,14 @@ Blockly.Blocks['escape_room'] = {
         .setCheck("scenario");
     this.appendDummyInput()
         .setAlign(Blockly.inputs.Align.CENTRE)
-        .appendField("EVENTS:");
-    this.appendStatementInput("EVENTS")
-        .setCheck("event");
-    this.appendDummyInput()
-        .setAlign(Blockly.inputs.Align.CENTRE)
         .appendField("TRANSITIONS:");
     this.appendStatementInput("TRANSITIONS")
         .setCheck("transition");
+    this.appendDummyInput()
+        .setAlign(Blockly.inputs.Align.CENTRE)
+        .appendField("EVENTS:");
+    this.appendStatementInput("EVENTS")
+        .setCheck("event");
     this.appendDummyInput()
         .appendField("STARTS WITH")
         .appendField(new Blockly.FieldDropdown([["TRANSITION","TRANSITION"], ["SCENARIO","SCENARIO"]]), "TYPE")

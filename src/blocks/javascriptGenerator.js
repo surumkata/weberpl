@@ -291,14 +291,13 @@ javascriptGenerator.forBlock['view'] = function(block, generator) {
     sizeString = sizeString.slice(1, -1);
   }
   else {
-    sizeString = '{"x":0,"y":0}'
+    sizeString = 'null'
   }
-  let posStringSliced;
   if (posString) {
-    posStringSliced = posString.slice(1, -1);
+    posString = posString.slice(1, -1);
   }
   else {
-    posStringSliced = '{"x":0,"y":0}'
+    posString = 'null'
   }
   if (value_image) {
     value_image = value_image.slice(1,-1);
@@ -308,13 +307,7 @@ javascriptGenerator.forBlock['view'] = function(block, generator) {
   }
   // Converter a string para objeto JSON
   var sizeObject = JSON.parse(sizeString);
-  console.log(posString);
-  try{
-    var posObject = JSON.parse(posStringSliced);
-  }
-  catch{
-    var posObject = JSON.parse(`"VAR_${posString}"`);
-  }
+  var posObject = JSON.parse(posString);
 
   var code = {
     "id" : text_id,
@@ -341,13 +334,13 @@ javascriptGenerator.forBlock['view2'] = function(block, generator) {
     sizeString = sizeString.slice(1, -1);
   }
   else {
-    sizeString = '{"x":0,"y":0}'
+    sizeString = 'null'
   }
   if (posString) {
     posString = posString.slice(1, -1);
   }
   else {
-    posString = '{"x":0,"y":0}'
+    posString = 'null'
   }
   if (value_image) {
     value_image = value_image.slice(1,-1);
@@ -361,6 +354,7 @@ javascriptGenerator.forBlock['view2'] = function(block, generator) {
 
   var code = {
     "id" : text_id,
+    "type" : "VIEW_IMAGE",
     "src" : value_image,
     "position" : posObject,
     "size" : sizeObject,
@@ -531,10 +525,15 @@ return [JSON.stringify(code, null, 2), javascriptGenerator.ORDER_NONE];
 
 javascriptGenerator.forBlock['poscond_mostra_msg'] = function(block, generator) {
 var message = block.getFieldValue('MESSAGE');
-var positionString = generator.valueToCode(block, 'POSITION', Order.ATOMIC);
+var posString = generator.valueToCode(block, 'POSITION', Order.ATOMIC);
 
-positionString = positionString.slice(1,-1);
-var positionObject = JSON.parse(positionString);
+if(posString){
+  posString = posString.slice(1,-1);
+}
+else{
+  posString = 'null';
+}
+var positionObject = JSON.parse(posString);
 
 
 var code = {
@@ -551,7 +550,12 @@ javascriptGenerator.forBlock['poscond_obj_muda_tam'] = function(block, generator
 var object_id = block.getFieldValue('OBJECT_ID');
 var sizeString = generator.valueToCode(block, 'SIZE', Order.ATOMIC);
 
-sizeString = sizeString.slice(1,-1);
+if(sizeString) {
+  sizeString = sizeString.slice(1,-1);
+}
+else {
+  sizeString = 'null'
+}
 var sizeObject = JSON.parse(sizeString);
 
 var code = {
@@ -566,10 +570,15 @@ return [JSON.stringify(code, null, 2), javascriptGenerator.ORDER_NONE];
 
 javascriptGenerator.forBlock['poscond_obj_muda_pos'] = function(block, generator) {
 var object_id = block.getFieldValue('OBJECT_ID');
-var positionString = generator.valueToCode(block, 'POSITION', Order.ATOMIC);
+var posString = generator.valueToCode(block, 'POSITION', Order.ATOMIC);
 
-positionString = positionString.slice(1,-1);
-var positionObject = JSON.parse(positionString);
+if(posString){
+  posString = posString.slice(1,-1);
+}
+else {
+  posString = 'null'
+}
+var positionObject = JSON.parse(posString);
 
 var code = {
   'type' : 'OBJ_CHANGE_POSITION',
@@ -594,11 +603,11 @@ return [JSON.stringify(code, null, 2), javascriptGenerator.ORDER_NONE];
 
 
 javascriptGenerator.forBlock['poscond_remove_obj'] = function(block, generator) {
-var item_id = block.getFieldValue('OBJECT_ID');
+var object_id = block.getFieldValue('OBJECT_ID');
 
 var code = {
-  'type' : 'DELETE_ITEM',
-  'item' : item_id
+  'type' : 'REMOVE_OBJ',
+  'object' : object_id
   }
 
 return [JSON.stringify(code, null, 2), javascriptGenerator.ORDER_NONE];
@@ -612,7 +621,7 @@ if (challengeString) {
   challengeString = challengeString.slice(1,-1);
 }
 else {
-  challengeString = "{}"
+  challengeString = '{"type":"NO_CHALLENGE"}'
 }
 
 return [challengeString, javascriptGenerator.ORDER_NONE];
@@ -700,11 +709,11 @@ return [JSON.stringify(code, null, 2), javascriptGenerator.ORDER_NONE];
 
 
 javascriptGenerator.forBlock['precond_obj_in_use'] = function(block, generator) {
-var item_id = block.getFieldValue('OBJECT_ID');
+var obj_id = block.getFieldValue('OBJECT_ID');
 
 var code = {
-  'type' : 'ITEM_IS_IN_USE',
-  'item' : item_id
+  'type' : 'OBJ_IS_IN_USE',
+  'object' : obj_id
 }
 
 return [JSON.stringify(code, null, 2), javascriptGenerator.ORDER_NONE];
@@ -733,15 +742,18 @@ var failString = generator.valueToCode(block, 'FAIL', Order.ATOMIC);
 
 if(sucessString){
   sucessString = sucessString.slice(1,-1);
+  sucessString = "[" + sucessString + "]";
 }
 else {
-  sucessString = "{}"
+  sucessString = "[]"
 }
+
 if (failString){
   failString = failString.slice(1,-1);
+  failString = "[" + failString + "]";
 }
 else {
-  failString = "{}"
+  failString = "[]"
 }
 
 var sucess = JSON.parse(sucessString);
@@ -766,15 +778,18 @@ var failString = generator.valueToCode(block, 'FAIL', Order.ATOMIC);
 
 if(sucessString){
   sucessString = sucessString.slice(1,-1);
+  sucessString = "[" + sucessString + "]";
 }
 else {
-  sucessString = "{}"
+  sucessString = "[]"
 }
+
 if (failString){
   failString = failString.slice(1,-1);
+  failString = "[" + failString + "]";
 }
 else {
-  failString = "{}"
+  failString = "[]"
 }
 
 var sucess = JSON.parse(sucessString);
@@ -801,15 +816,18 @@ var failString = generator.valueToCode(block, 'FAIL', Order.ATOMIC);
 
 if(sucessString){
   sucessString = sucessString.slice(1,-1);
+  sucessString = "[" + sucessString + "]";
 }
 else {
-  sucessString = "{}"
+  sucessString = "[]"
 }
+
 if (failString){
   failString = failString.slice(1,-1);
+  failString = "[" + failString + "]";
 }
 else {
-  failString = "{}"
+  failString = "[]"
 }
 
 var sucess = JSON.parse(sucessString);
@@ -841,15 +859,18 @@ javascriptGenerator.forBlock['challenge_connection'] = function(block, generator
 
   if(sucessString){
     sucessString = sucessString.slice(1,-1);
+    sucessString = "[" + sucessString + "]";
   }
   else {
-    sucessString = "{}"
+    sucessString = "[]"
   }
+  
   if (failString){
     failString = failString.slice(1,-1);
+    failString = "[" + failString + "]";
   }
   else {
-    failString = "{}"
+    failString = "[]"
   }
 
   var sucess = JSON.parse(sucessString);
@@ -877,15 +898,18 @@ javascriptGenerator.forBlock['challenge_connection'] = function(block, generator
 
   if(sucessString){
     sucessString = sucessString.slice(1,-1);
+    sucessString = "[" + sucessString + "]";
   }
   else {
-    sucessString = "{}"
+    sucessString = "[]"
   }
+  
   if (failString){
     failString = failString.slice(1,-1);
+    failString = "[" + failString + "]";
   }
   else {
-    failString = "{}"
+    failString = "[]"
   }
 
   var sucess = JSON.parse(sucessString);

@@ -85,6 +85,7 @@ class EventPosConditionObjPutInventory extends EventPosCondition {
   }
 
   do(room, inventory, state) {
+    if(this.objectId in room.objects){
       const object = room.objects[this.objectId];
       delete room.objects[this.objectId];
       const slot = inventory.findEmptySlot();
@@ -94,6 +95,7 @@ class EventPosConditionObjPutInventory extends EventPosCondition {
       room.addEventBuffer("desativar_" + this.objectId, deactivate, [new EventPosConditionDesactiveItem(this.objectId)], Number.MAX_SAFE_INTEGER);
       room.addEventBuffer("ativar_" + this.objectId, activate, [new EventPosConditionActiveItem(this.objectId)], Number.MAX_SAFE_INTEGER);
       debug("EVENT_PUT_IN_INVENTORY: Colocando item " + this.objectId + " no slot " + slot + " do inventário.");
+    }
   }
 }
 
@@ -133,15 +135,30 @@ class EventPosConditionDesactiveItem extends EventPosCondition {
   }
 }
 
-class EventPosConditionDeleteItem extends EventPosCondition {
-  constructor(itemId) {
-      super("DELETE_ITEM");
-      this.itemId = itemId;
+class EventPosConditionRemoveObj extends EventPosCondition {
+  constructor(objId) {
+      super("REMOVE_OBJ");
+      this.objId = objId;
   }
 
   do(room, inventory, state) {
-      inventory.updateRemove.push(this.itemId);
-      debug("EVENT_DELETE_ITEM: Removendo item " + this.itemId + ".");
+      //ver se obj esta no inventario
+      let inInventory = false;
+      for (let [slot, item] of Object.entries(this.slots)) {
+        if (item !== null && item.id === this.objId) {
+          inInventory = true;
+          break;
+        }
+      }
+      if(inInventory){
+        inventory.updateRemove.push(this.objId);
+      }
+      else if (this.objId in room.objects) {
+        const object = room.objects[this.objId];
+        delete room.objects[this.objId];
+      }
+
+      debug("EVENT_REMOVE_OBJ: Removendo objeto " + this.objId + ".");
   }
 }
 
@@ -253,7 +270,7 @@ export {
   EventPosConditionChangeScenario,
   EventPosConditionActiveItem,
   EventPosConditionDesactiveItem,
-  EventPosConditionDeleteItem,
+  EventPosConditionRemoveObj,
   EventPosConditionPlaySound,
   EventPosConditionQuestion,
   EventPosConditionMultipleChoice,
