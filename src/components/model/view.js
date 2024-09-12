@@ -504,21 +504,21 @@ export class ViewSketch {
   mouseMoved(mX,mY) {
     let hover = false;
     if(!this.showHitboxes){
-      for (var draw in this.draws){
+      for (let index = this.draws.length - 1; index >= 0; --index) {
         if(hover){
-          this.draws[draw].setHoverFalse();
+          this.draws[index].setHoverFalse();
         }
         else {
-          hover = this.draws[draw].mouseMoved(mX,mY);
+          hover = this.draws[index].mouseMoved(mX,mY);
         }
       }
     }
     else{
-      for(var draw in this.draws){
-        this.draws[draw].setHoverFalse();
+      for (let index = this.draws.length - 1; index >= 0; --index) {
+        this.draws[index].setHoverFalse();
       }
       if(this.hitboxesType === 'ADVANCED'){
-        for (var index in this.hitboxes){
+        for (let index = this.hitboxes.length - 1; index >= 0; --index) {
           let hitbox = this.hitboxes[index];
           if(hitbox.mouseMoved(mX,mY)){
             return true;
@@ -532,8 +532,8 @@ export class ViewSketch {
 
   mousePressed(mX,mY) {
     if(!this.showHitboxes){
-      for (var draw in this.draws){
-        var pressed = this.draws[draw].mousePressed(mX,mY);
+      for (let index = this.draws.length - 1; index >= 0; --index) {
+        var pressed = this.draws[index].mousePressed(mX,mY);
         if(pressed){
           return true;
         }
@@ -541,7 +541,7 @@ export class ViewSketch {
     }
     else{
       if(this.hitboxesType === 'ADVANCED'){
-        for (var index in this.hitboxes){
+        for (let index = this.hitboxes.length - 1; index >= 0; --index) {
           let hitbox = this.hitboxes[index];
           if(hitbox.mousePressed(mX,mY)){
             return true;
@@ -1765,10 +1765,10 @@ export class Circle extends DrawP5 {
           this.d += changeY;
           break;
         case "-width":
-          this.d -= changeX;
+          this.d = Math.max(0,this.d-changeX);
           break;
         case "-height":
-          this.d -= changeY;
+          this.d = Math.max(0,this.d-changeY);
           break;
         default:
           this.x += changeX;
