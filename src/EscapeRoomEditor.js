@@ -42,7 +42,7 @@ function EscapeRoomEditor() {
   const inputFileXML = useRef(null);
   const [currentScenario, setCurrentScenario] = useState("ROOM");
   const [scenariosImgs, setScenariosImgs] = useState({});
-  const [imgsLoaded, setImgsLoaded] = useState(false);
+  const [imgsLoaded, setImgsLoaded] = useState(true);
   const [imgsIndex, setImgIndex] = useState(0);
 
   const workspaceConfiguration = {
@@ -307,7 +307,30 @@ function EscapeRoomEditor() {
     });
   }
 
+  // Função auxiliar para esperar as imagens serem carregadas
+  const waitForImagesToLoad = () => {
+    return new Promise((resolve) => {
+      // Verifica a cada 500ms se todas as imagens estão carregadas
+      const interval = setInterval(() => {
+        if (Object.keys(scenariosImgs).length === scenariosIds.length) {
+          setImgsLoaded(true);
+          clearInterval(interval);
+          resolve(); // Resolve a promise quando todas as imagens estiverem prontas
+        }
+      }, 500);
+    });
+  };
+
+
+
   const exportBlocksPDF = async () => {
+
+    setImgsLoaded(false);
+    setScenariosImgs({});
+    setImgIndex(0);
+    // Espera até que as imagens estejam todas carregadas
+    await waitForImagesToLoad();
+
     const doc = new jsPDF();
     scenariosIds.forEach((scenarioId,index) => {
       if (index > 0) doc.addPage();
@@ -432,11 +455,9 @@ function EscapeRoomEditor() {
           let editCode = JSON.parse(JSON.stringify(erCode));
           scaleToEdit(editCode);
           var room = load(p5,editCode,true);
-          room.gameState.currentScenario = scenariosIds[imgsIndex];
+          room.gameState.currentScenario = currentScenario;
           
           setEscapeRoom(room);
-          setImgsLoaded(false);
-          setImgIndex(0);
 
         }
         else {
@@ -447,27 +468,30 @@ function EscapeRoomEditor() {
     
 
       if(er !== null){
-        er.escapeRoom.draw(p5,er.gameState.currentScenario, showInvisible, showHitboxes);
-
+        
         if(!imgsLoaded){
-          let canvas = document.querySelector('canvas');
-          let imgData = canvas.toDataURL('image/png');
+          if(imgsIndex < scenariosIds.length){
+            er.gameState.currentScenario = scenariosIds[imgsIndex];
+            er.escapeRoom.draw(p5,er.gameState.currentScenario, showInvisible, showHitboxes);
+            
+            let canvas = document.querySelector('canvas');
+            let imgData = canvas.toDataURL('image/png');
 
-          let scenarioId = er.gameState.currentScenario;
+            let scenarioId = er.gameState.currentScenario;
 
-          setScenariosImgs(prev => ({...prev, [scenarioId]: imgData}));
+            setScenariosImgs(prev => ({...prev, [scenarioId]: imgData}));
 
-          if(imgsIndex !== scenariosIds.length - 1){
-            let index = imgsIndex+1;
-            setImgIndex(index);
-            er.gameState.currentScenario = scenariosIds[index];
-            setEscapeRoom(er);
+            setImgIndex(imgsIndex+1);
           }
           else{
             er.gameState.currentScenario = currentScenario;
-            setEscapeRoom(er);
+            er.escapeRoom.draw(p5,er.gameState.currentScenario, showInvisible, showHitboxes);
             setImgsLoaded(true);
           }
+          setEscapeRoom(er);
+        }
+        else{
+          er.escapeRoom.draw(p5,er.gameState.currentScenario, showInvisible, showHitboxes);
         }
 
       }
@@ -495,10 +519,12 @@ function EscapeRoomEditor() {
       if(er !== null){
         for(var objectId in er.escapeRoom.objects){
           var obj = er.escapeRoom.objects[objectId]
-          if (obj.currentView in obj.views){
-            var hover = obj.views[obj.currentView].mouseMoved(p5.mouseX,p5.mouseY)
-            if(hover){
-              break;
+          if(obj.reference === er.gameState.currentScenario){
+            if (obj.currentView in obj.views){
+              var hover = obj.views[obj.currentView].mouseMoved(p5.mouseX,p5.mouseY)
+              if(hover){
+                break;
+              }
             }
           }
         }
@@ -509,10 +535,12 @@ function EscapeRoomEditor() {
         if(er !== null){
           for(var objectId in er.escapeRoom.objects){
             var obj = er.escapeRoom.objects[objectId]
-            if (obj.currentView in obj.views){
-              var pressed = obj.views[obj.currentView].mousePressed(p5.mouseX,p5.mouseY)
-              if (pressed){
-                break;
+            if(obj.reference === er.gameState.currentScenario){
+              if (obj.currentView in obj.views){
+                var pressed = obj.views[obj.currentView].mousePressed(p5.mouseX,p5.mouseY)
+                if (pressed){
+                  break;
+                }
               }
             }
           }
@@ -523,8 +551,10 @@ function EscapeRoomEditor() {
         if(er !== null){
           for(var objectId in er.escapeRoom.objects){
             var obj = er.escapeRoom.objects[objectId]
-            if (obj.currentView in obj.views){
-              obj.views[obj.currentView].mouseDragged(p5.mouseX,p5.mouseY)
+            if(obj.reference === er.gameState.currentScenario){
+              if (obj.currentView in obj.views){
+                obj.views[obj.currentView].mouseDragged(p5.mouseX,p5.mouseY)
+              }
             }
           }
         }
