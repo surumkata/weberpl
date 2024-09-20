@@ -456,10 +456,10 @@ this.setHelpUrl("");
 
 Blockly.Blocks['poscond_obj_muda_tam'] = {
 init: function() {
-  this.appendValueInput("SIZE")
+  this.appendValueInput("SCALE")
       .setCheck("point")
       .appendField(new Blockly.FieldTextInput("OBJECT"), "OBJECT_ID")
-      .appendField("CHANGE SIZE TO");
+      .appendField("SCALES INTO");
   this.setOutput(true, "action");
   this.setColour('%{BKY_ACTIONS}');
 this.setTooltip("");

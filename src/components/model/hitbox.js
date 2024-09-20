@@ -14,6 +14,9 @@ export class Hitbox {
 
     draw(p5){}
 
+    scale(scaleX,scaleY){}
+    translate(tx,ty){}
+
     mouseMoved(mX,mY) {return false;}
     mousePressed(mX,mY) {return false;}
     mouseDragged(mX,mY) {}
@@ -54,6 +57,19 @@ export class HitboxRect extends Hitbox {
     collide(px,py){
         console.log(px,py);
         return collidePointRect(px,py,this.x,this.y,this.w,this.h);
+    }
+
+    scale(scaleX,scaleY){
+      this.x *=scaleX;
+      this.y *=scaleY;
+      this.w *=scaleX;
+      this.h *=scaleY;
+    }
+
+    translate(tx,ty){
+      console.log(tx,ty)
+      this.x += tx
+      this.y += ty
     }
 
     mouseMoved(mX,mY) {
@@ -627,6 +643,35 @@ export class HitboxQuad extends Hitbox {
         }
     }
 
+    scale(scaleX,scaleY){
+      this.x1 *= scaleX
+      this.y1 *= scaleY
+      this.x2 *= scaleX
+      this.y2 *= scaleY
+      this.x3 *= scaleX
+      this.y3 *= scaleY
+      this.x4 *= scaleX
+      this.y4 *= scaleY
+    }
+
+    translate(tx,ty){
+      this.x1 += tx;
+      this.y1 += ty;
+      this.x2 += tx;
+      this.y2 += ty;
+      this.x3 += tx;
+      this.y3 += ty;
+      this.x4 += tx;
+      this.y4 += ty;
+
+      this.vertices = [
+        {x:this.x1,y:this.y1},
+        {x:this.x2,y:this.y2},
+        {x:this.x3,y:this.y3},
+        {x:this.x4,y:this.y4}
+      ]
+    }
+
     mouseMoved(mX,mY) {
         if(collidePointCircle(mX,mY,this.x1,this.y1,11)){
           this.hover = true
@@ -749,15 +794,28 @@ export class HitboxSquare extends Hitbox {
         super(id);
         this.x = x;
         this.y = y;
-        this.s = s;
+        this.w = s;
+        this.h = s;
     }
 
     collide(px,py){
-        return collidePointRect(px,py,this.x,this.y,this.s,this.s);
+        return collidePointRect(px,py,this.x,this.y,this.w,this.h);
     }
 
     draw(p5){
-        p5.square(this.x,this.y,this.s);
+        p5.rect(this.x,this.y,this.w,this.h);
+    }
+
+    scale(scaleX,scaleY){
+      this.x *= scaleX
+      this.y *= scaleY
+      this.w *= scaleX
+      this.h *= scaleY
+    }
+
+    translate(tx,ty){
+      this.x += tx
+      this.y += ty
     }
 }
 
@@ -778,6 +836,24 @@ export class HitboxTriangle extends Hitbox {
 
     draw(p5){
         p5.triangle(this.x1,this.y1,this.x2,this.y2,this.x3,this.y3);
+    }
+
+    scale(scaleX,scaleY){
+      this.x1 *= scaleX
+      this.y1 *= scaleY
+      this.x2 *= scaleX
+      this.y2 *= scaleY
+      this.x3 *= scaleX
+      this.y3 *= scaleY
+    }
+
+    translate(tx,ty){
+      this.x1 += tx;
+      this.y1 += ty;
+      this.x2 += tx;
+      this.y2 += ty;
+      this.x3 += tx;
+      this.y3 += ty;
     }
 }
 
@@ -800,6 +876,18 @@ export class HitboxArc extends Hitbox {
         else {
           p5.arc(this.arcX, this.arcY, this.arcW, this.arcH, this.arcStart, this.arcStop);
         }
+    }
+
+    scale(scaleX,scaleY){
+      this.arcX *=scaleX;
+      this.arcY *=scaleY;
+      this.arcW *=scaleX;
+      this.arcH *=scaleY;
+    }
+
+    translate(tx,ty){
+      this.arcX += tx;
+      this.arcY += ty;
     }
 
     pointOfEllipse(angle) {
@@ -856,16 +944,31 @@ export class HitboxCircle extends Hitbox {
         super(id);
         this.x = x;
         this.y = y;
-        this.d = d;
+        this.w = d;
+        this.h = d;
       }
     
       collide(px,py){
-        return collidePointCircle(px, py,this.x, this.y, this.d);
+        return collidePointEllipse(px, py,this.x, this.y, this.w,this.h);
       }
 
       draw(p5){
-        p5.circle(this.x,this.y,this.d);
-    }
+        p5.ellipse(this.x,this.y,this.w,this.h);
+      }
+
+      scale(scaleX, scaleY){
+        this.x *=scaleX;
+        this.y *=scaleY;
+        this.w *=scaleX;
+        this.h *=scaleY;
+      }
+
+      translate(tx,ty){
+        this.x += tx;
+        this.y += ty;
+      }
+
+      
 }
 
 export class HitboxLine extends Hitbox {
@@ -883,7 +986,21 @@ export class HitboxLine extends Hitbox {
 
       draw(p5){
         p5.line(this.x1,this.y1,this.x2,this.y2);
-    }
+      }
+
+      scale(scaleX,scaleY){
+        this.x1 *= scaleX
+        this.y1 *= scaleY
+        this.x2 *= scaleX
+        this.y2 *= scaleY
+      }
+
+      translate(tx,ty){
+        this.x1 += tx;
+        this.y1 += ty;
+        this.x2 += tx;
+        this.y2 += ty;
+      }
 }
 
 export class HitboxPoint extends Hitbox {
@@ -899,7 +1016,17 @@ export class HitboxPoint extends Hitbox {
 
       draw(p5){
         p5.point(this.x,this.y);
-    }
+      }
+      scale(scaleX,scaleY){
+        //Don't Make any sense :()
+        this.x *=scaleX;
+        this.y *=scaleY;
+      }
+
+      translate(tx,ty){
+        this.x += tx;
+        this.y += ty;
+      }
 }
 
 
@@ -918,5 +1045,17 @@ export class HitboxEllipse extends Hitbox {
 
     draw(p5){
         p5.ellipse(this.x,this.y,this.w,this.h);
+    }
+
+    scale(scaleX, scaleY){
+      this.x *= scaleX;
+      this.y *= scaleY;
+      this.w *= scaleX;
+      this.h *= scaleY;
+    }
+
+    translate(tx,ty){
+      this.x += tx;
+      this.y += ty;
     }
 }

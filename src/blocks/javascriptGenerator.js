@@ -49,7 +49,7 @@ javascriptGenerator.forBlock['point'] = function(block, generator) {
   var x = block.getFieldValue('x');
   var y = block.getFieldValue('y');
   // Criar um objeto JSON com os valores x e y
-  var sizeObject = { "x": parseInt(x), "y": parseInt(y) };
+  var sizeObject = { "x": x, "y": y };
   var jsonString = JSON.stringify(sizeObject);
   // Retornar o objeto JSON e a ordem (ORDER_NONE neste caso)
   return [jsonString, javascriptGenerator.ORDER_NONE];
@@ -548,20 +548,20 @@ return [JSON.stringify(code, null, 2), javascriptGenerator.ORDER_NONE];
 
 javascriptGenerator.forBlock['poscond_obj_muda_tam'] = function(block, generator) {
 var object_id = block.getFieldValue('OBJECT_ID');
-var sizeString = generator.valueToCode(block, 'SIZE', Order.ATOMIC);
+var scaleString = generator.valueToCode(block, 'SCALE', Order.ATOMIC);
 
-if(sizeString) {
-  sizeString = sizeString.slice(1,-1);
+if(scaleString) {
+  scaleString = scaleString.slice(1,-1);
 }
 else {
-  sizeString = 'null'
+  scaleString = 'null'
 }
-var sizeObject = JSON.parse(sizeString);
+var scaleObject = JSON.parse(scaleString);
 
 var code = {
-  'type' : 'OBJ_CHANGE_SIZE',
+  'type' : 'OBJ_SCALES',
   'object' : object_id,
-  'size' : sizeObject
+  'scale' : scaleObject
   }
 
 return [JSON.stringify(code, null, 2), javascriptGenerator.ORDER_NONE];
@@ -647,8 +647,8 @@ var source_id = block.getFieldValue('SRC');
 var code = {
   'type' : 'PLAY_SOUND',
   'sound' : sound_id,
-  'sourceId' : source_id,
-  'sourceType' : source_type
+  'source_id' : source_id,
+  'source_type' : source_type
 }
 
 return [JSON.stringify(code, null, 2), javascriptGenerator.ORDER_NONE];

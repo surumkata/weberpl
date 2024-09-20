@@ -1,9 +1,15 @@
+//Módulo dos Desafios (Challenges)
+
 import {WIDTH, HEIGHT, HEIGHT_INV} from './utils'
 
+//Classe abstracta de Desafio
 class Challenge {
-    constructor(sucessChallenge, failChallenge) {
-        this.sucessChallenge = sucessChallenge;
-        this.failChallenge = failChallenge;
+    //Todos os desafios tem um sucess (actions caso o desafio seja bem sucedido) e um fail (actions caso o desafio seja falhado)
+    constructor(sucess, fail) {
+        this.sucess = sucess;
+        this.fail = fail;
+
+        //Variáveis auxiliares no desenho dos desafios.
         this.background = [WIDTH / 4, HEIGHT/4 +HEIGHT_INV, WIDTH / 2, HEIGHT / 2];
         this.bigBackground = [WIDTH/8, HEIGHT/8+HEIGHT_INV, 3*WIDTH/4, 3*HEIGHT/4];
 
@@ -21,7 +27,6 @@ class Challenge {
         this.textColor = this.WHITE
         this.textStrokeColor = this.BLACK
         this.textStrokeWeight = 1
-
     }
   
     draw(p5) {
@@ -36,8 +41,22 @@ class Challenge {
         // Abstract method to be implemented in subclasses
     }
 
+    drawBigBackground(p5) {
+        p5.fill(this.backgroundColor);
+        p5.stroke(this.backgroundStrokeColor);
+        p5.strokeWeight(this.backgroundStrokeWeight);
+        p5.rect(this.bigBackground[0],this.bigBackground[1],this.bigBackground[2],this.bigBackground[3]);
+    }
+
+    drawBackground(p5) {
+        p5.fill(this.backgroundColor);
+        p5.stroke(this.backgroundStrokeColor);
+        p5.strokeWeight(this.backgroundStrokeWeight);
+        p5.rect(this.background[0],this.background[1],this.background[2],this.background[3]);
+    }
 
 
+    //Função auxiliar para detetar colisão com um retângulo
     rectCollision(mx,my,rect){
         let rectx = rect[0];
         let recty = rect[1];
@@ -49,7 +68,8 @@ class Challenge {
         return false;
     }
 
-    trianCollision(px, py, triangle) {
+    //Função auxiliar para detetar colisão com um triângulo
+    triangleCollision(px, py, triangle) {
         let x1 = triangle[0]
         let y1 = triangle[1]
         let x2 = triangle[2]
@@ -75,12 +95,14 @@ class Challenge {
     }
   }
 
+//Classe do desafio questão
 class ChallengeQuestion extends Challenge {
-    constructor(question,answer,sucessChallenge,failChallenge){
-        super(sucessChallenge,failChallenge);
+    constructor(question,answer,sucess,fail){
+        super(sucess,fail);
         this.question = question;
         this.answer = answer;
 
+        //Botão de confirmação de resposta
         this.triangle = [WIDTH / 2 - 25, HEIGHT / 2 + HEIGHT / 8,
                          WIDTH / 2 - 25, HEIGHT / 2 + HEIGHT / 8 + 50,
                          WIDTH / 2 + 25, HEIGHT / 2 + HEIGHT / 8 + 50/2
@@ -90,10 +112,8 @@ class ChallengeQuestion extends Challenge {
     }
     
     draw(p5) {
-        p5.fill(this.backgroundColor);
-        p5.stroke(this.backgroundStrokeColor);
-        p5.strokeWeight(this.backgroundStrokeWeight);
-        p5.rect(this.background[0],this.background[1],this.background[2],this.background[3]);
+        //Desenho do retângulo do desafio principal
+        this.drawBackground(p5)
         
         if(this.hover) {
             p5.fill(255,0,0);
@@ -113,12 +133,12 @@ class ChallengeQuestion extends Challenge {
     mousePressed(mX,mY,gameState) {
         if (mX >= 0 && mY >= 0 && mX <= WIDTH && mY <= HEIGHT) {
             if (super.rectCollision(mX,mY,this.background)){
-                if (super.trianCollision(mX,mY,this.triangle)){
+                if (super.triangleCollision(mX,mY,this.triangle)){
                     if(gameState.inputElem.value() === this.answer) {
-                        return this.sucessChallenge;
+                        return this.sucess;
                     }
                     else {
-                        return this.failChallenge;
+                        return this.fail;
                     }
                 }
             }
@@ -131,7 +151,7 @@ class ChallengeQuestion extends Challenge {
     }
 
     mouseMoved(mX,mY){
-        if (super.trianCollision(mX,mY,this.triangle)){
+        if (super.triangleCollision(mX,mY,this.triangle)){
             this.hover = true;
             document.documentElement.style.cursor = 'pointer';
         }
@@ -143,8 +163,8 @@ class ChallengeQuestion extends Challenge {
 }
 
 class ChallengeMultipleChoice extends Challenge {
-    constructor(question, multipleChoices, answer, sucessChallenge, failChallenge){
-        super(sucessChallenge,failChallenge);
+    constructor(question, multipleChoices, answer, sucess, fail){
+        super(sucess,fail);
         this.question = question;
         this.multipleChoices = multipleChoices;
 
@@ -173,10 +193,7 @@ class ChallengeMultipleChoice extends Challenge {
 
     draw(p5) {
         // Fundo colorido
-        p5.fill(this.backgroundColor);
-        p5.stroke(this.backgroundStrokeColor);
-        p5.strokeWeight(this.backgroundStrokeWeight);
-        p5.rect(this.bigBackground[0],this.bigBackground[1],this.bigBackground[2],this.bigBackground[3]);
+        this.drawBigBackground(p5)
 
         let i = 0
         this.choiceBoxes.forEach(box => {
@@ -216,10 +233,10 @@ class ChallengeMultipleChoice extends Challenge {
                 this.choiceBoxes.forEach(box => {
                     if(super.rectCollision(mX,mY,box)){
                         if(this.multipleChoices[i] === this.answer){
-                            event = this.sucessChallenge;
+                            event = this.sucess;
                         }
                         else {
-                            event = this.failChallenge;
+                            event = this.fail;
                         }
                     }
                     i+=1;
@@ -254,8 +271,8 @@ class ChallengeMultipleChoice extends Challenge {
 
 
 class ChallengeSequence extends Challenge {
-    constructor(question, sequence, sucessChallenge, failChallenge){
-        super(sucessChallenge,failChallenge);
+    constructor(question, sequence, sucess, fail){
+        super(sucess,fail);
         this.question = question;
         this.sequence = sequence;
         this.shuffledSequence = [...sequence];
@@ -289,15 +306,12 @@ class ChallengeSequence extends Challenge {
 
     draw(p5) {
         // Fundo colorido
-        p5.fill(this.backgroundColor);
-        p5.stroke(this.backgroundStrokeColor);
-        p5.strokeWeight(this.backgroundStrokeWeight);
-        p5.rect(this.bigBackground[0],this.bigBackground[1],this.bigBackground[2],this.bigBackground[3]);
+        this.drawBigBackground(p5)
 
         let i = 0
         this.choiceBoxes.forEach(box => {
             if (this.dones.includes(this.shuffledSequence[i])) {
-                p5.fill (0,255,0);
+                p5.fill(0,255,0);
             }
             else if(this.choiceHover != undefined && this.choiceHover === i){  
                 p5.fill(255,0,0);
@@ -335,13 +349,13 @@ class ChallengeSequence extends Challenge {
                     if(super.rectCollision(mX,mY,box)){
                         if(!this.dones.includes(this.shuffledSequence[i])) {
                             if(this.sequence[this.choice] !== this.shuffledSequence[i]) {
-                                event = this.failChallenge
+                                event = this.fail
                             }
                             else {
                                 this.choice += 1
                                 this.dones.push(this.shuffledSequence[i])
                                 if (this.choice === 4){
-                                    event = this.sucessChallenge
+                                    event = this.sucess
                                 }
                             }
                         }
@@ -376,8 +390,8 @@ class ChallengeSequence extends Challenge {
 }
 
 class ChallengeConnections extends Challenge{
-    constructor(question, list1, list2, sucessChallenge, failChallenge){
-        super(sucessChallenge,failChallenge);
+    constructor(question, list1, list2, sucess, fail){
+        super(sucess,fail);
         this.question = question;
         this.list1 = [...list1];
         this.list2 = [...list2];
@@ -427,10 +441,7 @@ class ChallengeConnections extends Challenge{
 
     draw(p5){
         // Fundo colorido
-        p5.fill(this.backgroundColor);
-        p5.stroke(this.backgroundStrokeColor);
-        p5.strokeWeight(this.backgroundStrokeWeight);
-        p5.rect(this.bigBackground[0],this.bigBackground[1],this.bigBackground[2],this.bigBackground[3]);
+        this.drawBigBackground(p5)
         
 
         let i = 0
@@ -511,11 +522,11 @@ class ChallengeConnections extends Challenge{
                                     this.rightChoice = undefined;
                                     this.leftChoice = undefined;
                                     if(this.dones.length === 4) {
-                                        event = this.sucessChallenge;
+                                        event = this.sucess;
                                     }
                                 }
                                 else{
-                                    event = this.failChallenge;
+                                    event = this.fail;
                                 }
                             }
                         }
@@ -533,11 +544,11 @@ class ChallengeConnections extends Challenge{
                                     this.rightChoice = undefined;
                                     this.leftChoice = undefined;
                                     if(this.dones.length === 4) {
-                                        event = this.sucessChallenge;
+                                        event = this.sucess;
                                     }
                                 }
                                 else{
-                                    event = this.failChallenge;
+                                    event = this.fail;
                                 }
                             }
                         }

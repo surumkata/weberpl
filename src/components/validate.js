@@ -215,12 +215,12 @@ const validatePosConditions = (posConditions, vars,reasons) => {
             reasons.push("Action {Object move to} needs a position")
           }
           break;
-      case "OBJ_CHANGE_SIZE":
+      case "OBJ_SCALES":
           if(!(posCondition.object in vars.objects)){
             reasons.push("Object "+posCondition.object+" does not exist in escape room");
           }
-          if(!posCondition.size){
-            reasons.push("Action {Object change size to} needs a size")
+          if(!posCondition.scale){
+            reasons.push("Action {Object scales into} needs a scale")
           }
           break;
       case "SHOW_MESSAGE":

@@ -1,3 +1,6 @@
+import { ViewSketch } from "./view";
+import { Position } from "./utils";
+
 // CLASSE DE UM OBJETO
 export class Object {
   constructor(id, scenarioId) {
@@ -35,9 +38,10 @@ export class Object {
   }
 
   // Função que muda o tamanho do objeto
-  changeSize(size) {
+  changeSize(scale) {
       for (let view in this.views){
-        this.views[view].changeSize(size);
+        let v = this.views[view];
+        v.changeSize(scale);
       }
   }
 

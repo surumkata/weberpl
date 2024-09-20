@@ -52,16 +52,16 @@ class EventPosConditionObjChangePosition extends EventPosCondition {
   }
 }
 
-class EventPosConditionObjChangeSize extends EventPosCondition {
-  constructor(objectId, size) {
-      super("OBJ_CHANGE_SIZE");
+class EventPosConditionObjScales extends EventPosCondition {
+  constructor(objectId, scale) {
+      super("OBJ_SCALES");
       this.objectId = objectId;
-      this.size = size;
+      this.scale = scale;
   }
 
   do(room, inventory, state) {
-      room.objects[this.objectId].changeSize(this.size);
-      debug("EVENT_CHANGE_SIZE: Mudando " + this.objectId + " para o size (" + this.size.x + "," + this.size.y + ").");
+      room.objects[this.objectId].changeSize(this.scale);
+      debug("EVENT_CHANGE_SIZE: Mudando " + this.objectId + " para o size (" + this.scale.x + "," + this.scale.y + ").");
   }
 }
 
@@ -264,7 +264,7 @@ export {
   EventPosConditionEndGame,
   EventPosConditionObjChangeState,
   EventPosConditionObjChangePosition,
-  EventPosConditionObjChangeSize,
+  EventPosConditionObjScales,
   EventPosConditionShowMessage,
   EventPosConditionObjPutInventory,
   EventPosConditionChangeScenario,

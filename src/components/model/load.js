@@ -11,7 +11,7 @@ import {Transition } from './transition.js';
 import { Event } from './event.js';
 import { PreConditionOperatorAnd, PreConditionOperatorNot, PreConditionOperatorOr, PreConditionTree, PreConditionVar } from './precondition_tree.js';
 import { EventPreConditionAfterEvent,EventPreConditionAfterTime,EventPreConditionClickedNotObject,EventPreConditionClickedObject,EventPreConditionItemIsInUse,EventPreConditionWhenObjectIsView } from './precondition.js';
-import { EventPosConditionTransition, EventPosConditionConnections, EventPosConditionSequence, EventPosConditionQuestion, EventPosConditionChangeScenario,EventPosConditionRemoveObj,EventPosConditionEndGame,EventPosConditionMultipleChoice,EventPosConditionObjChangePosition,EventPosConditionObjChangeSize,EventPosConditionObjChangeState,EventPosConditionObjPutInventory,EventPosConditionPlaySound,EventPosConditionShowMessage } from './poscondition.js';
+import { EventPosConditionTransition, EventPosConditionConnections, EventPosConditionSequence, EventPosConditionQuestion, EventPosConditionChangeScenario,EventPosConditionRemoveObj,EventPosConditionEndGame,EventPosConditionMultipleChoice,EventPosConditionObjChangePosition,EventPosConditionObjScales,EventPosConditionObjChangeState,EventPosConditionObjPutInventory,EventPosConditionPlaySound,EventPosConditionShowMessage } from './poscondition.js';
 import { HitboxArc, HitboxCircle, HitboxEllipse, HitboxLine, HitboxPoint, HitboxQuad, HitboxRect, HitboxSquare, HitboxTriangle } from './hitbox.js';
 import { Sound } from './sound.js';
 
@@ -84,8 +84,8 @@ function loadTransitions(p5,er,gs,transitions){
     })
 }
 
-function loadSketch(id,draws,hitboxes,hitboxesType,bbox){
-    var sketch = new ViewSketch(id,hitboxes,hitboxesType,bbox);
+function loadSketch(id,draws,hitboxes,hitboxesType){
+    var sketch = new ViewSketch(id,hitboxes,hitboxesType);
     draws.forEach(draw => {
         const type = draw.type;
         let drawView;
@@ -220,7 +220,9 @@ function loadView(p5,view){
     let hitboxes = loadHitboxes(view);
     switch(view.type){
         case "VIEW_IMAGE":
-            return new View(p5,view.id,[view.src],new Size(view.size.x,view.size.y), new Position (view.position.x,view.position.y+HEIGHT_INV),0,0,view.turn,hitboxes,view.hitbox_type);
+            let v = new View(p5,view.id,[view.src],new Size(view.size.x,view.size.y), new Position (view.position.x,view.position.y+HEIGHT_INV),0,0,view.turn,hitboxes,view.hitbox_type);
+            v.makeHitboxesBBox();
+            return v
         case "VIEW_SKETCH":
             return loadSketch(view.id,view.draws,hitboxes,view.hitbox_type);
         default:
@@ -342,10 +344,10 @@ function loadPosconditions(dataPosconditions) {
                 const pos = dataAction.position;
                 eventPoscondition = new EventPosConditionObjChangePosition(objPositionObjectId, new Position(pos.x,(pos.y+HEIGHT_INV)));
                 break;
-            case "OBJ_CHANGE_SIZE":
+            case "OBJ_SCALES":
                 const objSizeObjectId = dataAction.object;
-                const size = dataAction.size;
-                eventPoscondition = new EventPosConditionObjChangeSize(objSizeObjectId, new Size(size.x, size.y));
+                const scale = dataAction.scale;
+                eventPoscondition = new EventPosConditionObjScales(objSizeObjectId, new Size(scale.x, scale.y));
                 break;
             case "SHOW_MESSAGE":
                 const message = dataAction.message;
@@ -366,8 +368,8 @@ function loadPosconditions(dataPosconditions) {
                 break;
             case "PLAY_SOUND":
                 const soundId = dataAction.sound;
-                const sourceId = dataAction.sourceId;
-                const sourceType = dataAction.sourceType;
+                const sourceId = dataAction.source_id;
+                const sourceType = dataAction.source_type;
                 eventPoscondition = new EventPosConditionPlaySound(soundId, sourceId, sourceType);
                 break;
             case "QUESTION":

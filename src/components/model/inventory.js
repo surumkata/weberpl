@@ -15,50 +15,36 @@ export class Item {
     let padding = 10;
     let objSize = SQUARE_SIZE - padding*2;
 
-    if(view.constructor === View){
-        if (size.x >= size.y) {
-          this.size.x = objSize;
-          this.size.y = size.y * objSize / size.x;
-        } else {
-          this.size.y = objSize;
-          this.size.x = size.x * objSize / size.y;
-        }
-        if(this.size.x === objSize){
-            this.position.x = this.slotPosition.x + padding;
-            this.position.y = this.slotPosition.y + SQUARE_SIZE/2 - this.size.y/2;
-        }
-        else {
-            this.position.x = this.slotPosition.x + SQUARE_SIZE/2 - this.size.x/2;
-            this.position.y = this.slotPosition.y + padding;
-        }
-        view.changeSize(this.size);
-        view.changePosition(this.position);
+    let width;
+    let height;
+    if(view.constructor === ViewSketch){
+        width = view.bb.xmax - view.bb.xmin;
+        height = view.bb.ymax - view.bb.ymin;
     }
-    else if(view.constructor === ViewSketch){
-        let width = view.bb.xmax - view.bb.xmin;
-        let height = view.bb.ymax - view.bb.ymin;
-        if(width >= height){
-            this.size.x = objSize;
-            this.size.y = height * objSize/width;
-        }
-        else {
-            this.size.y = objSize;
-            this.size.x = width * objSize/height;
-        }
-        if(this.size.x === objSize){
-            this.position.x = this.slotPosition.x + padding;
-            this.position.y = this.slotPosition.y + SQUARE_SIZE/2 - this.size.y/2;
-        }
-        else {
-            this.position.x = this.slotPosition.x + SQUARE_SIZE/2 - this.size.x/2;
-            this.position.y = this.slotPosition.y + padding;
-        }
-        let scale = this.size.x/width;
-        view.scale(scale);
-        let translateX = (this.position.x-view.bb.xmin);
-        let translateY = (this.position.y-view.bb.ymin);
-        view.translate(translateX,translateY);
+    else if(view.constructor === View){
+        width = size.x;
+        height = size.y;
     }
+
+    if(width >= height){
+        this.size.x = objSize;
+        this.size.y = height * objSize/width;
+    }
+    else {
+        this.size.y = objSize;
+        this.size.x = width * objSize/height;
+    }
+    if(this.size.x === objSize){
+        this.position.x = this.slotPosition.x + padding;
+        this.position.y = this.slotPosition.y + SQUARE_SIZE/2 - this.size.y/2;
+    }
+    else {
+        this.position.x = this.slotPosition.x + SQUARE_SIZE/2 - this.size.x/2;
+        this.position.y = this.slotPosition.y + padding;
+    }
+
+    view.changeSize(this.size);
+    view.changePosition(this.position);
 
 
     this.view = view;

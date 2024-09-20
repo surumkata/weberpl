@@ -1,3 +1,4 @@
+import { HitboxArc, HitboxCircle, HitboxEllipse, HitboxLine, HitboxPoint, HitboxQuad, HitboxRect, HitboxSquare, HitboxTriangle } from "./hitbox";
 import { HEIGHT, HEIGHT_INV, Position, WIDTH, SCALE_EDIT } from "./utils";
 import { collidePointCircle, collidePointEllipse, collidePointLine, collidePointPoint, collidePointPoly, collidePointRect, collidePointTriangle } from "p5collide";
 //import { Hitbox, HitboxRect } from "./hitbox";
@@ -30,12 +31,35 @@ export class View {
     }
   }
 
-  changeSize(size) {
-    this.size = size;
+  changeSize(scale) {
+    console.log("door",this.position.x,this.position.y,this.size.x,this.size.y);
+    let position = new Position(this.position.x,this.position.y);
+    console.log(position)
+    
+    this.position.x *= scale.x;
+    this.position.y *= scale.y;
+    this.size.x *= scale.x;
+    this.size.y *= scale.y;
+
+
+    this.hitboxes.forEach(hitbox => {
+      hitbox.scale(scale.x,scale.y)
+    })
+
+    this.makeHitboxesBBox();
+
+    this.changePosition(position);
   }
 
   changePosition(position) {
-      this.position = position;
+    this.position.x = position.x;
+    this.position.y = position.y;
+    let translateX = position.x-this.hitboxbb.xmin;
+    let translateY = position.y-this.hitboxbb.ymin;
+    this.hitboxes.forEach(hitbox => {
+      hitbox.translate(translateX,translateY);
+    })
+    this.makeHitboxesBBox();
   } 
 
   changeSprite() {
@@ -127,6 +151,8 @@ export class View {
       p5.circle(this.position.x+this.size.x,this.position.y+this.size.y,10);
       p5.pop();
     }
+
+
     if (this.showHitboxes){
       p5.push();
       let alpha = 0.5;
@@ -226,10 +252,93 @@ export class View {
       //TODO: shiftReleased hitboxes
     }
   }
+
+  makeHitboxesBBox(){
+    let xmin = WIDTH;
+    let ymin = HEIGHT;
+    let xmax = 0;
+    let ymax = 0;
+
+    this.hitboxes.forEach(hitbox => {
+        let hitbox_xmin = WIDTH;
+        let hitbox_ymin = HEIGHT;
+        let hitbox_xmax = 0;
+        let hitbox_ymax = 0;
+        switch(hitbox.constructor) {
+            case HitboxRect:
+                hitbox_xmin = hitbox.x;
+                hitbox_ymin = hitbox.y;
+                hitbox_xmax = hitbox.x+hitbox.w;
+                hitbox_ymax = hitbox.y+hitbox.h;
+                break;
+            case HitboxQuad:
+                hitbox_xmin = Math.min(hitbox.x1,hitbox.x2,hitbox.x3,hitbox.x4);
+                hitbox_ymin = Math.min(hitbox.y1,hitbox.y2,hitbox.y3,hitbox.y4);
+                hitbox_xmax = Math.max(hitbox.x1,hitbox.x2,hitbox.x3,hitbox.x4);
+                hitbox_ymax = Math.min(hitbox.y1,hitbox.y2,hitbox.y3,hitbox.y4);
+                break;
+            case HitboxSquare:
+                hitbox_xmin = hitbox.x;
+                hitbox_ymin = hitbox.y;
+                hitbox_xmax = hitbox.x + hitbox.s;
+                hitbox_ymax = hitbox.y + hitbox.s;
+                break;
+            case HitboxTriangle:
+                hitbox_xmin = Math.min(hitbox.x1,hitbox.x2,hitbox.x3);
+                hitbox_ymin = Math.min(hitbox.y1,hitbox.y2,hitbox.y3);
+                hitbox_xmax = Math.max(hitbox.x1,hitbox.x2,hitbox.x3);
+                hitbox_ymax = Math.min(hitbox.y1,hitbox.y2,hitbox.y3);
+                break;
+            case HitboxLine:
+                hitbox_xmin = Math.min(hitbox.x1,hitbox.x2);
+                hitbox_ymin = Math.min(hitbox.y1,hitbox.y2);
+                hitbox_xmax = Math.max(hitbox.x1,hitbox.x2);
+                hitbox_ymax = Math.min(hitbox.y1,hitbox.y2);
+                break;
+            case HitboxPoint:
+                hitbox_xmin = hitbox.x
+                hitbox_ymin = hitbox.y
+                hitbox_xmax = hitbox.x
+                hitbox_ymax = hitbox.y
+                break;
+            case HitboxArc:
+                hitbox_xmin = hitbox.x - hitbox.w/2;
+                hitbox_ymin = hitbox.y - hitbox.h/2;
+                hitbox_xmax = hitbox.x + hitbox.w/2;
+                hitbox_ymax = hitbox.y + hitbox.h/2;
+                break;
+            case HitboxCircle:
+                hitbox_xmin = hitbox.x - hitbox.d/2;
+                hitbox_ymin = hitbox.y - hitbox.d/2;
+                hitbox_xmax = hitbox.x + hitbox.d/2;
+                hitbox_ymax = hitbox.y + hitbox.d/2;
+                break;
+            case HitboxEllipse:
+                hitbox_xmin = hitbox.x - hitbox.w/2;
+                hitbox_ymin = hitbox.y - hitbox.h/2;
+                hitbox_xmax = hitbox.x + hitbox.w/2;
+                hitbox_ymax = hitbox.y + hitbox.h/2;
+                break;
+            default:
+                break;
+        }
+        xmin = Math.min(xmin,hitbox_xmin);
+        ymin = Math.min(ymin,hitbox_ymin);
+        xmax = Math.max(xmax,hitbox_xmax);
+        ymax = Math.max(ymax,hitbox_ymax);
+    })
+
+    this.hitboxbb = {
+        xmin : xmin,
+        ymin : ymin,
+        xmax : xmax,
+        ymax : ymax
+    }
+  }
 }
 
 export class ViewSketch {
-  constructor(id,hitboxes,hitboxesType, bbox){
+  constructor(id,hitboxes,hitboxesType){
     this.id = id;
     this.draws = [];
     this.hitboxes = hitboxes;
@@ -264,8 +373,8 @@ export class ViewSketch {
             case Square:
                 draw_xmin = draw.x;
                 draw_ymin = draw.y;
-                draw_xmax = draw.x + draw.s;
-                draw_ymax = draw.y + draw.s;
+                draw_xmax = draw.x + draw.w;
+                draw_ymax = draw.y + draw.h;
                 break;
             case Triangle:
                 draw_xmin = Math.min(draw.x1,draw.x2,draw.x3);
@@ -292,10 +401,10 @@ export class ViewSketch {
                 draw_ymax = draw.y + draw.h/2;
                 break;
             case Circle:
-                draw_xmin = draw.x - draw.d/2;
-                draw_ymin = draw.y - draw.d/2;
-                draw_xmax = draw.x + draw.d/2;
-                draw_ymax = draw.y + draw.d/2;
+                draw_xmin = draw.x - draw.w/2;
+                draw_ymin = draw.y - draw.h/2;
+                draw_xmax = draw.x + draw.w/2;
+                draw_ymax = draw.y + draw.h/2;
                 break;
             case Ellipse:
                 draw_xmin = draw.x - draw.w/2;
@@ -306,10 +415,12 @@ export class ViewSketch {
             default:
                 break;
         }
+        //console.log(draw.constructor.name)
         xmin = Math.min(xmin,draw_xmin);
         ymin = Math.min(ymin,draw_ymin);
         xmax = Math.max(xmax,draw_xmax);
         ymax = Math.max(ymax,draw_ymax);
+        //console.log(xmin,ymin,xmax,ymax);
     })
 
     this.bb = {
@@ -318,6 +429,31 @@ export class ViewSketch {
         xmax : xmax,
         ymax : ymax
     }
+    
+    console.log(this.bb);
+  }
+
+  changePosition(position){
+    let translateX = (position.x-this.bb.xmin);
+    let translateY = (position.y-this.bb.ymin);
+    this.translate(translateX,translateY);
+  }
+
+  changeSize(scale){
+
+    let pos = new Position(this.bb.xmin,this.bb.ymin)
+    console.log(pos);
+
+    this.draws.forEach(draw => {
+      draw.scale(scale.x,scale.y);
+    })
+
+    this.hitboxes.forEach(hitbox => {
+      hitbox.scale(scale.x,scale.y);
+    });
+    
+    this.makeBBox();
+    this.changePosition(pos);
   }
 
   draw(p5, semi_opacity=false){
@@ -331,6 +467,7 @@ export class ViewSketch {
       draw.draw(p5,semi_opacity);
     })
     p5.pop()
+
     if (this.showHitboxes){
       p5.push();
       let alpha = 0.5;
@@ -358,138 +495,13 @@ export class ViewSketch {
     this.draws.push(draw);
   }
 
-  scale(scale){
-    this.draws.forEach(draw => {
-      switch(draw.constructor) {
-        case Rect:
-          draw.x  *=  scale;
-          draw.y  *=  scale;
-          draw.w  *=  scale;
-          draw.h  *=  scale;
-          draw.tl *= scale;
-          draw.tr *= scale;
-          draw.br *= scale;
-          draw.bl *= scale;
-          break;
-        case Quad:
-          draw.x1 *= scale;
-          draw.y1 *= scale;
-          draw.x2 *= scale;
-          draw.y2 *= scale;
-          draw.x3 *= scale;
-          draw.y3 *= scale;
-          draw.x4 *= scale;
-          draw.y4 *= scale;
-          break;
-        case Square:
-          draw.x  *= scale;
-          draw.y  *= scale;
-          draw.s  *= scale;
-          draw.tl *= scale;
-          draw.tr *= scale;
-          draw.br *= scale;
-          draw.bl *= scale;
-          break;
-        case Triangle:
-          draw.x1 *= scale;
-          draw.y1 *= scale;
-          draw.x2 *= scale;
-          draw.y2 *= scale;
-          draw.x3 *= scale;
-          draw.y3 *= scale; 
-          break;
-        case Line:
-          draw.x1 *= scale;
-          draw.y1 *= scale;
-          draw.x2 *= scale;
-          draw.y2 *= scale;
-          break;
-        case Point:
-          draw.x *= scale;
-          draw.y *= scale;
-          break;
-        case Arc:
-          draw.x *= scale;
-          draw.y *= scale;
-          draw.w *= scale;
-          draw.h *= scale;
-          break;
-        case Circle:
-          draw.x *= scale;
-          draw.y *= scale;
-          draw.d *= scale;
-          break;
-        case Ellipse:
-          draw.x *= scale;
-          draw.y *= scale;
-          draw.w *= scale;
-          draw.h *= scale;
-          break;
-        case Stroke:
-          draw.w *= scale;
-          break;
-        default:
-          break;
-      }
-    })
-    this.makeBBox();
-  }
-
   translate(tx,ty){
     this.draws.forEach(draw => {
-      switch(draw.constructor) {
-        case Rect:
-          draw.x  +=  tx;
-          draw.y  +=  ty;
-          break;
-        case Quad:
-          draw.x1 += tx;
-          draw.y1 += ty;
-          draw.x2 += tx;
-          draw.y2 += ty;
-          draw.x3 += tx;
-          draw.y3 += ty;
-          draw.x4 += tx;
-          draw.y4 += ty;
-          break;
-        case Square:
-          draw.x  += tx;
-          draw.y  += ty;
-          break;
-        case Triangle:
-          draw.x1 += tx;
-          draw.y1 += ty;
-          draw.x2 += tx;
-          draw.y2 += ty;
-          draw.x3 += tx;
-          draw.y3 += ty; 
-          break;
-        case Line:
-          draw.x1 += tx;
-          draw.y1 += ty;
-          draw.x2 += tx;
-          draw.y2 += ty;
-          break;
-        case Point:
-          draw.x += tx;
-          draw.y += ty;
-          break;
-        case Arc:
-          draw.x += tx;
-          draw.y += ty;
-          break;
-        case Circle:
-          draw.x += tx;
-          draw.y += ty;
-          break;
-        case Ellipse:
-          draw.x += tx;
-          draw.y += ty;
-          break;
-        default:
-          break;
-      }
+      draw.translate(tx,ty);
     })
+    this.hitboxes.forEach(hitbox => {
+      hitbox.translate(tx,ty);
+    });
     this.makeBBox();
   }
 
@@ -609,6 +621,8 @@ export class DrawP5 {
   draw(p5){
     // Abstract method to be implemented in subclasses
   }
+  translate(tx,ty){}
+  scale(scaleX,scaleY){}
 
   mouseMoved(mX,mY) {return false;}
   mousePressed(mX,mY) {return false;}
@@ -668,6 +682,17 @@ export class Rect extends DrawP5 {
     }
   }
 
+  scale(scaleX,scaleY){
+    this.x *= scaleX;
+    this.y *= scaleY;
+    this.w *=scaleX;
+    this.h *=scaleY;
+  }
+
+  translate(tx,ty){
+    this.x += tx
+    this.y += ty
+  }
   
   mouseMoved(mX,mY) {
     let width = this.w;
@@ -1224,6 +1249,35 @@ export class Quad extends DrawP5 {
     }
   }
 
+  scale(scaleX,scaleY){
+    this.x1 *= scaleX
+    this.y1 *= scaleY
+    this.x2 *= scaleX
+    this.y2 *= scaleY
+    this.x3 *= scaleX
+    this.y3 *= scaleY
+    this.x4 *= scaleX
+    this.y4 *= scaleY
+  }
+
+  translate(tx,ty){
+    this.x1 += tx;
+    this.y1 += ty;
+    this.x2 += tx;
+    this.y2 += ty;
+    this.x3 += tx;
+    this.y3 += ty;
+    this.x4 += tx;
+    this.y4 += ty;
+
+    this.vertices = [
+      {x:this.x1,y:this.y1},
+      {x:this.x2,y:this.y2},
+      {x:this.x3,y:this.y3},
+      {x:this.x4,y:this.y4}
+    ]
+  }
+
   mouseMoved(mX,mY) {
     if(collidePointCircle(mX,mY,this.x1,this.y1,11)){
       this.hover = true
@@ -1341,7 +1395,8 @@ export class Square extends DrawP5 {
     super(id);
     this.x = x;
     this.y = y;
-    this.s = s;
+    this.w = s;
+    this.h = s;
     this.tl = tl;
     this.tr = tr;
     this.br = br;
@@ -1349,7 +1404,19 @@ export class Square extends DrawP5 {
   }
 
   draw(p5){
-    p5.square(this.x, this.y, this.s, this.tl, this.tr, this.br, this.bl)
+    p5.rect(this.x,this.y,this.w, this.h, this.tl,this.tr,this.br, this.bl);
+  }
+
+  scale(scaleX,scaleY){
+    this.x *= scaleX
+    this.y *= scaleY
+    this.w *= scaleX
+    this.h *= scaleY
+  }
+
+  translate(tx,ty){
+    this.x += tx
+    this.y += ty
   }
 }
 
@@ -1379,6 +1446,24 @@ export class Triangle extends DrawP5 {
       p5.circle(this.x3,this.y3,10);
       p5.pop();
     }
+  }
+
+  scale(scaleX,scaleY){
+    this.x1 *= scaleX
+    this.y1 *= scaleY
+    this.x2 *= scaleX
+    this.y2 *= scaleY
+    this.x3 *= scaleX
+    this.y3 *= scaleY
+  }
+
+  translate(tx,ty){
+    this.x1 += tx;
+    this.y1 += ty;
+    this.x2 += tx;
+    this.y2 += ty;
+    this.x3 += tx;
+    this.y3 += ty;
   }
 
   mouseMoved(mX,mY) {
@@ -1513,6 +1598,18 @@ export class Arc extends DrawP5 {
       p5.line(this.x,this.y,this.x,this.y-this.h/2);
       p5.pop();
     }
+  }
+
+  scale(scaleX,scaleY){
+    this.x *=scaleX;
+    this.y +=scaleY;
+    this.w *=scaleX;
+    this.h *=scaleY;
+  }
+
+  translate(tx,ty){
+    this.x += tx;
+    this.y += ty;
   }
 
   pointOfEllipse(angle) {
@@ -1666,7 +1763,8 @@ export class Circle extends DrawP5 {
     super(id);
     this.x = x;
     this.y = y;
-    this.d = d;
+    this.w = d;
+    this.h = d;
     this.hover = false;
     this.pressed = false;
     this.typePressed = null;
@@ -1674,43 +1772,55 @@ export class Circle extends DrawP5 {
   }
 
   draw(p5){
-    p5.circle(this.x, this.y, this.d);
+    p5.ellipse(this.x, this.y, this.w, this.h);
     if(this.hover){
       p5.push();
       p5.fill(255,0,0);
       p5.noStroke();
-      p5.circle(this.x+this.d/2,this.y,10);
-      p5.circle(this.x,this.y+this.d/2,10);
-      p5.circle(this.x-this.d/2,this.y,10);
-      p5.circle(this.x,this.y-this.d/2,10);
+      p5.circle(this.x+this.w/2,this.y,10);
+      p5.circle(this.x,this.y+this.w/2,10);
+      p5.circle(this.x-this.w/2,this.y,10);
+      p5.circle(this.x,this.y-this.w/2,10);
       p5.stroke(255,0,0);
       p5.strokeWeight(2);
-      p5.line(this.x,this.y,this.x+this.d/2,this.y);
-      p5.line(this.x,this.y,this.x,this.y+this.d/2);
-      p5.line(this.x,this.y,this.x-this.d/2,this.y);
-      p5.line(this.x,this.y,this.x,this.y-this.d/2);
+      p5.line(this.x,this.y,this.x+this.w/2,this.y);
+      p5.line(this.x,this.y,this.x,this.y+this.w/2);
+      p5.line(this.x,this.y,this.x-this.w/2,this.y);
+      p5.line(this.x,this.y,this.x,this.y-this.w/2);
       p5.pop();
     }
   }
 
+  scale(scaleX, scaleY){
+    this.x *=scaleX;
+    this.y *=scaleY;
+    this.w *=scaleX;
+    this.h *=scaleY;
+  }
+
+  translate(tx,ty){
+    this.x += tx;
+    this.y += ty;
+  }
+
   mouseMoved(mX,mY) {
-    if(collidePointCircle(mX,mY,this.x+this.d/2,this.y,11)){
+    if(collidePointCircle(mX,mY,this.x+this.w/2,this.y,11)){
       this.hover = true
       document.documentElement.style.cursor = 'grab';
     }
-    else if(collidePointCircle(mX,mY,this.x,this.y+this.d/2,11)){
+    else if(collidePointCircle(mX,mY,this.x,this.y+this.w/2,11)){
       this.hover = true
       document.documentElement.style.cursor = 'grab';
     }
-    else if(collidePointCircle(mX,mY,this.x-this.d/2,this.y,11)){
+    else if(collidePointCircle(mX,mY,this.x-this.w/2,this.y,11)){
       this.hover = true
       document.documentElement.style.cursor = 'grab';
     }
-    else if(collidePointCircle(mX,mY,this.x,this.y-this.d/2,11)){
+    else if(collidePointCircle(mX,mY,this.x,this.y-this.w/2,11)){
       this.hover = true
       document.documentElement.style.cursor = 'grab';
     }
-    else if (collidePointCircle(mX,mY,this.x,this.y,this.d)){
+    else if (collidePointCircle(mX,mY,this.x,this.y,this.w)){
       this.hover = true
       document.documentElement.style.cursor = 'move';
     }
@@ -1722,27 +1832,27 @@ export class Circle extends DrawP5 {
   }
 
   mousePressed(mX,mY) {
-    if(collidePointCircle(mX,mY,this.x+this.d/2,this.y,11)){
+    if(collidePointCircle(mX,mY,this.x+this.w/2,this.y,11)){
       document.documentElement.style.cursor = 'grabbing';
       this.pressed = true;
       this.typePressed = "width"
     }
-    else if(collidePointCircle(mX,mY,this.x,this.y+this.d/2,11)){
+    else if(collidePointCircle(mX,mY,this.x,this.y+this.w/2,11)){
       document.documentElement.style.cursor = 'grabbing';
       this.pressed = true;
       this.typePressed = "height"
     }
-    else if(collidePointCircle(mX,mY,this.x-this.d/2,this.y,11)){
+    else if(collidePointCircle(mX,mY,this.x-this.w/2,this.y,11)){
       document.documentElement.style.cursor = 'grabbing';
       this.pressed = true;
       this.typePressed = "-width"
     }
-    else if(collidePointCircle(mX,mY,this.x,this.y-this.d/2,11)){
+    else if(collidePointCircle(mX,mY,this.x,this.y-this.w/2,11)){
       document.documentElement.style.cursor = 'grabbing';
       this.pressed = true;
       this.typePressed = "-height"
     }
-    else if (collidePointCircle(mX,mY,this.x,this.y,this.d)){
+    else if (collidePointCircle(mX,mY,this.x,this.y,this.w)){
       this.pressed = true;
       this.typePressed = "circle"
     }
@@ -1759,16 +1869,20 @@ export class Circle extends DrawP5 {
     if (this.pressed) {
       switch(this.typePressed){
         case "width":
-          this.d += changeX;
+          this.w += changeX;
+          this.h += changeX;
           break;
         case "height":
-          this.d += changeY;
+          this.w += changeX;
+          this.h += changeX;
           break;
         case "-width":
-          this.d = Math.max(0,this.d-changeX);
+          this.w = Math.max(0,this.w-changeX);
+          this.h = Math.max(0,this.h-changeX);
           break;
         case "-height":
-          this.d = Math.max(0,this.d-changeY);
+          this.w = Math.max(0,this.w-changeY);
+          this.h = Math.max(0,this.h-changeY);
           break;
         default:
           this.x += changeX;
@@ -1820,6 +1934,18 @@ export class Ellipse extends DrawP5 {
       p5.line(this.x,this.y,this.x,this.y-this.h/2);
       p5.pop();
     }
+  }
+
+  scale(scaleX, scaleY){
+    this.x *= scaleX;
+    this.y *= scaleY;
+    this.w *= scaleX;
+    this.h *= scaleY;
+  }
+
+  translate(tx,ty){
+    this.x += tx;
+    this.y += ty;
   }
 
   mouseMoved(mX,mY) {
@@ -1944,6 +2070,20 @@ export class Line extends DrawP5 {
     }
   }
 
+  scale(scaleX,scaleY){
+    this.x1 *= scaleX
+    this.y1 *= scaleY
+    this.x2 *= scaleX
+    this.y2 *= scaleY
+  }
+
+  translate(tx,ty){
+    this.x1 += tx;
+    this.y1 += ty;
+    this.x2 += tx;
+    this.y2 += ty;
+  }
+
   mouseMoved(mX,mY) {
     if(collidePointCircle(mX,mY,this.x1,this.y1,11)){
       this.hover = true
@@ -2039,6 +2179,17 @@ export class Point extends DrawP5 {
       p5.circle(this.x,this.y,10);
       p5.pop();
     }
+  }
+
+  scale(scaleX,scaleY){
+    //Don't Make any sense :()
+    this.x *= scaleX;
+    this.y *= scaleY;
+  }
+
+  translate(tx,ty){
+    this.x += tx;
+    this.y += ty;
   }
 
   mouseMoved(mX,mY) {
