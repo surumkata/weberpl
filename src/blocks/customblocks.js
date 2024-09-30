@@ -24,21 +24,6 @@ Blockly.Blocks['escape_room'] = {
         .appendField("ESCAPE ROOM")
         .appendField(new Blockly.FieldTextInput("My Escape Room"), "TITLE");
     this.appendDummyInput()
-        .setAlign(Blockly.inputs.Align.CENTRE)
-        .appendField("SCENARIOS:");
-    this.appendStatementInput("SCENARIOS")
-        .setCheck("scenario");
-    this.appendDummyInput()
-        .setAlign(Blockly.inputs.Align.CENTRE)
-        .appendField("TRANSITIONS:");
-    this.appendStatementInput("TRANSITIONS")
-        .setCheck("transition");
-    this.appendDummyInput()
-        .setAlign(Blockly.inputs.Align.CENTRE)
-        .appendField("EVENTS:");
-    this.appendStatementInput("EVENTS")
-        .setCheck("event");
-    this.appendDummyInput()
         .appendField("STARTS WITH")
         .appendField(new Blockly.FieldDropdown([["TRANSITION","TRANSITION"], ["SCENARIO","SCENARIO"]]), "TYPE")
         .appendField(new Blockly.FieldTextInput("ID"), "START");
@@ -131,8 +116,6 @@ Blockly.Blocks['scenario'] = {
         .appendField("SOUNDS:");
     this.appendStatementInput("SOUNDS")
         .setCheck("sound");
-    this.setPreviousStatement(true, "scenario");
-    this.setNextStatement(true, "scenario");
     this.setColour('%{BKY_SCENARIOS}');
  this.setTooltip("");
  this.setHelpUrl("");
@@ -156,8 +139,6 @@ Blockly.Blocks['event'] = {
     this.appendValueInput("DO")
         .setCheck("action")
         .appendField("DO");
-    this.setPreviousStatement(true, "event");
-    this.setNextStatement(true, "event");
     this.setColour('%{BKY_EVENTS}');
  this.setTooltip("");
  this.setHelpUrl("");
@@ -181,8 +162,6 @@ Blockly.Blocks['transition'] = {
         .appendField("NEXT ")
         .appendField(new Blockly.FieldDropdown([["TRANSITION","TRANSITION"], ["SCENARIO","SCENARIO"]]), "TYPE")
         .appendField(new Blockly.FieldTextInput("ID"), "NEXT");
-    this.setPreviousStatement(true, "transition");
-    this.setNextStatement(true, "transition");
     this.setColour('%{BKY_TRANSITIONS}');
  this.setTooltip("");
  this.setHelpUrl("");

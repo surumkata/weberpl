@@ -1,11 +1,6 @@
 const INITIAL =
   `<xml>
-  <block type="escape_room" x="10" y="10">
-    <field name="TITLE">ESCAPE ROOM</field>
-    <field name="TYPE">SCENARIO</field>
-    <field name="START">ROOM</field>
-    <statement name="SCENARIOS">
-      <block type="scenario">
+  <block type="scenario" x="350" y="10">
         <field name="ID">ROOM</field>
         <field name="initial_view">WALL</field>
         <statement name="VIEWS">
@@ -56,9 +51,12 @@ const INITIAL =
                   </block>
               </statement>
             </block>
-        </statement>
-      </block>
     </statement>
+  </block>
+  <block type="escape_room" x="10" y="10">
+    <field name="TITLE">ESCAPE ROOM</field>
+    <field name="TYPE">SCENARIO</field>
+    <field name="START">ROOM</field>
   </block>
 </xml>`;
 

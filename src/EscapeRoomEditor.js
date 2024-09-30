@@ -417,21 +417,62 @@ function EscapeRoomEditor() {
 
   }; 
 
+  const prepareEscapeRoom = (blocks) => {
+    let er = {
+      "title" : "",
+      "scenarios" : [],
+      "events" : [],
+      "transitions" : [],
+      "start_type" : "",
+      "start" : ""
+    };
+
+    blocks.forEach(block => {
+      switch(block.block_type){
+        case 'ESCAPE_ROOM':
+          er.title = block.title;
+          er.start_type = block.start_type;
+          er.start = block.start;
+          break;
+        case 'SCENARIO':
+          delete block.block_type;
+          er.scenarios.push(block);
+          break;
+        case 'EVENT':
+          delete block.block_type;
+          er.events.push(block);
+          break;
+        case 'TRANSITION':
+          delete block.block_type;
+          er.transitions.push(block);
+          break;
+        default:
+          break;
+      }
+    })
+
+    return er
+  }
+
 
 
   const onChange = useCallback(({ xml, json, js }) => {
-    let jsonParsed = JSON.parse(js);
-    var errorsEr = validate(jsonParsed);
-      if (errorsEr.length == 0) {
-          setEscapeRoomCode(jsonParsed);
-      }
-      else {
-        setEscapeRoomCode(null);
-      }
+    js = js.replaceAll("}\n{","}\n,{")
+    js = "[" + js + "]"
+    let blocksParsed = JSON.parse(js);
+    var jsonER = prepareEscapeRoom(blocksParsed);
+    var errorsEr = validate(jsonER);
+    if (errorsEr.length == 0) {
+        setEscapeRoomCode(jsonER);
+        makeScenariosTransitionsList();
+    }
+    else {
+      setEscapeRoomCode(null);
+    }
     setErrors(errorsEr);
     setLoaded(false);
     setXML(xml);
-    makeScenariosTransitionsList();
+    
   }, []);
 
   const onDispose = useCallback(({ workspace, xml, json }) => {

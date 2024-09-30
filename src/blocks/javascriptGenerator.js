@@ -2,42 +2,12 @@ import {javascriptGenerator, Order} from 'blockly/javascript';
 
 javascriptGenerator.forBlock['escape_room'] = function(block, generator) {
   var text_title = block.getFieldValue('TITLE');
-  var scenariosString = generator.statementToCode(block, 'SCENARIOS');
-  var eventsString = generator.statementToCode(block, 'EVENTS');
-  var transitionString = generator.statementToCode(block, 'TRANSITIONS');
   var start_type = block.getFieldValue('TYPE');
   var start_id = block.getFieldValue('START');
 
-  
-  // Substituir delimitadores entre objetos JSON e envolver em um array
-  if (transitionString) {
-    transitionString = "[" + transitionString.replaceAll("}{", "},{") + "]";
-  } else {
-    transitionString = "[]";
-  }
-
-  if (scenariosString) {
-    scenariosString = "[" + scenariosString.replaceAll("}{", "},{") + "]";
-  } else {
-    scenariosString = "[]";
-  }
-
-  if (eventsString) {
-    eventsString = "[" + eventsString.replaceAll("}{", "},{") + "]";
-  } else {
-    eventsString = "[]";
-  }
-
-  // Converter as strings JSON para objetos
-  var transitionObject = JSON.parse(transitionString);
-  var scenariosObject = JSON.parse(scenariosString);
-  var eventsObject = JSON.parse(eventsString);
-
   var code = {
+    "block_type" : "ESCAPE_ROOM",
     "title" : text_title,
-    "scenarios" : scenariosObject,
-    "events" : eventsObject,
-    "transitions" : transitionObject,
     "start_type" : start_type,
     "start" : start_id
   };
@@ -113,6 +83,7 @@ javascriptGenerator.forBlock['scenario'] = function(block, generator) {
   var soundsObject = JSON.parse(stringSounds);
   
   var code = {
+    'block_type' : 'SCENARIO',
     'id' : text_id,
     'initial_view' : text_initial_view,
     'views' : viewsObject,
@@ -151,6 +122,7 @@ javascriptGenerator.forBlock['event'] = function(block, generator) {
   var doObject = JSON.parse(doString);
 
   var code = {
+    "block_type" : "EVENT",
     "id" : text_id,
     "preConditions" : ifObject,
     "posConditions" : doObject,
@@ -184,6 +156,7 @@ javascriptGenerator.forBlock['transition'] = function(block, generator) {
   }
 
   var code = {
+    "block_type" : "TRANSITION",
     'id' : text_id,
     'story' : statements_story,
     'view' : viewObject,
