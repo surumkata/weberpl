@@ -1,18 +1,18 @@
-import { Arc, BeginClip, Circle, Ellipse, EndClip, Erase, Fill, Line, NoErase, NoFill, NoStroke, Point, Quad, Rect, Square, Stroke, Triangle, View, ViewSketch } from './view.js';
+import { Arc, Circle, Ellipse, Fill, Line, NoFill, NoStroke, Polygon, Rect, Square, Stroke, Triangle, View, ViewSketch } from './view.js';
 import { Object } from './object.js';
 import { EscapeRoom } from './escape_room.js';
 import { Position, Size } from './utils.js';
 import { Scenario } from './scenario.js';
 import { GameState } from './game_state.js';
 import { Inventory } from './inventory.js';
-import { WIDTH, HEIGHT, HEIGHT_INV, SCALE_EDIT, setHEIGHT, setHEIGHT_INV, setSCALE_EDIT, setWIDTH } from './utils.js';
+import { WIDTH, HEIGHT, HEIGHT_INV, SCALE_EDIT, setHEIGHT, setHEIGHT_INV, setWIDTH } from './utils.js';
 import {Transition } from './transition.js';
 
 import { Event } from './event.js';
 import { PreConditionOperatorAnd, PreConditionOperatorNot, PreConditionOperatorOr, PreConditionTree, PreConditionVar } from './precondition_tree.js';
 import { EventPreConditionAfterEvent,EventPreConditionAfterTime,EventPreConditionClickedNotObject,EventPreConditionClickedObject,EventPreConditionItemIsInUse,EventPreConditionWhenObjectIsView } from './precondition.js';
 import { EventPosConditionTransition, EventPosConditionConnections, EventPosConditionSequence, EventPosConditionQuestion, EventPosConditionChangeScenario,EventPosConditionRemoveObj,EventPosConditionEndGame,EventPosConditionMultipleChoice,EventPosConditionObjChangePosition,EventPosConditionObjScales,EventPosConditionObjChangeState,EventPosConditionObjPutInventory,EventPosConditionPlaySound,EventPosConditionShowMessage } from './poscondition.js';
-import { HitboxArc, HitboxCircle, HitboxEllipse, HitboxLine, HitboxPoint, HitboxQuad, HitboxRect, HitboxSquare, HitboxTriangle } from './hitbox.js';
+import { HitboxArc, HitboxCircle, HitboxEllipse, HitboxLine, HitboxPolygon, HitboxRect, HitboxSquare, HitboxTriangle } from './hitbox.js';
 import { Sound } from './sound.js';
 
 const load = (p5,json,edit=false) => {
@@ -91,43 +91,37 @@ function loadSketch(id,draws,hitboxes,hitboxesType){
         let drawView;
         switch(type) {
             case "RECT":
-                drawView = new Rect(draw.id,draw.x,draw.y+HEIGHT_INV,draw.w,draw.h,draw.tl,draw.tr,draw.br,draw.bl);
+                const { tl: rect_tl = 0, tr: rect_tr = 0, br: rect_br = 0, bl: rect_bl = 0 } = draw;
+                drawView = new Rect(draw.id,draw.position.x,draw.position.y+HEIGHT_INV,draw.size.x,draw.size.y,rect_tl,rect_tr,rect_br,rect_bl);
                 break;
-            case "QUAD":
-                drawView = new Quad(draw.id,draw.x1,draw.y1+HEIGHT_INV,draw.x2,draw.y2+HEIGHT_INV,draw.x3,draw.y3+HEIGHT_INV,draw.x4,draw.y4+HEIGHT_INV);
+            case "POLYGON":
+                let points = []
+
+                for (var i in draw.points){
+                  let newx = draw.points[i].x
+                  let newy = draw.points[i].y + HEIGHT_INV
+                  points.push({"x" : newx, "y" : newy})
+                }
+                drawView = new Polygon(draw.id,points);
                 break;
             case "SQUARE":
-                drawView = new Square(draw.id,draw.x,draw.y+HEIGHT_INV,draw.s,draw.tl,draw.tr,draw.br,draw.bl);
+                const { tl: square_tl = 0, tr: square_tr = 0, br: square_br = 0, bl: square_bl = 0 } = draw;
+                drawView = new Square(draw.id,draw.position.x,draw.position.y+HEIGHT_INV,draw.width,square_tl,square_tr,square_br,square_bl);
                 break;
             case "TRIANGLE":
-                drawView = new Triangle(draw.id,draw.x1,draw.y1+HEIGHT_INV,draw.x2,draw.y2+HEIGHT_INV,draw.x3,draw.y3+HEIGHT_INV);
+                drawView = new Triangle(draw.id,draw.point1.x,draw.point1.y+HEIGHT_INV,draw.point2.x,draw.point2.y+HEIGHT_INV,draw.point3.x,draw.point3.y+HEIGHT_INV);
                 break;
             case "LINE":
-                drawView = new Line(draw.id,draw.x1,draw.y1+HEIGHT_INV,draw.x2,draw.y2+HEIGHT_INV);
-                break;
-            case "POINT":
-                drawView = new Point(draw.id,draw.x,draw.y+HEIGHT_INV);
+                drawView = new Line(draw.id,draw.point1.x,draw.point1.y+HEIGHT_INV,draw.point2.x,draw.point2.y+HEIGHT_INV);
                 break;
             case "ARC":
-                drawView = new Arc(draw.id,draw.x,draw.y+HEIGHT_INV,draw.w,draw.h,draw.start,draw.stop,draw.mode);
+                drawView = new Arc(draw.id,draw.position.x,draw.position.y+HEIGHT_INV,draw.size.x,draw.size.y,draw.arcstart,draw.arcstop);
                 break;
             case "CIRCLE":
-                drawView = new Circle(draw.id,draw.x,draw.y+HEIGHT_INV,draw.d);
+                drawView = new Circle(draw.id,draw.position.x,draw.postion.y+HEIGHT_INV,draw.radius);
                 break;
             case "ELLIPSE":
-                drawView = new Ellipse(draw.id, draw.x, draw.y+HEIGHT_INV, draw.w, draw.h);
-                break;
-            case "BEGIN_CLIP":
-                drawView = new BeginClip();
-                break;
-            case "END_CLIP":
-                drawView = new EndClip();
-                break;   
-            case "ERASE":
-                drawView = new Erase();
-                break;
-            case "NO_ERASE":
-                drawView = new NoErase();
+                drawView = new Ellipse(draw.id, draw.position.x, draw.position.y+HEIGHT_INV, draw.size.x, draw.size.y);
                 break;
             case "FILL":
                 drawView = new Fill(draw.color, draw.alpha);
@@ -159,31 +153,35 @@ function loadAdvancedHitbox(draws){
     draws.forEach(hitbox => {
         switch(hitbox.type) {
             case "RECT":
-                hitboxes.push(new HitboxRect(hitbox.id,hitbox.x,hitbox.y+HEIGHT_INV,hitbox.w,hitbox.h));
+                hitboxes.push(new HitboxRect(hitbox.id,hitbox.position.x,hitbox.position.y+HEIGHT_INV,hitbox.size.x,hitbox.size.y));
                 break;
-            case "QUAD":
-                hitboxes.push(new HitboxQuad(hitbox.id,hitbox.x1,hitbox.y1+HEIGHT_INV,hitbox.x2,hitbox.y2+HEIGHT_INV,hitbox.x3,hitbox.y3+HEIGHT_INV,hitbox.x4,hitbox.y4+HEIGHT_INV));
+            case "POLYGON":
+                let points = []
+
+                for (var i in hitbox.points){
+                  let newx = hitbox.points[i].x
+                  let newy = hitbox.points[i].y +HEIGHT_INV
+                  points.push({"x" : newx, "y" : newy})
+                }
+                hitboxes.push(new HitboxPolygon(hitbox.id,points));
                 break;
             case "SQUARE":
-                hitboxes.push(new HitboxSquare(hitbox.id,hitbox.x,hitbox.y+HEIGHT_INV,hitbox.s));
+                hitboxes.push(new HitboxSquare(hitbox.id,hitbox.position.x,hitbox.position.y+HEIGHT_INV,hitbox.width));
                 break;
             case "TRIANGLE":
-                hitboxes.push(new HitboxTriangle(hitbox.id,hitbox.x1,hitbox.y1+HEIGHT_INV,hitbox.x2,hitbox.y2+HEIGHT_INV,hitbox.x3,hitbox.y3+HEIGHT_INV));
+                hitboxes.push(new HitboxTriangle(hitbox.id,hitbox.point1.x,hitbox.point1.y+HEIGHT_INV,hitbox.point2.x,hitbox.point2.y+HEIGHT_INV,hitbox.point3.x,hitbox.point3.y+HEIGHT_INV));
                 break;
             case "LINE":
-                hitboxes.push(new HitboxLine(hitbox.id,hitbox.x1,hitbox.y1+HEIGHT_INV,hitbox.x2,hitbox.y2+HEIGHT_INV));
-                break;
-            case "POINT":
-                hitboxes.push(new HitboxPoint(hitbox.id,hitbox.x,hitbox.y+HEIGHT_INV));
+                hitboxes.push(new HitboxLine(hitbox.id,hitbox.point1.x,hitbox.point1.y+HEIGHT_INV,hitbox.point2.x,hitbox.point2.y+HEIGHT_INV));
                 break;
             case "ARC":
-                hitboxes.push(new HitboxArc(hitbox.id,hitbox.x,hitbox.y+HEIGHT_INV,hitbox.w,hitbox.h,hitbox.start,hitbox.stop,hitbox.mode));
+                hitboxes.push(new HitboxArc(hitbox.id,hitbox.position.x,hitbox.position.y+HEIGHT_INV,hitbox.size.x,hitbox.size.y,hitbox.arcstart,hitbox.arcstop));
                 break;
             case "CIRCLE":
-                hitboxes.push(new HitboxCircle(hitbox.id,hitbox.x,hitbox.y+HEIGHT_INV,hitbox.d));
+                hitboxes.push(new HitboxCircle(hitbox.id,hitbox.position.x,hitbox.position.y+HEIGHT_INV,hitbox.radius));
                 break;
             case "ELLIPSE":
-                hitboxes.push(new HitboxEllipse(hitbox.id,hitbox.x, hitbox.y+HEIGHT_INV, hitbox.w, hitbox.h));
+                hitboxes.push(new HitboxEllipse(hitbox.id,hitbox.position.x,hitbox.position.y+HEIGHT_INV,hitbox.size.x,hitbox.size.y));
                 break;
             default:
                 break;

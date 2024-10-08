@@ -847,42 +847,88 @@ Blockly.Blocks['draw_rect'] = {
   }
 };
 
-Blockly.Blocks['draw_quad'] = {
-  init: function() {
+//////////////////////////////////////////////////////////////////////////////////////////////////////////////////////
+//////////////////////////////////////////////////////////////////////////////////////////////////////////////////////
+//////////////////////////////////////////////////////////////////////////////////////////////////////////////////////
+//////////////////////////////////////////////////////////////////////////////////////////////////////////////////////
+
+
+Blockly.Blocks['draw_polygon'] = {
+init: function() {
     this.appendDummyInput('ID')
-      .appendField('QUAD')
-      .appendField(new Blockly.FieldTextInput('QUAD'), 'ID');
-    this.appendDummyInput('P1')
-    .setAlign(Blockly.inputs.Align.CENTRE)
-      .appendField('x1:')
-      .appendField(new Blockly.FieldNumber(100), 'X1')
-      .appendField('y1:')
-      .appendField(new Blockly.FieldNumber(100), 'Y1');
-    this.appendDummyInput('P2')
-    .setAlign(Blockly.inputs.Align.CENTRE)
-      .appendField('x2:')
-      .appendField(new Blockly.FieldNumber(100), 'X2')
-      .appendField('y2:')
-      .appendField(new Blockly.FieldNumber(200), 'Y2');
-    this.appendDummyInput('P3')
-    .setAlign(Blockly.inputs.Align.CENTRE)
-      .appendField('x3:')
-      .appendField(new Blockly.FieldNumber(200), 'X3')
-      .appendField('y3:')
-      .appendField(new Blockly.FieldNumber(200), 'Y3');
-    this.appendDummyInput('P4')
-    .setAlign(Blockly.inputs.Align.CENTRE)
-      .appendField('x4:')
-      .appendField(new Blockly.FieldNumber(200), 'X4')
-      .appendField('y4:')
-      .appendField(new Blockly.FieldNumber(100), 'Y4');
-    this.setPreviousStatement(true, 'draw');
-    this.setNextStatement(true, 'draw');
-    this.setTooltip('');
-    this.setHelpUrl('');
+      .setAlign(Blockly.inputs.Align.CENTRE)
+      .appendField('POLYGON')
+      .appendField(new Blockly.FieldTextInput('POLYGON'), 'ID');
+    this.appendDummyInput('BUTTONS')
+        .setAlign(Blockly.inputs.Align.CENTRE)
+        .appendField(new Blockly.FieldImage("weberpl/icons/plus.png", 30, 30, '+', this.add.bind(this)))
+        .appendField(new Blockly.FieldImage("weberpl/icons/minus.png", 30, 30, '-', this.remove.bind(this)));
+    this.setPreviousStatement(true, null);
+    this.setNextStatement(true, null);
     this.setColour('%{BKY_DRAWS}');
+    this.setTooltip('');
+    this.setHelpUrl("");
+    this.itemCount_ = 4;
+  },
+
+  mutationToDom: function() {
+    if (!this.itemCount_) {
+      return null;
+    }
+    var container = document.createElement('mutation');
+    container.setAttribute('items', this.itemCount_);
+    return container;
+  },
+
+  domToMutation: function(xmlElement) {
+    this.itemCount_ = parseInt(xmlElement.getAttribute('items'), 10);
+    this.updateShape_();
+  },
+
+  updateShape_: function() {
+    // Remove all inputs except OPTION0 and BUTTONS
+    var i = 0;
+    while (this.getInput('OPTION' + i)) {
+      this.removeInput('OPTION' + i);
+      i++;
+    }
+    // Rebuild block.
+    for (var i = 0; i < this.itemCount_; i++) {
+      this.appendDummyInput('OPTION' + i)
+          .setAlign(Blockly.inputs.Align.CENTRE)
+          .appendField('x'+(i+1)+':')
+          .appendField(new Blockly.FieldNumber(), 'X'+ (i+1))
+          .appendField('y'+(i+1)+':')
+          .appendField(new Blockly.FieldNumber(), 'Y'+ (i+1));
+    }
+  },
+
+  // Método para adicionar uma nova entrada ao bloco
+  add: function() {
+    this.itemCount_++;
+    this.appendDummyInput('OPTION' + this.itemCount_)
+        .setAlign(Blockly.inputs.Align.CENTRE)
+        .appendField('x'+this.itemCount_+':')
+        .appendField(new Blockly.FieldNumber(), 'X'+ this.itemCount_)
+        .appendField('y'+this.itemCount_+':')
+        .appendField(new Blockly.FieldNumber(), 'Y'+ this.itemCount_);
+  },
+
+  // Método para remover a última entrada do bloco
+  remove: function() {
+    if (this.itemCount_ > 4) {
+      this.removeInput('OPTION' + this.itemCount_);
+      this.itemCount_--;
+    }
   }
 };
+
+
+//////////////////////////////////////////////////////////////////////////////////////////////////////////////////////
+//////////////////////////////////////////////////////////////////////////////////////////////////////////////////////
+//////////////////////////////////////////////////////////////////////////////////////////////////////////////////////
+//////////////////////////////////////////////////////////////////////////////////////////////////////////////////////
+
 
 Blockly.Blocks['draw_square'] = {
   init: function() {
@@ -971,25 +1017,6 @@ Blockly.Blocks['draw_line']  = {
   }
 };
 
-Blockly.Blocks['draw_point'] = {
-  init: function() {
-    this.appendDummyInput('ID')
-      .appendField('POINT')
-      .appendField(new Blockly.FieldTextInput('POINT'), 'ID');
-    this.appendDummyInput('P')
-    .setAlign(Blockly.inputs.Align.CENTRE)
-      .appendField('x:')
-      .appendField(new Blockly.FieldNumber(100), 'X')
-      .appendField('y:')
-      .appendField(new Blockly.FieldNumber(100), 'Y');
-    this.setPreviousStatement(true, 'draw');
-    this.setNextStatement(true, 'draw');
-    this.setTooltip('');
-    this.setHelpUrl('');
-    this.setColour('%{BKY_DRAWS}');
-  }
-};
-
 registerFieldAngle();
 Blockly.Blocks['draw_arc'] = {
   init: function() {
@@ -997,32 +1024,23 @@ Blockly.Blocks['draw_arc'] = {
       .appendField('ARC')
       .appendField(new Blockly.FieldTextInput('ARC'), 'ID');
     this.appendDummyInput('XY')
-    .setAlign(Blockly.inputs.Align.CENTRE)
+      .setAlign(Blockly.inputs.Align.CENTRE)
       .appendField('x:')
       .appendField(new Blockly.FieldNumber(100), 'X')
       .appendField('y:')
       .appendField(new Blockly.FieldNumber(100), 'Y');
     this.appendDummyInput('WH')
-    .setAlign(Blockly.inputs.Align.CENTRE)
+      .setAlign(Blockly.inputs.Align.CENTRE)
       .appendField('w:')
       .appendField(new Blockly.FieldNumber(100), 'W')
       .appendField('h:')
       .appendField(new Blockly.FieldNumber(100), 'H');
     this.appendDummyInput('start_stop')
-    .setAlign(Blockly.inputs.Align.CENTRE)
+      .setAlign(Blockly.inputs.Align.CENTRE)
       .appendField('start:')
       .appendField(new FieldAngle(0), 'START')
       .appendField('stop:')
       .appendField(new FieldAngle(90), 'STOP');
-    this.appendDummyInput('mode')
-    .setAlign(Blockly.inputs.Align.CENTRE)
-      .appendField('mode:')
-      .appendField(new Blockly.FieldDropdown([
-          ['DEFAULT', 'default'],
-          ['OPEN', 'open'],
-          ['CHORD', 'chord'],
-          ['PIE', 'pie']
-        ]), 'MODE');
     this.setPreviousStatement(true, 'draw');
     this.setNextStatement(true, 'draw');
     this.setTooltip('');
@@ -1077,30 +1095,6 @@ Blockly.Blocks['draw_ellipse']  = {
   }
 };
 
-Blockly.Blocks['begin_clip']  = {
-  init: function() {
-    this.appendDummyInput('NAME')
-      .appendField('Begin Clip');
-    this.setPreviousStatement(true, 'draw');
-    this.setNextStatement(true, 'draw');
-    this.setTooltip('');
-    this.setHelpUrl('');
-    this.setColour('%{BKY_DRAWS}');
-  }
-};
-
-Blockly.Blocks['end_clip']  = {
-  init: function() {
-    this.appendDummyInput('NAME')
-      .appendField('End Clip');
-    this.setPreviousStatement(true, 'draw');
-    this.setNextStatement(true, 'draw');
-    this.setTooltip('');
-    this.setHelpUrl('');
-    this.setColour('%{BKY_DRAWS}');
-  }
-};
-
 Blockly.Blocks['no_fill']  = {
   init: function() {
     this.appendDummyInput('NAME')
@@ -1117,31 +1111,6 @@ Blockly.Blocks['no_stroke']  = {
   init: function() {
     this.appendDummyInput('NAME')
       .appendField('No Stroke');
-    this.setPreviousStatement(true, 'draw');
-    this.setNextStatement(true, 'draw');
-    this.setTooltip('');
-    this.setHelpUrl('');
-    this.setColour('%{BKY_DRAWS}');
-  }
-};
-
-
-Blockly.Blocks['no_erase']  = {
-  init: function() {
-    this.appendDummyInput('NAME')
-      .appendField('No Erase');
-    this.setPreviousStatement(true, 'draw');
-    this.setNextStatement(true, 'draw');
-    this.setTooltip('');
-    this.setHelpUrl('');
-    this.setColour('%{BKY_DRAWS}');
-  }
-};
-
-Blockly.Blocks['erase']  = {
-  init: function() {
-    this.appendDummyInput('NAME')
-      .appendField('Erase');
     this.setPreviousStatement(true, 'draw');
     this.setNextStatement(true, 'draw');
     this.setTooltip('');
@@ -1264,42 +1233,77 @@ Blockly.Blocks['hitbox_rect'] = {
   }
 };
 
-Blockly.Blocks['hitbox_quad'] = {
+Blockly.Blocks['hitbox_polygon'] = {
   init: function() {
     this.appendDummyInput('ID')
-      .appendField('QUAD')
-      .appendField(new Blockly.FieldTextInput('QUAD'), 'ID');
-    this.appendDummyInput('P1')
-    .setAlign(Blockly.inputs.Align.CENTRE)
-      .appendField('x1:')
-      .appendField(new Blockly.FieldNumber(100), 'X1')
-      .appendField('y1:')
-      .appendField(new Blockly.FieldNumber(100), 'Y1');
-    this.appendDummyInput('P2')
-    .setAlign(Blockly.inputs.Align.CENTRE)
-      .appendField('x2:')
-      .appendField(new Blockly.FieldNumber(100), 'X2')
-      .appendField('y2:')
-      .appendField(new Blockly.FieldNumber(200), 'Y2');
-    this.appendDummyInput('P3')
-    .setAlign(Blockly.inputs.Align.CENTRE)
-      .appendField('x3:')
-      .appendField(new Blockly.FieldNumber(200), 'X3')
-      .appendField('y3:')
-      .appendField(new Blockly.FieldNumber(200), 'Y3');
-    this.appendDummyInput('P4')
-    .setAlign(Blockly.inputs.Align.CENTRE)
-      .appendField('x4:')
-      .appendField(new Blockly.FieldNumber(200), 'X4')
-      .appendField('y4:')
-      .appendField(new Blockly.FieldNumber(100), 'Y4');
-      this.setPreviousStatement(true, 'hitbox');
-      this.setNextStatement(true, 'hitbox');
-    this.setTooltip('');
-    this.setHelpUrl('');
+      .setAlign(Blockly.inputs.Align.CENTRE)
+      .appendField('POLYGON')
+      .appendField(new Blockly.FieldTextInput('POLYGON'), 'ID');
+    this.appendDummyInput('BUTTONS')
+        .setAlign(Blockly.inputs.Align.CENTRE)
+        .appendField(new Blockly.FieldImage("weberpl/icons/plus.png", 30, 30, '+', this.add.bind(this)))
+        .appendField(new Blockly.FieldImage("weberpl/icons/minus.png", 30, 30, '-', this.remove.bind(this)));
+    this.setPreviousStatement(true, null);
+    this.setNextStatement(true, null);
     this.setColour('%{BKY_HITBOXES}');
+    this.setTooltip('');
+    this.setHelpUrl("");
+    this.itemCount_ = 4;
+  },
+
+  
+  mutationToDom: function() {
+    if (!this.itemCount_) {
+      return null;
+    }
+    var container = document.createElement('mutation');
+    container.setAttribute('items', this.itemCount_);
+    return container;
+  },
+
+  domToMutation: function(xmlElement) {
+    this.itemCount_ = parseInt(xmlElement.getAttribute('items'), 10);
+    this.updateShape_();
+  },
+
+  updateShape_: function() {
+    // Remove all inputs except OPTION0 and BUTTONS
+    var i = 0;
+    while (this.getInput('OPTION' + i)) {
+      this.removeInput('OPTION' + i);
+      i++;
+    }
+    // Rebuild block.
+    for (var i = 0; i < this.itemCount_; i++) {
+      this.appendDummyInput('OPTION' + i)
+          .setAlign(Blockly.inputs.Align.CENTRE)
+          .appendField('x'+(i+1)+':')
+          .appendField(new Blockly.FieldNumber(), 'X'+ (i+1))
+          .appendField('y'+(i+1)+':')
+          .appendField(new Blockly.FieldNumber(), 'Y'+ (i+1));
+    }
+  },
+
+  // Método para adicionar uma nova entrada ao bloco
+  add: function() {
+    this.itemCount_++;
+    this.appendDummyInput('OPTION' + this.itemCount_)
+        .setAlign(Blockly.inputs.Align.CENTRE)
+        .appendField('x'+this.itemCount_+':')
+        .appendField(new Blockly.FieldNumber(), 'X'+ this.itemCount_)
+        .appendField('y'+this.itemCount_+':')
+        .appendField(new Blockly.FieldNumber(), 'Y'+ this.itemCount_);
+  },
+
+  // Método para remover a última entrada do bloco
+  remove: function() {
+    if (this.itemCount_ > 4) {
+      this.removeInput('OPTION' + this.itemCount_);
+      this.itemCount_--;
+    }
   }
 };
+
 
 Blockly.Blocks['hitbox_square'] = {
   init: function() {
@@ -1378,25 +1382,6 @@ Blockly.Blocks['hitbox_line']  = {
   }
 };
 
-Blockly.Blocks['hitbox_point'] = {
-  init: function() {
-    this.appendDummyInput('ID')
-      .appendField('POINT')
-      .appendField(new Blockly.FieldTextInput('POINT'), 'ID');
-    this.appendDummyInput('P')
-    .setAlign(Blockly.inputs.Align.CENTRE)
-      .appendField('x:')
-      .appendField(new Blockly.FieldNumber(100), 'X')
-      .appendField('y:')
-      .appendField(new Blockly.FieldNumber(100), 'Y');
-    this.setPreviousStatement(true, 'hitbox');
-    this.setNextStatement(true, 'hitbox');
-    this.setTooltip('');
-    this.setHelpUrl('');
-    this.setColour('%{BKY_HITBOXES}');
-  }
-};
-
 registerFieldAngle();
 Blockly.Blocks['hitbox_arc'] = {
   init: function() {
@@ -1421,15 +1406,6 @@ Blockly.Blocks['hitbox_arc'] = {
       .appendField(new FieldAngle(0), 'START')
       .appendField('stop:')
       .appendField(new FieldAngle(90), 'STOP');
-    this.appendDummyInput('mode')
-    .setAlign(Blockly.inputs.Align.CENTRE)
-      .appendField('mode:')
-      .appendField(new Blockly.FieldDropdown([
-          ['DEFAULT', 'default'],
-          ['OPEN', 'open'],
-          ['CHORD', 'chord'],
-          ['PIE', 'pie']
-        ]), 'MODE');
     this.setPreviousStatement(true, 'hitbox');
     this.setNextStatement(true, 'hitbox');
     this.setTooltip('');

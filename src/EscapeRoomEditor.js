@@ -93,68 +93,60 @@ function EscapeRoomEditor() {
   const scaleToEditHitbox = (hitbox) => {
     switch(hitbox.type) {
       case "RECT":
-        hitbox.x *= SCALE_EDIT;
-        hitbox.y *= SCALE_EDIT;
-        hitbox.w *= SCALE_EDIT;
-        hitbox.h *= SCALE_EDIT;
+        hitbox.position.x *= SCALE_EDIT;
+        hitbox.position.y *= SCALE_EDIT;
+        hitbox.size.x *= SCALE_EDIT;
+        hitbox.size.y *= SCALE_EDIT;
         hitbox.tl *= SCALE_EDIT;
         hitbox.tr *= SCALE_EDIT;
         hitbox.br *= SCALE_EDIT;
         hitbox.bl *= SCALE_EDIT;
         break;
-      case "QUAD":
-        hitbox.x1 *= SCALE_EDIT;
-        hitbox.y1 *= SCALE_EDIT;
-        hitbox.x2 *= SCALE_EDIT;
-        hitbox.y2 *= SCALE_EDIT;
-        hitbox.x3 *= SCALE_EDIT;
-        hitbox.y3 *= SCALE_EDIT;
-        hitbox.x4 *= SCALE_EDIT;
-        hitbox.y4 *= SCALE_EDIT;
+      case "POLYGON":
+        for (var i in hitbox.points){
+          hitbox.points[i].x *= SCALE_EDIT;
+          hitbox.points[i].y *= SCALE_EDIT;
+        }
         break;
       case "SQUARE":
-        hitbox.x  *= SCALE_EDIT;
-        hitbox.y  *= SCALE_EDIT;
-        hitbox.s  *= SCALE_EDIT;
+        hitbox.position.x  *= SCALE_EDIT;
+        hitbox.position.y  *= SCALE_EDIT;
+        hitbox.width  *= SCALE_EDIT;
         hitbox.tl *= SCALE_EDIT;
         hitbox.tr *= SCALE_EDIT;
         hitbox.br *= SCALE_EDIT;
         hitbox.bl *= SCALE_EDIT;
         break;
       case "TRIANGLE":
-        hitbox.x1 *= SCALE_EDIT;
-        hitbox.y1 *= SCALE_EDIT;
-        hitbox.x2 *= SCALE_EDIT;
-        hitbox.y2 *= SCALE_EDIT;
-        hitbox.x3 *= SCALE_EDIT;
-        hitbox.y3 *= SCALE_EDIT; 
+        hitbox.point1.x *= SCALE_EDIT;
+        hitbox.point1.y *= SCALE_EDIT;
+        hitbox.point2.x *= SCALE_EDIT;
+        hitbox.point2.y *= SCALE_EDIT;
+        hitbox.point3.x *= SCALE_EDIT;
+        hitbox.point3.y *= SCALE_EDIT; 
         break;
       case "LINE":
-        hitbox.x1 *= SCALE_EDIT;
-        hitbox.y1 *= SCALE_EDIT;
-        hitbox.x2 *= SCALE_EDIT;
-        hitbox.y2 *= SCALE_EDIT;
-        break;
-      case "POINT":
-        hitbox.x *= SCALE_EDIT;
-        hitbox.y *= SCALE_EDIT;
+        hitbox.point1.x *= SCALE_EDIT;
+        hitbox.point1.y *= SCALE_EDIT;
+        hitbox.point2.x *= SCALE_EDIT;
+        hitbox.point2.y *= SCALE_EDIT;
         break;
       case "ARC":
-        hitbox.x *= SCALE_EDIT;
-        hitbox.y *= SCALE_EDIT;
-        hitbox.w *= SCALE_EDIT;
-        hitbox.h *= SCALE_EDIT;
+        hitbox.position.x *= SCALE_EDIT;
+        hitbox.position.y *= SCALE_EDIT;
+        hitbox.size.x *= SCALE_EDIT;
+        hitbox.size.y *= SCALE_EDIT;
         break;
       case "CIRCLE":
-        hitbox.x *= SCALE_EDIT;
-        hitbox.y *= SCALE_EDIT;
-        hitbox.d *= SCALE_EDIT;
+        hitbox.position.x *= SCALE_EDIT;
+        hitbox.position.y *= SCALE_EDIT;
+        hitbox.radius *= SCALE_EDIT;
         break;
       case "ELLIPSE":
-        hitbox.x *= SCALE_EDIT;
-        hitbox.y *= SCALE_EDIT;
-        hitbox.w *= SCALE_EDIT;
-        hitbox.h *= SCALE_EDIT;
+        hitbox.position.x *= SCALE_EDIT;
+        hitbox.position.y *= SCALE_EDIT;
+        hitbox.size.x *= SCALE_EDIT;
+        hitbox.size.y *= SCALE_EDIT;
         break;
       default:
         break;
@@ -164,68 +156,60 @@ function EscapeRoomEditor() {
   const scaleToEditDraw = (draw) => {
     switch(draw.type) {
       case "RECT":
-        draw.x *= SCALE_EDIT;
-        draw.y *= SCALE_EDIT;
-        draw.w *= SCALE_EDIT;
-        draw.h *= SCALE_EDIT;
+        draw.position.x *= SCALE_EDIT;
+        draw.position.y *= SCALE_EDIT;
+        draw.size.x *= SCALE_EDIT;
+        draw.size.y *= SCALE_EDIT;
         draw.tl *= SCALE_EDIT;
         draw.tr *= SCALE_EDIT;
         draw.br *= SCALE_EDIT;
         draw.bl *= SCALE_EDIT;
         break;
-      case "QUAD":
-        draw.x1 *= SCALE_EDIT;
-        draw.y1 *= SCALE_EDIT;
-        draw.x2 *= SCALE_EDIT;
-        draw.y2 *= SCALE_EDIT;
-        draw.x3 *= SCALE_EDIT;
-        draw.y3 *= SCALE_EDIT;
-        draw.x4 *= SCALE_EDIT;
-        draw.y4 *= SCALE_EDIT;
+      case "POLYGON":
+        for (var i in draw.points){
+          draw.points[i].x *= SCALE_EDIT;
+          draw.points[i].y *= SCALE_EDIT;
+        }
         break;
       case "SQUARE":
-        draw.x  *= SCALE_EDIT;
-        draw.y  *= SCALE_EDIT;
-        draw.s  *= SCALE_EDIT;
+        draw.position.x *= SCALE_EDIT;
+        draw.position.y *= SCALE_EDIT;
+        draw.width  *= SCALE_EDIT;
         draw.tl *= SCALE_EDIT;
         draw.tr *= SCALE_EDIT;
         draw.br *= SCALE_EDIT;
         draw.bl *= SCALE_EDIT;
         break;
       case "TRIANGLE":
-        draw.x1 *= SCALE_EDIT;
-        draw.y1 *= SCALE_EDIT;
-        draw.x2 *= SCALE_EDIT;
-        draw.y2 *= SCALE_EDIT;
-        draw.x3 *= SCALE_EDIT;
-        draw.y3 *= SCALE_EDIT; 
+        draw.point1.x *= SCALE_EDIT;
+        draw.point1.y *= SCALE_EDIT;
+        draw.point2.x *= SCALE_EDIT;
+        draw.point2.y *= SCALE_EDIT;
+        draw.point3.x *= SCALE_EDIT;
+        draw.point3.y *= SCALE_EDIT; 
         break;
       case "LINE":
-        draw.x1 *= SCALE_EDIT;
-        draw.y1 *= SCALE_EDIT;
-        draw.x2 *= SCALE_EDIT;
-        draw.y2 *= SCALE_EDIT;
-        break;
-      case "POINT":
-        draw.x *= SCALE_EDIT;
-        draw.y *= SCALE_EDIT;
+        draw.point1.x *= SCALE_EDIT;
+        draw.point1.y *= SCALE_EDIT;
+        draw.point2.x *= SCALE_EDIT;
+        draw.point2.y *= SCALE_EDIT;
         break;
       case "ARC":
-        draw.x *= SCALE_EDIT;
-        draw.y *= SCALE_EDIT;
-        draw.w *= SCALE_EDIT;
-        draw.h *= SCALE_EDIT;
+        draw.position.x *= SCALE_EDIT;
+        draw.position.y *= SCALE_EDIT;
+        draw.size.x *= SCALE_EDIT;
+        draw.size.y *= SCALE_EDIT;
         break;
       case "CIRCLE":
-        draw.x *= SCALE_EDIT;
-        draw.y *= SCALE_EDIT;
-        draw.d *= SCALE_EDIT;
+        draw.position.x *= SCALE_EDIT;
+        draw.position.y *= SCALE_EDIT;
+        draw.radius *= SCALE_EDIT;
         break;
       case "ELLIPSE":
-        draw.x *= SCALE_EDIT;
-        draw.y *= SCALE_EDIT;
-        draw.w *= SCALE_EDIT;
-        draw.h *= SCALE_EDIT;
+        draw.position.x *= SCALE_EDIT;
+        draw.position.y *= SCALE_EDIT;
+        draw.size.x *= SCALE_EDIT;
+        draw.size.y *= SCALE_EDIT;
         break;
       case "STROKE":
         draw.w *= SCALE_EDIT;

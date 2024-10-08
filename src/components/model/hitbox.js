@@ -607,184 +607,136 @@ export class HitboxRect extends Hitbox {
     }
 }
 
-export class HitboxQuad extends Hitbox {
-    constructor(id,x1,y1,x2,y2,x3,y3,x4,y4){
+export class HitboxPolygon extends Hitbox {
+    constructor(id,points){
         super(id);
-        this.x1 = x1;
-        this.y1 = y1;
-        this.x2 = x2;
-        this.y2 = y2;
-        this.x3 = x3;
-        this.y3 = y3;
-        this.x4 = x4;
-        this.y4 = y4;
-        this.vertices = [
-            {x:x1,y:y1},
-            {x:x2,y:y2},
-            {x:x3,y:y3},
-            {x:x4,y:y4}
-        ]
+        this.points = points;
         this.pressed = false;
         this.typePressed = null;
         this.lastPosition = new Position(0,0);
     }
 
     draw(p5){
-        p5.quad(this.x1,this.y1,this.x2,this.y2,this.x3,this.y3,this.x4,this.y4);
+        // Start drawing the shape.
+        p5.beginShape();
+
+        for(var i in this.points){
+          var point = this.points[i]
+          p5.vertex(point.x, point.y);
+        }
+
+        // Stop drawing the shape.
+        p5.endShape(p5.CLOSE);
         if(this.hover){
-            p5.push();
-            p5.fill(255,0,0);
-            p5.noStroke();
-            p5.circle(this.x1,this.y1,10);
-            p5.circle(this.x2,this.y2,10);
-            p5.circle(this.x3,this.y3,10);
-            p5.circle(this.x4,this.y4,10);
-            p5.pop();
+          p5.push();
+          p5.fill(255,0,0);
+          p5.noStroke();
+        
+          for(var i in this.points){
+            var point = this.points[i]
+            p5.circle(point.x, point.y,10);
+          }
+        
+          p5.pop();
         }
     }
 
     scale(scaleX,scaleY){
-      this.x1 *= scaleX
-      this.y1 *= scaleY
-      this.x2 *= scaleX
-      this.y2 *= scaleY
-      this.x3 *= scaleX
-      this.y3 *= scaleY
-      this.x4 *= scaleX
-      this.y4 *= scaleY
+      for(var i in this.points){
+        var point = this.points[i]
+        point.x *= scaleX;
+        point.y *= scaleY;
+      }
     }
 
     translate(tx,ty){
-      this.x1 += tx;
-      this.y1 += ty;
-      this.x2 += tx;
-      this.y2 += ty;
-      this.x3 += tx;
-      this.y3 += ty;
-      this.x4 += tx;
-      this.y4 += ty;
-
-      this.vertices = [
-        {x:this.x1,y:this.y1},
-        {x:this.x2,y:this.y2},
-        {x:this.x3,y:this.y3},
-        {x:this.x4,y:this.y4}
-      ]
+      for(var i in this.points){
+        var point = this.points[i]
+        point.x += tx;
+        point.y += ty;
+      }
     }
 
+
     mouseMoved(mX,mY) {
-        if(collidePointCircle(mX,mY,this.x1,this.y1,11)){
-          this.hover = true
+      let pointHover = false;
+      for(var i in this.points){
+        var point = this.points[i]
+        console.log(point.x,point.y)
+        if(collidePointCircle(mX,mY,point.x,point.y,11)){
+          this.hover = true;
           document.documentElement.style.cursor = 'grab';
+          pointHover = true;
+          break;
         }
-        else if(collidePointCircle(mX,mY,this.x2,this.y2,11)){
-          this.hover = true
-          document.documentElement.style.cursor = 'grab';
-        }
-        else if(collidePointCircle(mX,mY,this.x3,this.y3,11)){
-          this.hover = true
-          document.documentElement.style.cursor = 'grab';
-        }
-        else if(collidePointCircle(mX,mY,this.x4,this.y4,11)){
-          this.hover = true
-          document.documentElement.style.cursor = 'grab';
-        }
-        else if (collidePointPoly(mX,mY,this.vertices)){
-          this.hover = true
-          document.documentElement.style.cursor = 'move';
-        }
-        else {
-          this.hover = false
-          document.documentElement.style.cursor = 'default';
-        }
-        return this.hover
       }
-    
-      mousePressed(mX,mY) {
-        if(collidePointCircle(mX,mY,this.x1,this.y1,11)){
-          document.documentElement.style.cursor = 'grabbing';
-          this.pressed = true;
-          this.typePressed = "point1"
-        }
-        else if(collidePointCircle(mX,mY,this.x2,this.y2,11)){
-          document.documentElement.style.cursor = 'grabbing';
-          this.pressed = true;
-          this.typePressed = "point2"
-        }
-        else if(collidePointCircle(mX,mY,this.x3,this.y3,11)){
-          document.documentElement.style.cursor = 'grabbing';
-          this.pressed = true;
-          this.typePressed = "point3"
-        }
-        else if(collidePointCircle(mX,mY,this.x4,this.y4,11)){
-          document.documentElement.style.cursor = 'grabbing';
-          this.pressed = true;
-          this.typePressed = "point4"
-        }
-        else if (collidePointPoly(mX,mY,this.vertices)){
-          this.pressed = true;
-          this.typePressed = "quad"
-        }
-        if(this.pressed){
-          this.lastPosition = new Position(mX,mY);
-        }
-        return this.pressed;
+      if(!pointHover && collidePointPoly(mX,mY,this.points)){
+        this.hover = true
+        document.documentElement.style.cursor = 'move';
       }
+      else if(!pointHover){
+        this.hover = false
+        document.documentElement.style.cursor = 'default';
+      }
+      return this.hover
+    }
     
-      mouseDragged(mX,mY) {
-        let changeX = mX-this.lastPosition.x;
-        let changeY = mY-this.lastPosition.y;
-    
-        if (this.pressed) {
-          switch(this.typePressed){
-            case "point1":
-              this.x1 += changeX;
-              this.y1 += changeY;
-              break;
-            case "point2":
-              this.x2 += changeX;
-              this.y2 += changeY;
-              break;
-            case "point3":
-              this.x3 += changeX;
-              this.y3 += changeY;
-              break;
-            case "point4":
-              this.x4 += changeX;
-              this.y4 += changeY;
-              break;
-            default:
-              this.x1 += changeX;
-              this.y1 += changeY;
-              this.x2 += changeX;
-              this.y2 += changeY;
-              this.x3 += changeX;
-              this.y3 += changeY;
-              this.x4 += changeX;
-              this.y4 += changeY;
-              break;
+    mousePressed(mX,mY) {
+      let pointPressed = false;
+      for(var i in this.points){
+        var point = this.points[i]
+        if(collidePointCircle(mX,mY,point.x,point.y,11)){
+          document.documentElement.style.cursor = 'grabbing';
+          this.pressed = true;
+          this.typePressed = i
+          pointPressed = true;
+          break;
+        }
+      }
+      if (!pointPressed && collidePointPoly(mX,mY,this.points)){
+        this.pressed = true;
+        this.typePressed = "polygon"
+      }
+  
+      if(this.pressed){
+        this.lastPosition = new Position(mX,mY);
+      }
+      return this.pressed;
+    }
+
+
+    mouseDragged(mX,mY) {
+      let changeX = mX-this.lastPosition.x;
+      let changeY = mY-this.lastPosition.y;
+
+      if (this.pressed) {
+        if (this.typePressed === 'polygon'){
+          for(var i in this.points){
+            var point = this.points[i]
+            point.x += changeX;
+            point.y += changeY;
           }
-          this.vertices = [
-            {x:this.x1,y:this.y1},
-            {x:this.x2,y:this.y2},
-            {x:this.x3,y:this.y3},
-            {x:this.x4,y:this.y4},
-          ];
-          this.lastPosition = new Position(mX,mY);
         }
-      }
-    
-      mouseReleased() {
-        if (this.pressed){
-          this.pressed = false;
-          this.typePressed = null;
-          return true;
+        else if(this.typePressed!==null){
+          var point = this.points[this.typePressed]
+          point.x += changeX;
+          point.y += changeY;
         }
-        return false;
+        this.lastPosition = new Position(mX,mY);
       }
+    }
+
+    mouseReleased() {
+      if (this.pressed){
+        this.pressed = false;
+        this.typePressed = null;
+        return true;
+      }
+      return false;
+    }
 
     collide(px,py){
-        return collidePointPoly(px,py,this.vertices);
+        return collidePointPoly(px,py,this.points);
     }
 
 }
@@ -858,7 +810,7 @@ export class HitboxTriangle extends Hitbox {
 }
 
 export class HitboxArc extends Hitbox {
-    constructor(id,x,y,w,h,start,stop,mode){
+    constructor(id,x,y,w,h,start,stop){
         super(id);
         this.arcX = x;
         this.arcY = y;
@@ -866,7 +818,7 @@ export class HitboxArc extends Hitbox {
         this.arcH = h;
         this.arcStart = start * (Math.PI/180);
         this.arcStop = stop * (Math.PI/180);
-        this.mode = mode;
+        this.mode = 'default';
       }
 
     draw(p5){
@@ -1002,33 +954,6 @@ export class HitboxLine extends Hitbox {
         this.y2 += ty;
       }
 }
-
-export class HitboxPoint extends Hitbox {
-    constructor(id,x,y){
-        super(id);
-        this.x = x;
-        this.y = y;
-    }
-    
-      collide(px,py){
-        return collidePointPoint(px, py,this.x, this.y);
-      }
-
-      draw(p5){
-        p5.point(this.x,this.y);
-      }
-      scale(scaleX,scaleY){
-        //Don't Make any sense :()
-        this.x *=scaleX;
-        this.y *=scaleY;
-      }
-
-      translate(tx,ty){
-        this.x += tx;
-        this.y += ty;
-      }
-}
-
 
 export class HitboxEllipse extends Hitbox {
     constructor(id,x,y,w,h){

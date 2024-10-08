@@ -1,19 +1,19 @@
-import { HitboxQuad, HitboxRect } from "./model/hitbox";
+import { HitboxPolygon, HitboxRect } from "./model/hitbox";
 import { SCALE_EDIT, HEIGHT_INV } from "./model/utils";
-import { Arc, Circle, Ellipse, Line, Point, Quad, Rect, Triangle} from "./model/view";
+import { Arc, Circle, Ellipse, Line, Polygon, Rect, Triangle} from "./model/view";
 
 export const updateHitbox = (workspaceRef, objectId, viewId, hitbox) => {
     switch(hitbox.constructor){
-        case HitboxQuad:
-            let quad_newx1 = hitbox.x1* 1/SCALE_EDIT;
-            let quad_newy1 = hitbox.y1* 1/SCALE_EDIT-HEIGHT_INV;
-            let quad_newx2 = hitbox.x2* 1/SCALE_EDIT;
-            let quad_newy2 = hitbox.y2* 1/SCALE_EDIT-HEIGHT_INV;
-            let quad_newx3 = hitbox.x3* 1/SCALE_EDIT;
-            let quad_newy3 = hitbox.y3* 1/SCALE_EDIT-HEIGHT_INV;
-            let quad_newx4 = hitbox.x4* 1/SCALE_EDIT;
-            let quad_newy4 = hitbox.y4* 1/SCALE_EDIT-HEIGHT_INV;
-            updateHitboxQuad(workspaceRef,objectId,viewId,hitbox.id,quad_newx1,quad_newy1,quad_newx2,quad_newy2,quad_newx3,quad_newy3,quad_newx4,quad_newy4);
+        case HitboxPolygon:
+            let points = []
+            for (var i in hitbox.points){
+              let point = hitbox.points[i]
+              let newx = point.x*1/SCALE_EDIT
+              let newy = point.y* 1/SCALE_EDIT-HEIGHT_INV
+              points.push({"x" : newx, "y" : newy})
+            }
+
+            updateHitboxPolygon(workspaceRef,objectId,viewId,hitbox.id,points);
             break;
         case HitboxRect:
             let newx = hitbox.x* 1/SCALE_EDIT;
@@ -56,16 +56,16 @@ export const updateViewSketch = (workspaceRef,objectId,viewId,draw) => {
           }
           updateRect(workspaceRef,objectId,viewId,draw.id,newx,newy,neww,newh);
           break;
-        case Quad:
-          let quad_newx1 = draw.x1* 1/SCALE_EDIT;
-          let quad_newy1 = draw.y1* 1/SCALE_EDIT-HEIGHT_INV;
-          let quad_newx2 = draw.x2* 1/SCALE_EDIT;
-          let quad_newy2 = draw.y2* 1/SCALE_EDIT-HEIGHT_INV;
-          let quad_newx3 = draw.x3* 1/SCALE_EDIT;
-          let quad_newy3 = draw.y3* 1/SCALE_EDIT-HEIGHT_INV;
-          let quad_newx4 = draw.x4* 1/SCALE_EDIT;
-          let quad_newy4 = draw.y4* 1/SCALE_EDIT-HEIGHT_INV;
-          updateQuad(workspaceRef,objectId,viewId,draw.id,quad_newx1,quad_newy1,quad_newx2,quad_newy2,quad_newx3,quad_newy3,quad_newx4,quad_newy4);
+        case Polygon:
+          let points = []
+
+          for (var i in draw.points){
+            let newx = draw.points[i].x * 1/SCALE_EDIT
+            let newy = draw.points[i].y * 1/SCALE_EDIT-HEIGHT_INV
+            points.push({"x" : newx, "y" : newy})
+          }
+
+          updatePolygon(workspaceRef,objectId,viewId,draw.id,points);
           break;
         case Triangle:
           let triangle_newx1 = draw.x1* 1/SCALE_EDIT;
@@ -83,10 +83,6 @@ export const updateViewSketch = (workspaceRef,objectId,viewId,draw) => {
           let line_newy2 = draw.y2* 1/SCALE_EDIT-HEIGHT_INV;
           updateLine(workspaceRef,objectId,viewId,draw.id,line_newx1,line_newy1,line_newx2,line_newy2);
           break;
-        case Point:
-          let point_newx = draw.x* 1/SCALE_EDIT;
-          let point_newy = draw.y* 1/SCALE_EDIT-HEIGHT_INV;
-          updatePoint(workspaceRef,objectId,viewId,draw.id,point_newx,point_newy);
         case Ellipse:
           let ellipse_newx = draw.x* 1/SCALE_EDIT;
           let ellipse_newy = draw.y* 1/SCALE_EDIT-HEIGHT_INV;
@@ -198,7 +194,7 @@ const updateViewPositionAndSize = (workspaceRef, objectId, viewId, newPosx, newP
     traverseBlocks(objectBlocks);
   }
 
-  const updateQuad = (workspaceRef,objectId,viewId,quadId,newx1,newy1,newx2,newy2,newx3,newy3,newx4,newy4) => {
+  const updatePolygon = (workspaceRef,objectId,viewId,quadId,points) => {
     const objectBlocks = workspaceRef.current.getBlocksByType('object');
 
     const traverseBlocks = (blocks) => {
@@ -207,15 +203,13 @@ const updateViewPositionAndSize = (workspaceRef, objectId, viewId, newPosx, newP
           traverseBlocks(block.getChildren(false)); // Recurse into child blocks
         } else if (block.getFieldValue('ID') === viewId && block.type === 'view_draw') {
           traverseBlocks(block.getChildren(false)); // Recurse into child blocks
-        } else if (block.getFieldValue('ID') === quadId && block.type === 'draw_quad') {
-          block.setFieldValue(newx1, 'X1');
-          block.setFieldValue(newy1, 'Y1');
-          block.setFieldValue(newx2, 'X2');
-          block.setFieldValue(newy2, 'Y2');
-          block.setFieldValue(newx3, 'X3');
-          block.setFieldValue(newy3, 'Y3');
-          block.setFieldValue(newx4, 'X4');
-          block.setFieldValue(newy4, 'Y4');
+        } else if (block.getFieldValue('ID') === quadId && block.type === 'draw_polygon') {
+          for(let i in points){
+            let point = points[i]
+            let j = parseInt(i)+1
+            block.setFieldValue(point.x, 'X'+j);
+            block.setFieldValue(point.y, 'Y'+j);
+          }
         } else {
           // Continue traversing for other children
           traverseBlocks(block.getChildren(false));
@@ -226,7 +220,7 @@ const updateViewPositionAndSize = (workspaceRef, objectId, viewId, newPosx, newP
     traverseBlocks(objectBlocks);
   }
 
-  const updateHitboxQuad = (workspaceRef,objectId,viewId,hitboxId,newx1,newy1,newx2,newy2,newx3,newy3,newx4,newy4) => {
+  const updateHitboxPolygon = (workspaceRef,objectId,viewId,hitboxId,points) => {
     const objectBlocks = workspaceRef.current.getBlocksByType('object');
 
     const traverseBlocks = (blocks) => {
@@ -235,15 +229,14 @@ const updateViewPositionAndSize = (workspaceRef, objectId, viewId, newPosx, newP
           traverseBlocks(block.getChildren(false)); // Recurse into child blocks
         } else if (block.getFieldValue('ID') === viewId && block.type === 'view_draw') {
           traverseBlocks(block.getChildren(false)); // Recurse into child blocks
-        } else if (block.getFieldValue('ID') === hitboxId && block.type === 'hitbox_quad') {
-          block.setFieldValue(newx1, 'X1');
-          block.setFieldValue(newy1, 'Y1');
-          block.setFieldValue(newx2, 'X2');
-          block.setFieldValue(newy2, 'Y2');
-          block.setFieldValue(newx3, 'X3');
-          block.setFieldValue(newy3, 'Y3');
-          block.setFieldValue(newx4, 'X4');
-          block.setFieldValue(newy4, 'Y4');
+        } else if (block.getFieldValue('ID') === hitboxId && block.type === 'hitbox_polygon') {
+          for(var i in points){
+            let point = points[i]
+            let j = parseInt(i)+1
+
+            block.setFieldValue(point.x, 'X' + j);
+            block.setFieldValue(point.y, 'Y' + j);
+          }
         } else {
           // Continue traversing for other children
           traverseBlocks(block.getChildren(false));
@@ -294,28 +287,6 @@ const updateViewPositionAndSize = (workspaceRef, objectId, viewId, newPosx, newP
           block.setFieldValue(newy1, 'Y1');
           block.setFieldValue(newx2, 'X2');
           block.setFieldValue(newy2, 'Y2');
-        } else {
-          // Continue traversing for other children
-          traverseBlocks(block.getChildren(false));
-        }
-      });
-    };
-
-    traverseBlocks(objectBlocks);
-  }
-
-  const updatePoint = (workspaceRef,objectId,viewId,quadId,newx,newy) => {
-    const objectBlocks = workspaceRef.current.getBlocksByType('object');
-
-    const traverseBlocks = (blocks) => {
-      blocks.forEach(block => {
-        if (block.getFieldValue('ID') === objectId && block.type === 'object') {
-          traverseBlocks(block.getChildren(false)); // Recurse into child blocks
-        } else if (block.getFieldValue('ID') === viewId && block.type === 'view_draw') {
-          traverseBlocks(block.getChildren(false)); // Recurse into child blocks
-        } else if (block.getFieldValue('ID') === quadId && block.type === 'draw_point') {
-          block.setFieldValue(newx, 'X');
-          block.setFieldValue(newy, 'Y');
         } else {
           // Continue traversing for other children
           traverseBlocks(block.getChildren(false));

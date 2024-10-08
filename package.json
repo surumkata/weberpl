@@ -4,6 +4,7 @@
   "version": "1.0.0",
   "private": true,
   "dependencies": {
+    "@blockly/block-plus-minus": "^8.0.9",
     "@blockly/field-angle": "^5.0.7",
     "@blockly/field-colour-hsv-sliders": "^5.0.7",
     "@blockly/zoom-to-fit": "^6.0.7",

@@ -110,18 +110,15 @@ const TOOLBOX =
   '    <block type="view_draw"></block>\n' +
   '    <category name="DRAWS" colour="120">\n' +
   '      <block type="draw_rect"></block>\n' +
-  '      <block type="draw_quad"></block>\n' +
+  '      <block type="draw_polygon"></block>\n' +
   '      <block type="draw_square"></block>\n' +
   '      <block type="draw_triangle"></block>\n' +
   '      <block type="draw_line"></block>\n' +
-  '      <block type="draw_point"></block>\n' +
   '      <block type="draw_arc"></block>\n' +
   '      <block type="draw_circle"></block>\n' +
   '      <block type="draw_ellipse"></block>\n' +
-  '      <block type="begin_clip"></block>\n' +
-  '      <block type="end_clip"></block>\n' +
-  '      <block type="erase"></block>\n' +
-  '      <block type="no_erase"></block>\n' +
+  '    </category>\n' +
+  '    <category name="DRAWS AUX" colour="120">\n' +
   '      <block type="fill"></block>\n' +
   '      <block type="no_fill"></block>\n' +
   '      <block type="stroke"></block>\n' +
@@ -129,11 +126,10 @@ const TOOLBOX =
   '    </category>\n' +
   '    <category name="HITBOXES" colour="345">\n' +
   '      <block type="hitbox_rect"></block>\n' +
-  '      <block type="hitbox_quad"></block>\n' +
+  '      <block type="hitbox_polygon"></block>\n' +
   '      <block type="hitbox_square"></block>\n' +
   '      <block type="hitbox_triangle"></block>\n' +
   '      <block type="hitbox_line"></block>\n' +
-  '      <block type="hitbox_point"></block>\n' +
   '      <block type="hitbox_arc"></block>\n' +
   '      <block type="hitbox_circle"></block>\n' +
   '      <block type="hitbox_ellipse"></block>\n' +

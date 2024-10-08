@@ -1,7 +1,6 @@
-import { HitboxArc, HitboxCircle, HitboxEllipse, HitboxLine, HitboxPoint, HitboxQuad, HitboxRect, HitboxSquare, HitboxTriangle } from "./hitbox";
+import { HitboxArc, HitboxCircle, HitboxPolygon, HitboxEllipse, HitboxLine, HitboxRect, HitboxSquare, HitboxTriangle } from "./hitbox";
 import { HEIGHT, HEIGHT_INV, Position, WIDTH, SCALE_EDIT } from "./utils";
-import { collidePointCircle, collidePointEllipse, collidePointLine, collidePointPoint, collidePointPoly, collidePointRect, collidePointTriangle } from "p5collide";
-//import { Hitbox, HitboxRect } from "./hitbox";
+import { collidePointCircle, collidePointEllipse, collidePointLine, collidePointPoly, collidePointRect, collidePointTriangle } from "p5collide";
 
 export class View {
   constructor(p5,id, srcImages, size, position, timeSprite, repeate,turn,hitboxes,hitboxesType) {
@@ -32,9 +31,7 @@ export class View {
   }
 
   changeSize(scale) {
-    console.log("door",this.position.x,this.position.y,this.size.x,this.size.y);
     let position = new Position(this.position.x,this.position.y);
-    console.log(position)
     
     this.position.x *= scale.x;
     this.position.y *= scale.y;
@@ -271,11 +268,20 @@ export class View {
                 hitbox_xmax = hitbox.x+hitbox.w;
                 hitbox_ymax = hitbox.y+hitbox.h;
                 break;
-            case HitboxQuad:
-                hitbox_xmin = Math.min(hitbox.x1,hitbox.x2,hitbox.x3,hitbox.x4);
-                hitbox_ymin = Math.min(hitbox.y1,hitbox.y2,hitbox.y3,hitbox.y4);
-                hitbox_xmax = Math.max(hitbox.x1,hitbox.x2,hitbox.x3,hitbox.x4);
-                hitbox_ymax = Math.min(hitbox.y1,hitbox.y2,hitbox.y3,hitbox.y4);
+            case HitboxPolygon:
+                let xs = []
+                let ys = []
+                for (let i in hitbox.points){
+                  let point = hitbox.points[i]
+                  xs.push(point.x)
+                  ys.push(point.y)
+                }
+
+                draw_xmin = Math.min(...xs);
+                draw_ymin = Math.min(...ys);
+                draw_xmax = Math.max(...xs);
+                draw_ymax = Math.min(...ys);
+                break;
                 break;
             case HitboxSquare:
                 hitbox_xmin = hitbox.x;
@@ -294,12 +300,6 @@ export class View {
                 hitbox_ymin = Math.min(hitbox.y1,hitbox.y2);
                 hitbox_xmax = Math.max(hitbox.x1,hitbox.x2);
                 hitbox_ymax = Math.min(hitbox.y1,hitbox.y2);
-                break;
-            case HitboxPoint:
-                hitbox_xmin = hitbox.x
-                hitbox_ymin = hitbox.y
-                hitbox_xmax = hitbox.x
-                hitbox_ymax = hitbox.y
                 break;
             case HitboxArc:
                 hitbox_xmin = hitbox.x - hitbox.w/2;
@@ -364,11 +364,19 @@ export class ViewSketch {
                 draw_xmax = draw.x+draw.w;
                 draw_ymax = draw.y+draw.h;
                 break;
-            case Quad:
-                draw_xmin = Math.min(draw.x1,draw.x2,draw.x3,draw.x4);
-                draw_ymin = Math.min(draw.y1,draw.y2,draw.y3,draw.y4);
-                draw_xmax = Math.max(draw.x1,draw.x2,draw.x3,draw.x4);
-                draw_ymax = Math.min(draw.y1,draw.y2,draw.y3,draw.y4);
+            case Polygon:
+                let xs = []
+                let ys = []
+                for (let i in draw.points){
+                  let point = draw.points[i]
+                  xs.push(point.x)
+                  ys.push(point.y)
+                }
+
+                draw_xmin = Math.min(...xs);
+                draw_ymin = Math.min(...ys);
+                draw_xmax = Math.max(...xs);
+                draw_ymax = Math.min(...ys);
                 break;
             case Square:
                 draw_xmin = draw.x;
@@ -387,12 +395,6 @@ export class ViewSketch {
                 draw_ymin = Math.min(draw.y1,draw.y2);
                 draw_xmax = Math.max(draw.x1,draw.x2);
                 draw_ymax = Math.min(draw.y1,draw.y2);
-                break;
-            case Point:
-                draw_xmin = draw.x
-                draw_ymin = draw.y
-                draw_xmax = draw.x
-                draw_ymax = draw.y
                 break;
             case Arc:
                 draw_xmin = draw.x - draw.w/2;
@@ -415,12 +417,10 @@ export class ViewSketch {
             default:
                 break;
         }
-        //console.log(draw.constructor.name)
         xmin = Math.min(xmin,draw_xmin);
         ymin = Math.min(ymin,draw_ymin);
         xmax = Math.max(xmax,draw_xmax);
         ymax = Math.max(ymax,draw_ymax);
-        //console.log(xmin,ymin,xmax,ymax);
     })
 
     this.bb = {
@@ -430,7 +430,6 @@ export class ViewSketch {
         ymax : ymax
     }
     
-    console.log(this.bb);
   }
 
   changePosition(position){
@@ -442,7 +441,6 @@ export class ViewSketch {
   changeSize(scale){
 
     let pos = new Position(this.bb.xmin,this.bb.ymin)
-    console.log(pos);
 
     this.draws.forEach(draw => {
       draw.scale(scale.x,scale.y);
@@ -1212,23 +1210,10 @@ export class Rect extends DrawP5 {
 }
 
 
-export class Quad extends DrawP5 {
-  constructor(id,x1,y1,x2,y2,x3,y3,x4,y4){
+export class Polygon extends DrawP5 {
+  constructor(id,points){
     super(id);
-    this.x1 = x1;
-    this.y1 = y1;
-    this.x2 = x2;
-    this.y2 = y2;
-    this.x3 = x3;
-    this.y3 = y3;
-    this.x4 = x4;
-    this.y4 = y4;
-    this.vertices = [
-      {x:x1,y:y1},
-      {x:x2,y:y2},
-      {x:x3,y:y3},
-      {x:x4,y:y4},
-    ]
+    this.points = points;
     this.hover = false;
     this.pressed = false;
     this.typePressed = null;
@@ -1236,70 +1221,62 @@ export class Quad extends DrawP5 {
   }
 
   draw(p5){
-    p5.quad(this.x1, this.y1, this.x2, this.y2, this.x3, this.y3, this.x4, this.y4);
+    // Start drawing the shape.
+    p5.beginShape();
+    
+    for(var i in this.points){
+      var point = this.points[i]
+      p5.vertex(point.x, point.y);
+    }
+    
+    // Stop drawing the shape.
+    p5.endShape(p5.CLOSE);
     if(this.hover){
       p5.push();
       p5.fill(255,0,0);
       p5.noStroke();
-      p5.circle(this.x1,this.y1,10);
-      p5.circle(this.x2,this.y2,10);
-      p5.circle(this.x3,this.y3,10);
-      p5.circle(this.x4,this.y4,10);
+
+      for(var i in this.points){
+        var point = this.points[i]
+        p5.circle(point.x, point.y,10);
+      }
+
       p5.pop();
     }
   }
 
   scale(scaleX,scaleY){
-    this.x1 *= scaleX
-    this.y1 *= scaleY
-    this.x2 *= scaleX
-    this.y2 *= scaleY
-    this.x3 *= scaleX
-    this.y3 *= scaleY
-    this.x4 *= scaleX
-    this.y4 *= scaleY
+    for(var i in this.points){
+      var point = this.points[i]
+      point.x *= scaleX;
+      point.y *= scaleY;
+    }
   }
 
   translate(tx,ty){
-    this.x1 += tx;
-    this.y1 += ty;
-    this.x2 += tx;
-    this.y2 += ty;
-    this.x3 += tx;
-    this.y3 += ty;
-    this.x4 += tx;
-    this.y4 += ty;
-
-    this.vertices = [
-      {x:this.x1,y:this.y1},
-      {x:this.x2,y:this.y2},
-      {x:this.x3,y:this.y3},
-      {x:this.x4,y:this.y4}
-    ]
+    for(var i in this.points){
+      var point = this.points[i]
+      point.x += tx;
+      point.y += ty;
+    }
   }
 
   mouseMoved(mX,mY) {
-    if(collidePointCircle(mX,mY,this.x1,this.y1,11)){
-      this.hover = true
-      document.documentElement.style.cursor = 'grab';
+    let pointHover = false;
+    for(var i in this.points){
+      var point = this.points[i]
+      if(collidePointCircle(mX,mY,point.x,point.y,11)){
+        this.hover = true;
+        document.documentElement.style.cursor = 'grab';
+        pointHover = true;
+        break;
+      }
     }
-    else if(collidePointCircle(mX,mY,this.x2,this.y2,11)){
-      this.hover = true
-      document.documentElement.style.cursor = 'grab';
-    }
-    else if(collidePointCircle(mX,mY,this.x3,this.y3,11)){
-      this.hover = true
-      document.documentElement.style.cursor = 'grab';
-    }
-    else if(collidePointCircle(mX,mY,this.x4,this.y4,11)){
-      this.hover = true
-      document.documentElement.style.cursor = 'grab';
-    }
-    else if (collidePointPoly(mX,mY,this.vertices)){
+    if(!pointHover && collidePointPoly(mX,mY,this.points)){
       this.hover = true
       document.documentElement.style.cursor = 'move';
     }
-    else {
+    else if(!pointHover){
       this.hover = false
       document.documentElement.style.cursor = 'default';
     }
@@ -1307,30 +1284,22 @@ export class Quad extends DrawP5 {
   }
 
   mousePressed(mX,mY) {
-    if(collidePointCircle(mX,mY,this.x1,this.y1,11)){
-      document.documentElement.style.cursor = 'grabbing';
-      this.pressed = true;
-      this.typePressed = "point1"
+    let pointPressed = false;
+    for(var i in this.points){
+      var point = this.points[i]
+      if(collidePointCircle(mX,mY,point.x,point.y,11)){
+        document.documentElement.style.cursor = 'grabbing';
+        this.pressed = true;
+        this.typePressed = i
+        pointPressed = true;
+        break;
+      }
     }
-    else if(collidePointCircle(mX,mY,this.x2,this.y2,11)){
-      document.documentElement.style.cursor = 'grabbing';
+    if (!pointPressed && collidePointPoly(mX,mY,this.points)){
       this.pressed = true;
-      this.typePressed = "point2"
+      this.typePressed = "polygon"
     }
-    else if(collidePointCircle(mX,mY,this.x3,this.y3,11)){
-      document.documentElement.style.cursor = 'grabbing';
-      this.pressed = true;
-      this.typePressed = "point3"
-    }
-    else if(collidePointCircle(mX,mY,this.x4,this.y4,11)){
-      document.documentElement.style.cursor = 'grabbing';
-      this.pressed = true;
-      this.typePressed = "point4"
-    }
-    else if (collidePointPoly(mX,mY,this.vertices)){
-      this.pressed = true;
-      this.typePressed = "quad"
-    }
+
     if(this.pressed){
       this.lastPosition = new Position(mX,mY);
     }
@@ -1342,40 +1311,18 @@ export class Quad extends DrawP5 {
     let changeY = mY-this.lastPosition.y;
 
     if (this.pressed) {
-      switch(this.typePressed){
-        case "point1":
-          this.x1 += changeX;
-          this.y1 += changeY;
-          break;
-        case "point2":
-          this.x2 += changeX;
-          this.y2 += changeY;
-          break;
-        case "point3":
-          this.x3 += changeX;
-          this.y3 += changeY;
-          break;
-        case "point4":
-          this.x4 += changeX;
-          this.y4 += changeY;
-          break;
-        default:
-          this.x1 += changeX;
-          this.y1 += changeY;
-          this.x2 += changeX;
-          this.y2 += changeY;
-          this.x3 += changeX;
-          this.y3 += changeY;
-          this.x4 += changeX;
-          this.y4 += changeY;
-          break;
+      if (this.typePressed === 'polygon'){
+        for(var i in this.points){
+          var point = this.points[i]
+          point.x += changeX;
+          point.y += changeY;
+        }
       }
-      this.vertices = [
-        {x:this.x1,y:this.y1},
-        {x:this.x2,y:this.y2},
-        {x:this.x3,y:this.y3},
-        {x:this.x4,y:this.y4},
-      ];
+      else if(this.typePressed!==null){
+        var point = this.points[this.typePressed]
+        point.x += changeX;
+        point.y += changeY;
+      }
       this.lastPosition = new Position(mX,mY);
     }
   }
@@ -1558,7 +1505,7 @@ export class Triangle extends DrawP5 {
 }
 
 export class Arc extends DrawP5 {
-  constructor(id,x,y,w,h,start,stop,mode){
+  constructor(id,x,y,w,h,start,stop){
     super(id);
     this.x = x;
     this.y = y;
@@ -1566,7 +1513,7 @@ export class Arc extends DrawP5 {
     this.h = h;
     this.start = start * (Math.PI/180);
     this.stop = stop * (Math.PI/180);
-    this.mode = mode;
+    this.mode = 'default';
     this.hover = false;
     this.pressed = false;
     this.typePressed = null;
@@ -2160,101 +2107,6 @@ export class Line extends DrawP5 {
   }
 }
 
-export class Point extends DrawP5 {
-  constructor(id,x,y){
-    super(id);
-    this.x = x;
-    this.y = y;
-    this.hover = false;
-    this.pressed = false;
-    this.lastPosition = new Position(0,0);
-  }
-
-  draw(p5){
-    p5.point(this.x, this.y);
-    if(this.hover){
-      p5.push();
-      p5.fill(255,0,0);
-      p5.noStroke();
-      p5.circle(this.x,this.y,10);
-      p5.pop();
-    }
-  }
-
-  scale(scaleX,scaleY){
-    //Don't Make any sense :()
-    this.x *= scaleX;
-    this.y *= scaleY;
-  }
-
-  translate(tx,ty){
-    this.x += tx;
-    this.y += ty;
-  }
-
-  mouseMoved(mX,mY) {
-    if(collidePointCircle(mX,mY,this.x,this.y,11)){
-      this.hover = true
-      document.documentElement.style.cursor = 'grab';
-    }
-    else {
-      this.hover = false
-      document.documentElement.style.cursor = 'default';
-    }
-    return this.hover
-  }
-
-  mousePressed(mX,mY) {
-    if(collidePointCircle(mX,mY,this.x,this.y,11)){
-      document.documentElement.style.cursor = 'grabbing';
-      this.pressed = true;
-    }
-    if(this.pressed){
-      this.lastPosition = new Position(mX,mY);
-    }
-    return this.pressed;
-  }
-
-  mouseDragged(mX,mY) {
-    let changeX = mX-this.lastPosition.x;
-    let changeY = mY-this.lastPosition.y;
-
-    if (this.pressed) {
-      this.x += changeX;
-      this.y += changeY;
-      this.lastPosition = new Position(mX,mY);
-    }
-  }
-
-  mouseReleased() {
-    if (this.pressed){
-      this.pressed = false;
-      return true;
-    }
-    return false;
-  }
-}
-
-export class BeginClip extends DrawP5 {
-  constructor(){
-    super("BeginClip")
-  }
-
-  draw(p5){
-    p5.beginClip();
-  }
-}
-
-export class EndClip extends DrawP5 {
-  constructor(){
-    super("EndClip")
-  }
-
-  draw(p5){
-    p5.endClip();
-  }
-}
-
 export class Fill extends DrawP5 {
   constructor(hexcode, alpha){
     super("Fill");
@@ -2313,25 +2165,5 @@ export class NoStroke extends DrawP5 {
 
   draw(p5){
     p5.noStroke();
-  }
-}
-
-export class Erase extends DrawP5 {
-  constructor(){
-    super("Erase")
-  }
-
-  draw(p5){
-    p5.erase();
-  }
-}
-
-export class NoErase extends DrawP5 {
-  constructor(){
-    super("NoErase")
-  }
-
-  draw(p5){
-    p5.noErase();
   }
 }
