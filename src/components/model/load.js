@@ -118,7 +118,7 @@ function loadSketch(id,draws,hitboxes,hitboxesType){
                 drawView = new Arc(draw.id,draw.position.x,draw.position.y+HEIGHT_INV,draw.size.x,draw.size.y,draw.arcstart,draw.arcstop);
                 break;
             case "CIRCLE":
-                drawView = new Circle(draw.id,draw.position.x,draw.postion.y+HEIGHT_INV,draw.radius);
+                drawView = new Circle(draw.id,draw.position.x,draw.position.y+HEIGHT_INV,draw.radius);
                 break;
             case "ELLIPSE":
                 drawView = new Ellipse(draw.id, draw.position.x, draw.position.y+HEIGHT_INV, draw.size.x, draw.size.y);
@@ -148,9 +148,9 @@ function loadSketch(id,draws,hitboxes,hitboxesType){
     return sketch;
 }
 
-function loadAdvancedHitbox(draws){
+function loadAdvancedHitbox(data_hitboxes){
     var hitboxes = [];
-    draws.forEach(hitbox => {
+    data_hitboxes.forEach(hitbox => {
         switch(hitbox.type) {
             case "RECT":
                 hitboxes.push(new HitboxRect(hitbox.id,hitbox.position.x,hitbox.position.y+HEIGHT_INV,hitbox.size.x,hitbox.size.y));

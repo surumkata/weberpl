@@ -40,8 +40,7 @@ export class Object {
   // Função que muda o tamanho do objeto
   changeSize(scale) {
       for (let view in this.views){
-        let v = this.views[view];
-        v.changeSize(scale);
+        this.views[view].changeSize(scale);
       }
   }
 

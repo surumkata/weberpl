@@ -55,7 +55,6 @@ export class HitboxRect extends Hitbox {
     }
 
     collide(px,py){
-        console.log(px,py);
         return collidePointRect(px,py,this.x,this.y,this.w,this.h);
     }
 
@@ -67,7 +66,6 @@ export class HitboxRect extends Hitbox {
     }
 
     translate(tx,ty){
-      console.log(tx,ty)
       this.x += tx
       this.y += ty
     }
@@ -662,7 +660,6 @@ export class HitboxPolygon extends Hitbox {
       let pointHover = false;
       for(var i in this.points){
         var point = this.points[i]
-        console.log(point.x,point.y)
         if(collidePointCircle(mX,mY,point.x,point.y,11)){
           this.hover = true;
           document.documentElement.style.cursor = 'grab';
@@ -769,6 +766,95 @@ export class HitboxSquare extends Hitbox {
       this.x += tx
       this.y += ty
     }
+
+    mouseMoved(mX,mY) {
+      if(collidePointCircle(mX,mY,this.x,this.y,11)){
+        this.hover = true
+        document.documentElement.style.cursor = 'nwse-resize';
+      }
+      else if(collidePointCircle(mX,mY,this.x+this.w,this.y+this.h,11)){
+        this.hover = true
+        document.documentElement.style.cursor = 'nwse-resize';
+      }
+      else if (collidePointRect(mX,mY,this.x,this.y,this.w,this.h)){
+        this.hover = true
+        document.documentElement.style.cursor = 'move';
+      }
+      else {
+        this.hover = false
+        document.documentElement.style.cursor = 'default';
+      }
+      return this.hover
+    }
+  
+    mousePressed(mX,mY) {
+      if(collidePointCircle(mX,mY,this.x,this.y,11)){ //CIRCULO ESQUERDO CIMA
+        this.pressed = true
+        this.typePressed = "CIRCULO_ESQUERDA_CIMA"
+      }
+      else if(collidePointCircle(mX,mY,this.x+this.w,this.y+this.h,11)){ //CIRCULO DIREITA BAIXO
+        this.pressed = true
+        this.typePressed = "CIRCULO_DIREITA_BAIXO"
+      }
+      else if (collidePointRect(mX,mY,this.x,this.y,this.w,this.h)){
+        this.pressed = true;
+        this.typePressed = "square"
+      }
+      if(this.pressed){
+        this.lastPosition = new Position(mX,mY);
+      }
+      return this.pressed;
+    }
+  
+    mouseDragged(mX,mY) {
+      let changeX = mX-this.lastPosition.x;
+      let changeY = mY-this.lastPosition.y;
+  
+      if (this.pressed) {
+        switch(this.typePressed){
+          case 'CIRCULO_ESQUERDA_CIMA':
+            if(Math.abs(changeX) > Math.abs(changeY)){
+              this.x += changeX;
+              this.y += changeX;
+              this.w -= changeX;
+              this.h -= changeX;
+            }
+            else{
+              this.x += changeY;
+              this.y += changeY;
+              this.w -= changeY;
+              this.h -= changeY;
+            }
+            break;
+          case 'CIRCULO_DIREITA_BAIXO':
+            if(Math.abs(changeX) > Math.abs(changeY)){
+              this.w += changeX;
+              this.h += changeX;
+            }
+            else{
+              this.w += changeY;
+              this.h += changeY;
+            }
+            break;  
+          default:
+            this.x += changeX;
+            this.y += changeY;
+            break;
+        }
+        this.lastPosition = new Position(mX,mY);
+      }
+    }
+  
+    mouseReleased() {
+      if (this.pressed){
+        this.pressed = false;
+        this.typePressed = null;
+        return true;
+      }
+      return false;
+    }
+
+
 }
 
 export class HitboxTriangle extends Hitbox {
@@ -780,6 +866,11 @@ export class HitboxTriangle extends Hitbox {
         this.y2 = y2;
         this.x3 = x3;
         this.y3 = y3;
+        this.hover = false;
+        this.pressed = false;
+        this.typePressed = null;
+        this.lastPosition = new Position(0,0);
+
     }
 
     collide(px,py){
@@ -788,6 +879,15 @@ export class HitboxTriangle extends Hitbox {
 
     draw(p5){
         p5.triangle(this.x1,this.y1,this.x2,this.y2,this.x3,this.y3);
+        if(this.hover){
+          p5.push();
+          p5.fill(255,0,0);
+          p5.noStroke();
+          p5.circle(this.x1,this.y1,10);
+          p5.circle(this.x2,this.y2,10);
+          p5.circle(this.x3,this.y3,10);
+          p5.pop();
+        }
     }
 
     scale(scaleX,scaleY){
@@ -807,6 +907,96 @@ export class HitboxTriangle extends Hitbox {
       this.x3 += tx;
       this.y3 += ty;
     }
+
+    mouseMoved(mX,mY) {
+      if(collidePointCircle(mX,mY,this.x1,this.y1,11)){
+        this.hover = true
+        document.documentElement.style.cursor = 'grab';
+      }
+      else if(collidePointCircle(mX,mY,this.x2,this.y2,11)){
+        this.hover = true
+        document.documentElement.style.cursor = 'grab';
+      }
+      else if(collidePointCircle(mX,mY,this.x3,this.y3,11)){
+        this.hover = true
+        document.documentElement.style.cursor = 'grab';
+      }
+      else if (collidePointTriangle(mX,mY,this.x1,this.y1,this.x2,this.y2,this.x3,this.y3)){
+        this.hover = true
+        document.documentElement.style.cursor = 'move';
+      }
+      else {
+        this.hover = false
+        document.documentElement.style.cursor = 'default';
+      }
+      return this.hover
+    }
+  
+    mousePressed(mX,mY) {
+      if(collidePointCircle(mX,mY,this.x1,this.y1,11)){
+        document.documentElement.style.cursor = 'grabbing';
+        this.pressed = true;
+        this.typePressed = "point1"
+      }
+      else if(collidePointCircle(mX,mY,this.x2,this.y2,11)){
+        document.documentElement.style.cursor = 'grabbing';
+        this.pressed = true;
+        this.typePressed = "point2"
+      }
+      else if(collidePointCircle(mX,mY,this.x3,this.y3,11)){
+        document.documentElement.style.cursor = 'grabbing';
+        this.pressed = true;
+        this.typePressed = "point3"
+      }
+      else if (collidePointTriangle(mX,mY,this.x1,this.y1,this.x2,this.y2,this.x3,this.y3)){
+        this.pressed = true;
+        this.typePressed = "triangle"
+      }
+      if(this.pressed){
+        this.lastPosition = new Position(mX,mY);
+      }
+      return this.pressed;
+    }
+  
+    mouseDragged(mX,mY) {
+      let changeX = mX-this.lastPosition.x;
+      let changeY = mY-this.lastPosition.y;
+  
+      if (this.pressed) {
+        switch(this.typePressed){
+          case "point1":
+            this.x1 += changeX;
+            this.y1 += changeY;
+            break;
+          case "point2":
+            this.x2 += changeX;
+            this.y2 += changeY;
+            break;
+          case "point3":
+            this.x3 += changeX;
+            this.y3 += changeY;
+            break;
+          default:
+            this.x1 += changeX;
+            this.y1 += changeY;
+            this.x2 += changeX;
+            this.y2 += changeY;
+            this.x3 += changeX;
+            this.y3 += changeY;
+            break;
+        }
+        this.lastPosition = new Position(mX,mY);
+      }
+    }
+  
+    mouseReleased() {
+      if (this.pressed){
+        this.pressed = false;
+        this.typePressed = null;
+        return true;
+      }
+      return false;
+    }
 }
 
 export class HitboxArc extends Hitbox {
@@ -816,17 +1006,35 @@ export class HitboxArc extends Hitbox {
         this.arcY = y;
         this.arcW = w;
         this.arcH = h;
-        this.arcStart = start * (Math.PI/180);
-        this.arcStop = stop * (Math.PI/180);
+        this.arcStart = start;
+        this.arcStop = stop;
         this.mode = 'default';
+        this.hover = false;
+        this.pressed = false;
+        this.typePressed = null;
+        this.lastPosition = new Position(0,0);
+        this.p1 = this.pointOfEllipse(this.start);
+        this.p2 = this.pointOfEllipse(this.stop);
       }
 
     draw(p5){
-        if(this.mode !== 'default') {
-          p5.arc(this.arcX, this.arcY, this.arcW, this.arcH, this.arcStart, this.arcStop, this.mode);
-        }
-        else {
-          p5.arc(this.arcX, this.arcY, this.arcW, this.arcH, this.arcStart, this.arcStop);
+        
+        p5.arc(this.arcX, this.arcY, this.arcW, this.arcH, this.arcStart, this.arcStop);
+        if(this.hover){
+          p5.push();
+          p5.fill(255,0,0);
+          p5.noStroke();
+          p5.circle(this.x+this.w/2,this.y,10);
+          p5.circle(this.x,this.y+this.h/2,10);
+          p5.circle(this.x-this.w/2,this.y,10);
+          p5.circle(this.x,this.y-this.h/2,10);
+          p5.stroke(255,0,0);
+          p5.strokeWeight(2);
+          p5.line(this.x,this.y,this.x+this.w/2,this.y);
+          p5.line(this.x,this.y,this.x,this.y+this.h/2);
+          p5.line(this.x,this.y,this.x-this.w/2,this.y);
+          p5.line(this.x,this.y,this.x,this.y-this.h/2);
+          p5.pop();
         }
     }
 
@@ -889,15 +1097,114 @@ export class HitboxArc extends Hitbox {
       
         return (inside && insideSlice);
     }
+
+    mouseMoved(mX,mY) {
+      if(collidePointCircle(mX,mY,this.x+this.w/2,this.y,11)){
+        this.hover = true
+        document.documentElement.style.cursor = 'grab';
+      }
+      else if(collidePointCircle(mX,mY,this.x,this.y+this.h/2,11)){
+        this.hover = true
+        document.documentElement.style.cursor = 'grab';
+      }
+      else if(collidePointCircle(mX,mY,this.x-this.w/2,this.y,11)){
+        this.hover = true
+        document.documentElement.style.cursor = 'grab';
+      }
+      else if(collidePointCircle(mX,mY,this.x,this.y-this.h/2,11)){
+        this.hover = true
+        document.documentElement.style.cursor = 'grab';
+      }
+      else if (this.collide(mX,mY)){
+        this.hover = true
+        document.documentElement.style.cursor = 'move';
+      }
+      else {
+        this.hover = false
+        document.documentElement.style.cursor = 'default';
+      }
+      return this.hover
+    }
+  
+    mousePressed(mX,mY) {
+      if(collidePointCircle(mX,mY,this.x+this.w/2,this.y,11)){
+        document.documentElement.style.cursor = 'grabbing';
+        this.pressed = true;
+        this.typePressed = "width"
+      }
+      else if(collidePointCircle(mX,mY,this.x,this.y+this.h/2,11)){
+        document.documentElement.style.cursor = 'grabbing';
+        this.pressed = true;
+        this.typePressed = "height"
+      }
+      else if(collidePointCircle(mX,mY,this.x-this.w/2,this.y,11)){
+        document.documentElement.style.cursor = 'grabbing';
+        this.pressed = true;
+        this.typePressed = "-width"
+      }
+      else if(collidePointCircle(mX,mY,this.x,this.y-this.h/2,11)){
+        document.documentElement.style.cursor = 'grabbing';
+        this.pressed = true;
+        this.typePressed = "-height"
+      }
+      else if (this.collide(mX,mY)){
+        this.pressed = true;
+        this.typePressed = "arc"
+      }
+      if(this.pressed){
+        this.lastPosition = new Position(mX,mY);
+      }
+      return this.pressed;
+    }
+  
+    mouseDragged(mX,mY) {
+      let changeX = mX-this.lastPosition.x;
+      let changeY = mY-this.lastPosition.y;
+  
+      if (this.pressed) {
+        switch(this.typePressed){
+          case "width":
+            this.w += changeX;
+            break;
+          case "height":
+            this.h += changeY;
+            break;
+          case "-width":
+            this.w -= changeX;
+            break;
+          case "-height":
+            this.h -= changeY;
+            break;
+          default:
+            this.x += changeX;
+            this.y += changeY;
+            break;
+        }
+        this.lastPosition = new Position(mX,mY);
+      }
+    }
+  
+    mouseReleased() {
+      if (this.pressed){
+        this.pressed = false;
+        this.typePressed = null;
+        return true;
+      }
+      return false;
+    }
 }
 
 export class HitboxCircle extends Hitbox {
-    constructor(id,x,y,d){
+    constructor(id,x,y,r){
         super(id);
         this.x = x;
         this.y = y;
-        this.w = d;
-        this.h = d;
+        this.w = r;
+        this.h = r;
+        this.hover = false;
+        this.pressed = false;
+        this.typePressed = null;
+        this.lastPosition = new Position(0,0);
       }
     
       collide(px,py){
@@ -906,6 +1213,22 @@ export class HitboxCircle extends Hitbox {
 
       draw(p5){
         p5.ellipse(this.x,this.y,this.w,this.h);
+        if(this.hover){
+          p5.push();
+          p5.fill(255,0,0);
+          p5.noStroke();
+          p5.circle(this.x+this.w/2,this.y,10);
+          p5.circle(this.x,this.y+this.w/2,10);
+          p5.circle(this.x-this.w/2,this.y,10);
+          p5.circle(this.x,this.y-this.w/2,10);
+          p5.stroke(255,0,0);
+          p5.strokeWeight(2);
+          p5.line(this.x,this.y,this.x+this.w/2,this.y);
+          p5.line(this.x,this.y,this.x,this.y+this.w/2);
+          p5.line(this.x,this.y,this.x-this.w/2,this.y);
+          p5.line(this.x,this.y,this.x,this.y-this.w/2);
+          p5.pop();
+        }
       }
 
       scale(scaleX, scaleY){
@@ -920,6 +1243,117 @@ export class HitboxCircle extends Hitbox {
         this.y += ty;
       }
 
+      mouseMoved(mX,mY) {
+        if(collidePointCircle(mX,mY,this.x+this.w/2,this.y,11)){
+          this.hover = true
+          document.documentElement.style.cursor = 'grab';
+        }
+        else if(collidePointCircle(mX,mY,this.x,this.y+this.w/2,11)){
+          this.hover = true
+          document.documentElement.style.cursor = 'grab';
+        }
+        else if(collidePointCircle(mX,mY,this.x-this.w/2,this.y,11)){
+          this.hover = true
+          document.documentElement.style.cursor = 'grab';
+        }
+        else if(collidePointCircle(mX,mY,this.x,this.y-this.w/2,11)){
+          this.hover = true
+          document.documentElement.style.cursor = 'grab';
+        }
+        else if (collidePointCircle(mX,mY,this.x,this.y,this.w)){
+          this.hover = true
+          document.documentElement.style.cursor = 'move';
+        }
+        else {
+          this.hover = false
+          document.documentElement.style.cursor = 'default';
+        }
+        return this.hover
+      }
+    
+      mousePressed(mX,mY) {
+        if(collidePointCircle(mX,mY,this.x+this.w/2,this.y,11)){
+          document.documentElement.style.cursor = 'grabbing';
+          this.pressed = true;
+          this.typePressed = "width"
+        }
+        else if(collidePointCircle(mX,mY,this.x,this.y+this.w/2,11)){
+          document.documentElement.style.cursor = 'grabbing';
+          this.pressed = true;
+          this.typePressed = "height"
+        }
+        else if(collidePointCircle(mX,mY,this.x-this.w/2,this.y,11)){
+          document.documentElement.style.cursor = 'grabbing';
+          this.pressed = true;
+          this.typePressed = "-width"
+        }
+        else if(collidePointCircle(mX,mY,this.x,this.y-this.w/2,11)){
+          document.documentElement.style.cursor = 'grabbing';
+          this.pressed = true;
+          this.typePressed = "-height"
+        }
+        else if (collidePointCircle(mX,mY,this.x,this.y,this.w)){
+          this.pressed = true;
+          this.typePressed = "circle"
+        }
+        if(this.pressed){
+          this.lastPosition = new Position(mX,mY);
+        }
+        return this.pressed;
+      }
+    
+      mouseDragged(mX,mY) {
+        let changeX = mX-this.lastPosition.x;
+        let changeY = mY-this.lastPosition.y;
+    
+        if (this.pressed) {
+          switch(this.typePressed){
+            case "width":
+              if(Math.abs(changeX) > Math.abs(changeY)){
+                this.w += changeX;
+                this.h += changeX;
+              }
+              else{
+                this.w += changeY;
+                this.h += changeY;
+              }
+              break;
+            case "height":
+              if(Math.abs(changeX) > Math.abs(changeY)){
+                this.w += changeX;
+                this.h += changeX;
+              }
+              else{
+                this.w += changeY;
+                this.h += changeY;
+              }
+              break;
+            case "-width":
+              this.w = Math.max(0,this.w-changeX);
+              this.h = Math.max(0,this.h-changeX);
+              break;
+            case "-height":
+              this.w = Math.max(0,this.w-changeY);
+              this.h = Math.max(0,this.h-changeY);
+              break;
+            default:
+              this.x += changeX;
+              this.y += changeY;
+              break;
+          }
+          this.lastPosition = new Position(mX,mY);
+        }
+      }
+    
+      mouseReleased() {
+        if (this.pressed){
+          this.pressed = false;
+          this.typePressed = null;
+          return true;
+        }
+        return false;
+      }
+
       
 }
 
@@ -930,6 +1364,10 @@ export class HitboxLine extends Hitbox {
         this.y1 = y1;
         this.x2 = x2;
         this.y2 = y2;
+        this.hover = false;
+        this.pressed = false;
+        this.typePressed = null;
+        this.lastPosition = new Position(0,0);
       }
     
       collide(px,py){
@@ -938,6 +1376,14 @@ export class HitboxLine extends Hitbox {
 
       draw(p5){
         p5.line(this.x1,this.y1,this.x2,this.y2);
+        if(this.hover){
+          p5.push();
+          p5.fill(255,0,0);
+          p5.noStroke();
+          p5.circle(this.x1,this.y1,10);
+          p5.circle(this.x2,this.y2,10);
+          p5.pop();
+        }
       }
 
       scale(scaleX,scaleY){
@@ -953,6 +1399,83 @@ export class HitboxLine extends Hitbox {
         this.x2 += tx;
         this.y2 += ty;
       }
+
+      mouseMoved(mX,mY) {
+        if(collidePointCircle(mX,mY,this.x1,this.y1,11)){
+          this.hover = true
+          document.documentElement.style.cursor = 'grab';
+        }
+        else if(collidePointCircle(mX,mY,this.x2,this.y2,11)){
+          this.hover = true
+          document.documentElement.style.cursor = 'grab';
+        }
+        else if (collidePointLine(mX,mY,this.x1,this.y1,this.x2,this.y2)){
+          this.hover = true
+          document.documentElement.style.cursor = 'move';
+        }
+        else {
+          this.hover = false
+          document.documentElement.style.cursor = 'default';
+        }
+        return this.hover
+      }
+    
+      mousePressed(mX,mY) {
+        if(collidePointCircle(mX,mY,this.x1,this.y1,11)){
+          document.documentElement.style.cursor = 'grabbing';
+          this.pressed = true;
+          this.typePressed = "point1"
+        }
+        else if(collidePointCircle(mX,mY,this.x2,this.y2,11)){
+          document.documentElement.style.cursor = 'grabbing';
+          this.pressed = true;
+          this.typePressed = "point2"
+        }
+        else if (collidePointLine(mX,mY,this.x1,this.y1,this.x2,this.y2)){
+          this.pressed = true;
+          this.typePressed = "line"
+        }
+        if(this.pressed){
+          this.lastPosition = new Position(mX,mY);
+        }
+        return this.pressed;
+      }
+    
+      mouseDragged(mX,mY) {
+        let changeX = mX-this.lastPosition.x;
+        let changeY = mY-this.lastPosition.y;
+    
+        if (this.pressed) {
+          switch(this.typePressed){
+            case "point1":
+              this.x1 += changeX;
+              this.y1 += changeY;
+              break;
+            case "point2":
+              this.x2 += changeX;
+              this.y2 += changeY;
+              break;
+            default:
+              this.x1 += changeX;
+              this.y1 += changeY;
+              this.x2 += changeX;
+              this.y2 += changeY;
+              break;
+          }
+          this.lastPosition = new Position(mX,mY);
+        }
+      }
+    
+      mouseReleased() {
+        if (this.pressed){
+          this.pressed = false;
+          this.typePressed = null;
+          return true;
+        }
+        return false;
+      }
+
+
 }
 
 export class HitboxEllipse extends Hitbox {
@@ -962,6 +1485,10 @@ export class HitboxEllipse extends Hitbox {
         this.y = y;
         this.w = w;
         this.h = h;
+        this.hover = false;
+        this.pressed = false;
+        this.typePressed = null;
+        this.lastPosition = new Position(0,0);
     }
 
     collide(px,py){
@@ -970,6 +1497,22 @@ export class HitboxEllipse extends Hitbox {
 
     draw(p5){
         p5.ellipse(this.x,this.y,this.w,this.h);
+        if(this.hover){
+          p5.push();
+          p5.fill(255,0,0);
+          p5.noStroke();
+          p5.circle(this.x+this.w/2,this.y,10);
+          p5.circle(this.x,this.y+this.h/2,10);
+          p5.circle(this.x-this.w/2,this.y,10);
+          p5.circle(this.x,this.y-this.h/2,10);
+          p5.stroke(255,0,0);
+          p5.strokeWeight(2);
+          p5.line(this.x,this.y,this.x+this.w/2,this.y);
+          p5.line(this.x,this.y,this.x,this.y+this.h/2);
+          p5.line(this.x,this.y,this.x-this.w/2,this.y);
+          p5.line(this.x,this.y,this.x,this.y-this.h/2);
+          p5.pop();
+        }
     }
 
     scale(scaleX, scaleY){
@@ -982,5 +1525,100 @@ export class HitboxEllipse extends Hitbox {
     translate(tx,ty){
       this.x += tx;
       this.y += ty;
+    }
+
+    mouseMoved(mX,mY) {
+      if(collidePointCircle(mX,mY,this.x+this.w/2,this.y,11)){
+        this.hover = true
+        document.documentElement.style.cursor = 'grab';
+      }
+      else if(collidePointCircle(mX,mY,this.x,this.y+this.h/2,11)){
+        this.hover = true
+        document.documentElement.style.cursor = 'grab';
+      }
+      else if(collidePointCircle(mX,mY,this.x-this.w/2,this.y,11)){
+        this.hover = true
+        document.documentElement.style.cursor = 'grab';
+      }
+      else if(collidePointCircle(mX,mY,this.x,this.y-this.h/2,11)){
+        this.hover = true
+        document.documentElement.style.cursor = 'grab';
+      }
+      else if (collidePointEllipse(mX,mY,this.x,this.y,this.w,this.h)){
+        this.hover = true
+        document.documentElement.style.cursor = 'move';
+      }
+      else {
+        this.hover = false
+        document.documentElement.style.cursor = 'default';
+      }
+      return this.hover
+    }
+  
+    mousePressed(mX,mY) {
+      if(collidePointCircle(mX,mY,this.x+this.w/2,this.y,11)){
+        document.documentElement.style.cursor = 'grabbing';
+        this.pressed = true;
+        this.typePressed = "width"
+      }
+      else if(collidePointCircle(mX,mY,this.x,this.y+this.h/2,11)){
+        document.documentElement.style.cursor = 'grabbing';
+        this.pressed = true;
+        this.typePressed = "height"
+      }
+      else if(collidePointCircle(mX,mY,this.x-this.w/2,this.y,11)){
+        document.documentElement.style.cursor = 'grabbing';
+        this.pressed = true;
+        this.typePressed = "-width"
+      }
+      else if(collidePointCircle(mX,mY,this.x,this.y-this.h/2,11)){
+        document.documentElement.style.cursor = 'grabbing';
+        this.pressed = true;
+        this.typePressed = "-height"
+      }
+      else if (collidePointEllipse(mX,mY,this.x,this.y,this.w,this.h)){
+        this.pressed = true;
+        this.typePressed = "ellipse"
+      }
+      if(this.pressed){
+        this.lastPosition = new Position(mX,mY);
+      }
+      return this.pressed;
+    }
+  
+    mouseDragged(mX,mY) {
+      let changeX = mX-this.lastPosition.x;
+      let changeY = mY-this.lastPosition.y;
+  
+      if (this.pressed) {
+        switch(this.typePressed){
+          case "width":
+            this.w += changeX;
+            break;
+          case "height":
+            this.h += changeY;
+            break;
+          case "-width":
+            this.w -= changeX;
+            break;
+          case "-height":
+            this.h -= changeY;
+            break;
+          default:
+            this.x += changeX;
+            this.y += changeY;
+            break;
+        }
+        this.lastPosition = new Position(mX,mY);
+      }
+    }
+  
+    mouseReleased() {
+      if (this.pressed){
+        this.pressed = false;
+        this.typePressed = null;
+        return true;
+      }
+      return false;
     }
 }

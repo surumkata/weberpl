@@ -277,11 +277,10 @@ export class View {
                   ys.push(point.y)
                 }
 
-                draw_xmin = Math.min(...xs);
-                draw_ymin = Math.min(...ys);
-                draw_xmax = Math.max(...xs);
-                draw_ymax = Math.min(...ys);
-                break;
+                hitbox_xmin = Math.min(...xs);
+                hitbox_ymin = Math.min(...ys);
+                hitbox_xmax = Math.max(...xs);
+                hitbox_ymax = Math.min(...ys);
                 break;
             case HitboxSquare:
                 hitbox_xmin = hitbox.x;
@@ -1348,11 +1347,116 @@ export class Square extends DrawP5 {
     this.tr = tr;
     this.br = br;
     this.bl = bl;
+    this.hover = false;
+    this.pressed = false;
+    this.typePressed = null;
+    this.lastPosition = new Position(0,0);
   }
 
   draw(p5){
     p5.rect(this.x,this.y,this.w, this.h, this.tl,this.tr,this.br, this.bl);
+    if(this.hover){
+      p5.push();
+      p5.stroke(255,0,0);
+      p5.strokeWeight(2);
+      p5.fill(100,100,100,0);
+      p5.rect(this.x,this.y,this.w,this.h);
+      p5.fill(255,0,0);
+      p5.noStroke();
+      p5.circle(this.x,this.y,10);
+      p5.circle(this.x+this.w,this.y+this.h,10);
+      p5.pop();
+    }
   }
+
+  mouseMoved(mX,mY) {
+    if(collidePointCircle(mX,mY,this.x,this.y,11)){
+      this.hover = true
+      document.documentElement.style.cursor = 'nwse-resize';
+    }
+    else if(collidePointCircle(mX,mY,this.x+this.w,this.y+this.h,11)){
+      this.hover = true
+      document.documentElement.style.cursor = 'nwse-resize';
+    }
+    else if (collidePointRect(mX,mY,this.x,this.y,this.w,this.h)){
+      this.hover = true
+      document.documentElement.style.cursor = 'move';
+    }
+    else {
+      this.hover = false
+      document.documentElement.style.cursor = 'default';
+    }
+    return this.hover
+  }
+
+  mousePressed(mX,mY) {
+    if(collidePointCircle(mX,mY,this.x,this.y,11)){ //CIRCULO ESQUERDO CIMA
+      this.pressed = true
+      this.typePressed = "CIRCULO_ESQUERDA_CIMA"
+    }
+    else if(collidePointCircle(mX,mY,this.x+this.w,this.y+this.h,11)){ //CIRCULO DIREITA BAIXO
+      this.pressed = true
+      this.typePressed = "CIRCULO_DIREITA_BAIXO"
+    }
+    else if (collidePointRect(mX,mY,this.x,this.y,this.w,this.h)){
+      this.pressed = true;
+      this.typePressed = "square"
+    }
+    if(this.pressed){
+      this.lastPosition = new Position(mX,mY);
+    }
+    return this.pressed;
+  }
+
+  mouseDragged(mX,mY) {
+    let changeX = mX-this.lastPosition.x;
+    let changeY = mY-this.lastPosition.y;
+    console.log(changeX,changeY)
+
+    if (this.pressed) {
+      switch(this.typePressed){
+        case 'CIRCULO_ESQUERDA_CIMA':
+          if(Math.abs(changeX) > Math.abs(changeY)){
+            this.x += changeX;
+            this.y += changeX;
+            this.w -= changeX;
+            this.h -= changeX;
+          }
+          else{
+            this.x += changeY;
+            this.y += changeY;
+            this.w -= changeY;
+            this.h -= changeY;
+          }
+          break;
+        case 'CIRCULO_DIREITA_BAIXO':
+          if(Math.abs(changeX) > Math.abs(changeY)){
+            this.w += changeX;
+            this.h += changeX;
+          }
+          else{
+            this.w += changeY;
+            this.h += changeY;
+          }
+          break;  
+        default:
+          this.x += changeX;
+          this.y += changeY;
+          break;
+      }
+      this.lastPosition = new Position(mX,mY);
+    }
+  }
+
+  mouseReleased() {
+    if (this.pressed){
+      this.pressed = false;
+      this.typePressed = null;
+      return true;
+    }
+    return false;
+  }
+
 
   scale(scaleX,scaleY){
     this.x *= scaleX
@@ -1511,8 +1615,8 @@ export class Arc extends DrawP5 {
     this.y = y;
     this.w = w;
     this.h = h;
-    this.start = start * (Math.PI/180);
-    this.stop = stop * (Math.PI/180);
+    this.start = start;
+    this.stop = stop;
     this.mode = 'default';
     this.hover = false;
     this.pressed = false;
@@ -1523,12 +1627,7 @@ export class Arc extends DrawP5 {
   }
 
   draw(p5){
-    if(this.mode !== 'default') {
-      p5.arc(this.x, this.y, this.w, this.h, this.start, this.stop, this.mode);
-    }
-    else {
-      p5.arc(this.x, this.y, this.w, this.h, this.start, this.stop);
-    }
+    p5.arc(this.x, this.y, this.w, this.h, this.start, this.stop);
     if(this.hover){
       p5.push();
       p5.fill(255,0,0);
@@ -1706,12 +1805,12 @@ export class Arc extends DrawP5 {
 }
 
 export class Circle extends DrawP5 {
-  constructor(id,x,y,d){
+  constructor(id,x,y,r){
     super(id);
     this.x = x;
     this.y = y;
-    this.w = d;
-    this.h = d;
+    this.w = r;
+    this.h = r;
     this.hover = false;
     this.pressed = false;
     this.typePressed = null;
@@ -1816,12 +1915,24 @@ export class Circle extends DrawP5 {
     if (this.pressed) {
       switch(this.typePressed){
         case "width":
-          this.w += changeX;
-          this.h += changeX;
+          if(Math.abs(changeX) > Math.abs(changeY)){
+            this.w += changeX;
+            this.h += changeX;
+          }
+          else{
+            this.w += changeY;
+            this.h += changeY;
+          }
           break;
         case "height":
-          this.w += changeX;
-          this.h += changeX;
+          if(Math.abs(changeX) > Math.abs(changeY)){
+            this.w += changeX;
+            this.h += changeX;
+          }
+          else{
+            this.w += changeY;
+            this.h += changeY;
+          }
           break;
         case "-width":
           this.w = Math.max(0,this.w-changeX);

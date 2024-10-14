@@ -1081,8 +1081,8 @@ javascriptGenerator.forBlock['draw_arc'] = function(block, generator) {
     "type" : "ARC",
     "position" : {"x" : x, "y" : y},
     "size" : {"x" : w, "y" : h},
-    "arcstart" : start,
-    "arcstop" : stop
+    "arcstart" : start * (Math.PI/180),
+    "arcstop" : stop * (Math.PI/180)
   }
 
   return JSON.stringify(code, null, 2); // Retornar o JSON como string formatada
@@ -1099,7 +1099,7 @@ javascriptGenerator.forBlock['draw_circle'] = function(block, generator) {
     "id" : text_id,
     "type" : "CIRCLE",
     "position" : {"x" : x, "y" : y},
-    "radius" : d
+    "radius" : d / 2
   }
 
   return JSON.stringify(code, null, 2); // Retornar o JSON como string formatada
@@ -1376,8 +1376,8 @@ javascriptGenerator.forBlock['hitbox_arc'] = function(block, generator) {
     "type" : "ARC",
     "position" : {"x" : x, "y" : y},
     "size" : {"x" : w, "y" : h},
-    "arcstart" : start,
-    "arcstop" : stop
+    "arcstart" : start * (Math.PI/180),
+    "arcstop" : stop * (Math.PI/180)
   }
 
   return JSON.stringify(code, null, 2); // Retornar o JSON como string formatada
@@ -1394,7 +1394,7 @@ javascriptGenerator.forBlock['hitbox_circle'] = function(block, generator) {
     "id" : text_id,
     "type" : "CIRCLE",
     "position" : {"x" : x, "y" : y},
-    "radius" : d
+    "radius" : d / 2
   }
 
   return JSON.stringify(code, null, 2); // Retornar o JSON como string formatada
