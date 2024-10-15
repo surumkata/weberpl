@@ -32,7 +32,7 @@ export const updateHitbox = (workspaceRef, objectId, viewId, hitbox) => {
         case HitboxCircle:
             newvalues['X'] = hitbox.x* 1/SCALE_EDIT;
             newvalues['Y'] = hitbox.y* 1/SCALE_EDIT-HEIGHT_INV;
-            newvalues['D'] = (hitbox.w* 1/SCALE_EDIT) * 2;
+            newvalues['RADIUS'] = hitbox.w* 1/SCALE_EDIT;
             hitbox_type = 'hitbox_circle'
             break;
         case HitboxEllipse:
@@ -130,7 +130,7 @@ export const updateViewSketch = (workspaceRef,objectId,viewId,draw) => {
         case Circle:
           newvalues['X'] = draw.x* 1/SCALE_EDIT;
           newvalues['Y'] = draw.y* 1/SCALE_EDIT-HEIGHT_INV;
-          newvalues['D'] = (draw.w* 1/SCALE_EDIT) * 2;
+          newvalues['RADIUS'] = draw.w* 1/SCALE_EDIT;
           draw_type = 'draw_circle'
           break;
         case Arc:

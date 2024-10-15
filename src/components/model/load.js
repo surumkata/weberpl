@@ -212,24 +212,31 @@ function loadHitboxes(view){
     return hitboxes;
 }
 
-function loadSource(src_type,src){
-    switch(src_type){
-        case 'URL' :
-            return [src];
-        case 'LIBRARY':
-            console.log(process.env.PUBLIC_URL + '/assets/'+src+'.png')
-            return [process.env.PUBLIC_URL + '/assets/'+src+'.png'];
-        default:
-            break;
-    }
+function loadSource(sources){
+    var result = []
+    sources.forEach(source => {
+        switch(source[0]){
+            case 'URL' :
+                result.push([source[1]]);
+            case 'LIB':
+                result.push(process.env.PUBLIC_URL + '/assets/'+source[1]+'.png');
+            default:
+                break;
+        }
+    })
+    return result
+    
 }
 
 function loadView(p5,view){
     let hitboxes = loadHitboxes(view);
     switch(view.type){
         case "VIEW_IMAGE":
-            let src = loadSource(view.src_type,view.src)
-            let v = new View(p5,view.id,src,new Size(view.size.x,view.size.y), new Position (view.position.x,view.position.y+HEIGHT_INV),0,0,view.turn,hitboxes,view.hitbox_type);
+            let src = loadSource(view.sources)
+            let time_sprite = view.time_sprite ?? 0;
+            let repetitions = view.repetitions || Infinity;
+            let turn = view.turn ?? {x: false, y: false};
+            let v = new View(p5,view.id,src,new Size(view.size.x,view.size.y), new Position (view.position.x,view.position.y+HEIGHT_INV),time_sprite,repetitions,turn,hitboxes,view.hitbox_type);
             v.makeHitboxesBBox();
             return v
         case "VIEW_SKETCH":

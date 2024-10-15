@@ -18,8 +18,8 @@ const INITIAL =
                   <field name="y">0</field>
                 </block>
               </value>
-              <value name="IMAGE">
-                <block type="image">
+              <value name="SOURCE">
+                <block type="image2">
                     <field name="OPCAO1">BACKGROUND</field>
                     <field name="OPCAO2">ROOM</field>
                 </block>
@@ -45,8 +45,8 @@ const INITIAL =
                         <field name="y">360</field>
                       </block>
                     </value>
-                    <value name="IMAGE">
-                      <block type="image">
+                    <value name="SOURCE">
+                      <block type="image2">
                         <field name="OPCAO1">DOOR</field>
                         <field name="OPCAO2">CLOSED</field>
                       </block>
@@ -110,7 +110,10 @@ const TOOLBOX =
   '  <category name="VIEWS" colour="80">\n' +
   '    <block type="view"></block>\n' +
   '    <block type="view2"></block>\n' +
+  '    <block type="view_animated"></block>\n' +
+  '    <block type="view_animated2"></block>\n' +
   '    <block type="view_draw"></block>\n' +
+  '    <block type="view_draw2"></block>\n' +
   '    <category name="DRAWS" colour="120">\n' +
   '      <block type="draw_rect"></block>\n' +
   '      <block type="draw_polygon"></block>\n' +
@@ -141,9 +144,10 @@ const TOOLBOX =
   '  <category name="UTILS" colour="20">\n' +
   '    <block type="point"></block>\n' +
   '    <block type="url"></block>\n' +
+  '    <block type="url2"></block>\n' +
   '    <block type="image"></block>\n' +
+  '    <block type="image2"></block>\n' +
   '    <block type="story"></block>\n' +
-  '    <block type="custom_dropdown_block"></block>\n' +
   '    <block type="turn"></block>\n' +
   '  </category>\n' +
   '</xml>';

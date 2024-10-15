@@ -1199,8 +1199,8 @@ export class HitboxCircle extends Hitbox {
         super(id);
         this.x = x;
         this.y = y;
-        this.w = r;
-        this.h = r;
+        this.w = r*2;
+        this.h = r*2;
         this.hover = false;
         this.pressed = false;
         this.typePressed = null;
@@ -1483,8 +1483,8 @@ export class HitboxEllipse extends Hitbox {
         super(id);
         this.x = x;
         this.y = y;
-        this.w = w;
-        this.h = h;
+        this.w = w*2;
+        this.h = h*2;
         this.hover = false;
         this.pressed = false;
         this.typePressed = null;

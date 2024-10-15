@@ -56,12 +56,158 @@ Blockly.Blocks['url'] = {
         .appendField(new Blockly.FieldTextInput("url"), "URL")
         .appendField(")");
     this.setInputsInline(false);
+    this.setPreviousStatement(true, 'url');
+    this.setNextStatement(true, 'url');
+    this.setColour('%{BKY_UTILS}');
+ this.setTooltip("");
+ this.setHelpUrl("");
+  }
+};
+
+Blockly.Blocks['url2'] = {
+  init: function() {
+    this.appendDummyInput()
+        .appendField("URL (")
+        .appendField(new Blockly.FieldTextInput("url"), "URL")
+        .appendField(")");
+    this.setInputsInline(false);
     this.setOutput(true, "url");
     this.setColour('%{BKY_UTILS}');
  this.setTooltip("");
  this.setHelpUrl("");
   }
 };
+
+
+Blockly.Blocks['image'] = {
+  init: function() {
+    this.appendDummyInput()
+        .appendField("IMAGE")
+        .appendField(new Blockly.FieldDropdown([
+          ["door", "DOOR"],
+          ["safe", "SAFE"],
+          ["key", "KEY"],
+          ['magnifyingglass','MAGNIFYINGGLASS'],
+          ['notes','NOTES'],
+          ['background','BACKGROUND'],
+
+        ], this.updateOptions.bind(this)), 'OPCAO1')
+        .appendField(new Blockly.FieldDropdown(this.getSecondOptions.bind(this)), 'OPCAO2');
+    this.setColour('%{BKY_UTILS}');
+    this.setPreviousStatement(true, 'url');
+    this.setNextStatement(true, 'url');
+    this.setTooltip('');
+    this.setHelpUrl('');
+  },
+  // Função para atualizar as opções do segundo dropdown
+  updateOptions: function(newValue) {
+    const opcoes2 = this.getField('OPCAO2');
+    opcoes2.menuGenerator_ = this.getSecondOptions(newValue);
+    opcoes2.setValue(opcoes2.menuGenerator_[0][1]); // Define o valor padrão para a primeira opção
+  },
+  // Função para obter as opções do segundo dropdown com base na escolha do primeiro dropdown
+  getSecondOptions: function(option1) {
+    switch(option1) {
+      case 'DOOR':
+        return [
+          ["open", "OPEN"],
+          ["closed", "CLOSED"]
+        ];
+      case 'KEY':
+        return [
+          ["normal", "NORMAL"]
+        ];
+      case 'MAGNIFYINGGLASS':
+        return [
+          ["normal", "NORMAL"]
+        ]
+      case 'NOTES':
+        return [
+          ["normal", "NORMAL"]
+        ]
+      case 'SAFE':
+        return [
+          ["open", "OPEN"],
+          ["closed", "CLOSED"]
+        ];
+      case 'BACKGROUND':
+        return [
+          ["room", "ROOM"],
+          ["station", "STATION"]
+        ]
+      default:
+        return [
+          ["open", "OPEN"],
+          ["closed", "CLOSED"]
+        ];
+    }
+  }
+};
+
+Blockly.Blocks['image2'] = {
+  init: function() {
+    this.appendDummyInput()
+        .appendField("IMAGE")
+        .appendField(new Blockly.FieldDropdown([
+          ["door", "DOOR"],
+          ["safe", "SAFE"],
+          ["key", "KEY"],
+          ['magnifyingglass','MAGNIFYINGGLASS'],
+          ['notes','NOTES'],
+          ['background','BACKGROUND'],
+
+        ], this.updateOptions.bind(this)), 'OPCAO1')
+        .appendField(new Blockly.FieldDropdown(this.getSecondOptions.bind(this)), 'OPCAO2');
+    this.setColour('%{BKY_UTILS}');
+    this.setOutput(true, "url");
+    this.setTooltip('');
+    this.setHelpUrl('');
+  },
+  // Função para atualizar as opções do segundo dropdown
+  updateOptions: function(newValue) {
+    const opcoes2 = this.getField('OPCAO2');
+    opcoes2.menuGenerator_ = this.getSecondOptions(newValue);
+    opcoes2.setValue(opcoes2.menuGenerator_[0][1]); // Define o valor padrão para a primeira opção
+  },
+  // Função para obter as opções do segundo dropdown com base na escolha do primeiro dropdown
+  getSecondOptions: function(option1) {
+    switch(option1) {
+      case 'DOOR':
+        return [
+          ["open", "OPEN"],
+          ["closed", "CLOSED"]
+        ];
+      case 'KEY':
+        return [
+          ["normal", "NORMAL"]
+        ];
+      case 'MAGNIFYINGGLASS':
+        return [
+          ["normal", "NORMAL"]
+        ]
+      case 'NOTES':
+        return [
+          ["normal", "NORMAL"]
+        ]
+      case 'SAFE':
+        return [
+          ["open", "OPEN"],
+          ["closed", "CLOSED"]
+        ];
+      case 'BACKGROUND':
+        return [
+          ["room", "ROOM"],
+          ["station", "STATION"]
+        ]
+      default:
+        return [
+          ["open", "OPEN"],
+          ["closed", "CLOSED"]
+        ];
+    }
+  }
+};
+
 
 Blockly.Blocks['story'] = {
   init: function() {
@@ -70,8 +216,8 @@ Blockly.Blocks['story'] = {
         .appendField(new Blockly.FieldTextInput(""), "STORY")
         .appendField("\"");
     this.setInputsInline(false);
-    this.setPreviousStatement(true, null);
-    this.setNextStatement(true, null);
+    this.setPreviousStatement(true, 'story');
+    this.setNextStatement(true, 'story');
     this.setColour('%{BKY_UTILS}');
  this.setTooltip("");
  this.setHelpUrl("");
@@ -219,10 +365,10 @@ Blockly.Blocks['view'] = {
         ['NO', 'NO'],
         ['ADVANCED', 'ADVANCED']
       ], this.onHitboxChange.bind(this)), 'HITBOX_TYPE');  // Associa a função de mudança
-    this.appendValueInput('IMAGE')
+    this.appendValueInput('SOURCE')
       .setAlign(Blockly.inputs.Align.CENTRE)
-      .setCheck('url')
-      .appendField('IMAGE:');
+      .setCheck(['url', 'Array'])
+      .appendField('SOURCE:');
     this.appendValueInput('POSITION')
       .setAlign(Blockly.inputs.Align.CENTRE)
       .setCheck('point')
@@ -257,7 +403,7 @@ Blockly.Blocks['view'] = {
       this.appendStatementInput('ADVANCED_HITBOX')
         .setCheck('hitbox');
 
-      this.moveInputBefore('ADVANCED_HITBOX', 'IMAGE');
+      this.moveInputBefore('ADVANCED_HITBOX', 'SOURCES');
       this.moveInputBefore('ADVANCED_HITBOX_LABEL', 'ADVANCED_HITBOX');
     }
 
@@ -266,6 +412,104 @@ Blockly.Blocks['view'] = {
   }
 };
 
+Blockly.Blocks['view_animated'] = {
+  init: function() {
+    this.appendDummyInput('ID')
+      .setAlign(Blockly.inputs.Align.CENTRE)
+      .appendField('VIEW ANIMATED')
+      .appendField(new Blockly.FieldTextInput('VIEW'), 'ID');
+    this.appendDummyInput('HITBOX')
+    .setAlign(Blockly.inputs.Align.CENTRE)
+    .appendField('HITBOX:')
+    .appendField(new Blockly.FieldDropdown([
+        ['DEFAULT', 'DEFAULT'],
+        ['NO', 'NO'],
+        ['ADVANCED', 'ADVANCED']
+      ], this.onHitboxChange.bind(this)), 'HITBOX_TYPE');  // Associa a função de mudança
+    this.appendStatementInput('SOURCES')
+      .setAlign(Blockly.inputs.Align.CENTRE)
+      .setCheck(['url', 'Array'])
+      .appendField('SOURCES:');
+    this.appendValueInput('POSITION')
+      .setAlign(Blockly.inputs.Align.CENTRE)
+      .setCheck('point')
+      .appendField('POSITION:');
+    this.appendValueInput('SIZE')
+      .setAlign(Blockly.inputs.Align.CENTRE)
+      .setCheck('point')
+      .appendField('SIZE:');
+    this.appendDummyInput('AUXS')
+      .appendField('TIME_SPRITE:')
+      .appendField(new Blockly.FieldNumber(0, 0), 'TIME_SPRITE:')
+      .appendField('REPETITIONS')
+      .appendField(new Blockly.FieldNumber(0, 0), 'REPETITIONS');
+    this.setPreviousStatement(true, 'view');
+    this.setNextStatement(true, 'view');
+    this.setTooltip('');
+    this.setHelpUrl('');
+    this.setColour('%{BKY_VIEWS}');
+  },
+
+  onHitboxChange: function(newValue) {
+    this.updateAdvancedHitbox(newValue);
+  },
+
+  updateAdvancedHitbox: function(option) {
+    // Remove o campo de advanced hitbox, se existir
+    if (this.getInput('ADVANCED_HITBOX')) {
+      this.removeInput('ADVANCED_HITBOX');
+      this.removeInput('ADVANCED_HITBOX_LABEL');
+    }
+
+    // Adiciona o campo se a opção for "ADVANCED"
+    if (option === 'ADVANCED') {
+      this.appendDummyInput('ADVANCED_HITBOX_LABEL')
+        .setAlign(Blockly.inputs.Align.CENTRE)
+        .appendField('ADVANCED HITBOX:');
+      this.appendStatementInput('ADVANCED_HITBOX')
+        .setCheck('hitbox');
+
+      this.moveInputBefore('ADVANCED_HITBOX', 'SOURCES');
+      this.moveInputBefore('ADVANCED_HITBOX_LABEL', 'ADVANCED_HITBOX');
+    }
+
+    // Atualiza o layout do bloco
+    this.render();
+  }
+};
+
+Blockly.Blocks['view_animated2'] = {
+  init: function() {
+    this.appendDummyInput('ID')
+      .setAlign(Blockly.inputs.Align.CENTRE)
+      .appendField('VIEW ANIMATED')
+      .appendField(new Blockly.FieldTextInput('VIEW'), 'ID');
+    this.appendStatementInput('SOURCES')
+      .setAlign(Blockly.inputs.Align.CENTRE)
+      .setCheck(['url', 'Array'])
+      .appendField('SOURCES:');
+    this.appendValueInput('POSITION')
+      .setAlign(Blockly.inputs.Align.CENTRE)
+      .setCheck('point')
+      .appendField('POSITION:');
+    this.appendValueInput('SIZE')
+      .setAlign(Blockly.inputs.Align.CENTRE)
+      .setCheck('point')
+      .appendField('SIZE:');
+    this.appendDummyInput('AUXS')
+      .appendField('TIME_SPRITE:')
+      .appendField(new Blockly.FieldNumber(0, 0), 'TIME_SPRITE:')
+      .appendField('REPETITIONS')
+      .appendField(new Blockly.FieldNumber(0, 0), 'REPETITIONS');
+    this.setInputsInline(false)
+    this.setOutput(true, 'view');
+    this.setTooltip('');
+    this.setHelpUrl('');
+    this.setColour('%{BKY_VIEWS}');
+  }
+};
+
+
 
 Blockly.Blocks['view2'] = {
   init: function() {
@@ -273,10 +517,10 @@ Blockly.Blocks['view2'] = {
       .setAlign(Blockly.inputs.Align.CENTRE)
       .appendField("VIEW")
       .appendField(new Blockly.FieldTextInput("VIEW"), "ID");
-    this.appendValueInput("IMAGE")
+    this.appendValueInput("SOURCE")
         .setCheck("url")
         .setAlign(Blockly.inputs.Align.RIGHT)
-        .appendField("IMAGE:");
+        .appendField("SOURCES:");
     this.appendValueInput("POSITION")
         .setCheck("point")
         .setAlign(Blockly.inputs.Align.RIGHT)
@@ -730,70 +974,6 @@ this.setHelpUrl("");
 }
 };
 
-Blockly.Blocks['image'] = {
-    init: function() {
-      this.appendDummyInput()
-          .appendField("IMAGE")
-          .appendField(new Blockly.FieldDropdown([
-            ["door", "DOOR"],
-            ["safe", "SAFE"],
-            ["key", "KEY"],
-            ['magnifyingglass','MAGNIFYINGGLASS'],
-            ['notes','NOTES'],
-            ['background','BACKGROUND'],
-
-          ], this.updateOptions.bind(this)), 'OPCAO1')
-          .appendField(new Blockly.FieldDropdown(this.getSecondOptions.bind(this)), 'OPCAO2');
-      this.setColour('%{BKY_UTILS}');
-      this.setOutput(true, null);
-      this.setTooltip('');
-      this.setHelpUrl('');
-    },
-    // Função para atualizar as opções do segundo dropdown
-    updateOptions: function(newValue) {
-      const opcoes2 = this.getField('OPCAO2');
-      opcoes2.menuGenerator_ = this.getSecondOptions(newValue);
-      opcoes2.setValue(opcoes2.menuGenerator_[0][1]); // Define o valor padrão para a primeira opção
-    },
-    // Função para obter as opções do segundo dropdown com base na escolha do primeiro dropdown
-    getSecondOptions: function(option1) {
-      switch(option1) {
-        case 'DOOR':
-          return [
-            ["open", "OPEN"],
-            ["closed", "CLOSED"]
-          ];
-        case 'KEY':
-          return [
-            ["normal", "NORMAL"]
-          ];
-        case 'MAGNIFYINGGLASS':
-          return [
-            ["normal", "NORMAL"]
-          ]
-        case 'NOTES':
-          return [
-            ["normal", "NORMAL"]
-          ]
-        case 'SAFE':
-          return [
-            ["open", "OPEN"],
-            ["closed", "CLOSED"]
-          ];
-        case 'BACKGROUND':
-          return [
-            ["room", "ROOM"],
-            ["station", "STATION"]
-          ]
-        default:
-          return [
-            ["open", "OPEN"],
-            ["closed", "CLOSED"]
-          ];
-      }
-    }
-  };
-
 //UTILS
 
 Blockly.Blocks['turn'] = {
@@ -1064,8 +1244,8 @@ Blockly.Blocks['draw_circle'] = {
       .appendField(new Blockly.FieldNumber(100), 'X')
       .appendField('y:')
       .appendField(new Blockly.FieldNumber(100), 'Y')
-      .appendField('d:')
-      .appendField(new Blockly.FieldNumber(100), 'D');
+      .appendField('radius:')
+      .appendField(new Blockly.FieldNumber(100), 'RADIUS');
     this.setPreviousStatement(true, 'draw');
     this.setNextStatement(true, 'draw');
     this.setTooltip('');
@@ -1207,6 +1387,23 @@ Blockly.Blocks['view_draw'] = {
 
     // Atualiza o layout do bloco
     this.render();
+  }
+};
+
+Blockly.Blocks['view_draw2'] = {
+  init: function() {
+    this.appendDummyInput('NAME')
+      .appendField('VIEW SKETCH')
+      .appendField(new Blockly.FieldTextInput('SKETCH'), 'ID');
+    this.appendDummyInput('DRAWS_TITLE')
+      .setAlign(Blockly.inputs.Align.CENTRE)
+      .appendField('DRAWS:')
+    this.appendStatementInput('DRAWS')
+      .setCheck('draw');
+    this.setOutput(true, 'view');
+    this.setTooltip('');
+    this.setHelpUrl('');
+    this.setColour('%{BKY_VIEWS}');
   }
 };
 
@@ -1429,8 +1626,8 @@ Blockly.Blocks['hitbox_circle'] = {
       .appendField(new Blockly.FieldNumber(100), 'X')
       .appendField('y:')
       .appendField(new Blockly.FieldNumber(100), 'Y')
-      .appendField('d:')
-      .appendField(new Blockly.FieldNumber(100), 'D');
+      .appendField('radius:')
+      .appendField(new Blockly.FieldNumber(100), 'RADIUS');
     this.setPreviousStatement(true, 'hitbox');
     this.setNextStatement(true, 'hitbox');
     this.setTooltip('');

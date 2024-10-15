@@ -25,9 +25,35 @@ import { jsPDF } from 'jspdf';
 import { View, ViewSketch } from './components/model/view';
 import { updateView,updateViewSketch, updateHitbox } from './components/updateBlocks';
 
+import { useParams } from 'react-router-dom';
 
 
 function EscapeRoomEditor() {
+
+  function fromUrlSafeBase64(str) {
+    let base64 = str
+        .replace(/-/g, '+')
+        .replace(/_/g, '/');
+    // Padding pode ser necessário dependendo do comprimento do string
+    while (base64.length % 4) {
+        base64 += '=';
+    }
+    return atob(base64);
+  }
+
+  var initial;
+  const { data } = useParams();
+  if (data !== undefined){
+    try{
+      initial = fromUrlSafeBase64(data)
+    }
+    catch{
+      initial = ConfigFiles.INITIAL
+    }
+  }
+  else{
+    initial = ConfigFiles.INITIAL
+  }
 
   const [erCode, setEscapeRoomCode] = useState(null);
   const [er, setEscapeRoom] = useState(null);
@@ -735,15 +761,15 @@ function EscapeRoomEditor() {
           <div className="dropdown">
             <button className="dropbtn">Export <i className="fa fa-caret-down"></i></button>
             <div className="dropdown-content">
-              <a href="#" onClick={exportBlocksXML}>Export XML</a>
-              <a href="#" onClick={exportBlocksJSON}>Export JSON</a>
-              <a href="#" onClick={exportBlocksPDF}>Export PDF</a>
+              <a onClick={exportBlocksXML}>Export XML</a>
+              <a onClick={exportBlocksJSON}>Export JSON</a>
+              <a onClick={exportBlocksPDF}>Export PDF</a>
             </div>
           </div> 
           <div className="dropdown">
             <button className="dropbtn">Import <i className="fa fa-caret-down"></i></button>
             <div className="dropdown-content">
-              <a href="#" onClick={importXML}>Import XML</a>
+              <a onClick={importXML}>Import XML</a>
               <input type="file" accept=".xml" ref={inputFileXML} onChange={importBlocksXML} style={{display: 'none'}}/>
             </div>
           </div> 
@@ -755,7 +781,7 @@ function EscapeRoomEditor() {
           <BlocklyEditor
             className={'editor'}
             workspaceConfiguration={workspaceConfiguration}
-            initial={ConfigFiles.INITIAL}
+            initial={initial}
             onInject={onInject}
             onChange={onChange}
             onDispose={onDispose}

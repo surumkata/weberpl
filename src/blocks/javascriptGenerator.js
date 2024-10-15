@@ -28,23 +28,29 @@ javascriptGenerator.forBlock['point'] = function(block, generator) {
 
 javascriptGenerator.forBlock['url'] = function(block, generator) {
   var text_url = block.getFieldValue('URL');
-  var code = {
-              "src_type" : "URL",
-              "src" : text_url
-             }
-  return [JSON.stringify(code,null,2), javascriptGenerator.ORDER_NONE];
+  var code = ["URL",text_url]
+  return JSON.stringify(code,null,2);
 };
 
 javascriptGenerator.forBlock['image'] = function(block, generator) {
   var opcao1 = block.getFieldValue('OPCAO1');
   var opcao2 = block.getFieldValue('OPCAO2');
-  var code = {
-              "src_type" : "LIBRARY",
-              "src" : opcao1 + "_" + opcao2
-              };
+  var code = ["LIB",opcao1 + "_" + opcao2]
+  return JSON.stringify(code,null,2);
+};
+
+javascriptGenerator.forBlock['url2'] = function(block, generator) {
+  var text_url = block.getFieldValue('URL');
+  var code = ["URL",text_url]
   return [JSON.stringify(code,null,2), javascriptGenerator.ORDER_NONE];
 };
 
+javascriptGenerator.forBlock['image2'] = function(block, generator) {
+  var opcao1 = block.getFieldValue('OPCAO1');
+  var opcao2 = block.getFieldValue('OPCAO2');
+  var code = ["LIB",opcao1 + "_" + opcao2]
+  return [JSON.stringify(code,null,2), javascriptGenerator.ORDER_NONE];
+};
 
 javascriptGenerator.forBlock['story'] = function(block, generator) {
   var text_story = block.getFieldValue('STORY');
@@ -245,13 +251,10 @@ javascriptGenerator.forBlock['sound'] = function(block,generator) {
 
 javascriptGenerator.forBlock['view'] = function(block, generator) {
   var text_id = block.getFieldValue('ID');
-  var value_image = generator.valueToCode(block, 'IMAGE', Order.ATOMIC);
+  var sourceString = generator.valueToCode(block, 'SOURCE', Order.ATOMIC);
   var posString = generator.valueToCode(block, 'POSITION', Order.ATOMIC);
   var sizeString = generator.valueToCode(block, 'SIZE', Order.ATOMIC);
   var hitboxType = block.getFieldValue('HITBOX_TYPE');
-
-  let src_type = 'url';
-  let src = '';
 
   var hitboxString;
   if (hitboxType === "ADVANCED"){
@@ -283,15 +286,14 @@ javascriptGenerator.forBlock['view'] = function(block, generator) {
   else {
     posString = 'null'
   }
-  if (value_image) {
-    value_image = value_image.slice(1, -1);
-    value_image = JSON.parse(value_image);
-    src = value_image['src']
-    src_type = value_image['src_type']
+  
+  if (sourceString) {
+    sourceString = sourceString.slice(1, -1);
   }
   else{
-    src = ""
+    sourceString = "[]"
   }
+  var sourceObject = JSON.parse(sourceString);
   // Converter a string para objeto JSON
   var sizeObject = JSON.parse(sizeString);
   var posObject = JSON.parse(posString);
@@ -300,8 +302,7 @@ javascriptGenerator.forBlock['view'] = function(block, generator) {
   var code = {
     "id" : text_id,
     "type" : "VIEW_IMAGE",
-    "src" : src,
-    "src_type" : src_type,
+    "sources" : [sourceObject],
     "position" : posObject,
     "size" : sizeObject,
     "turn" : {"x" : false, "y" : false},
@@ -313,14 +314,32 @@ javascriptGenerator.forBlock['view'] = function(block, generator) {
 };
 
 
-javascriptGenerator.forBlock['view2'] = function(block, generator) {
+javascriptGenerator.forBlock['view_animated'] = function(block, generator) {
   var text_id = block.getFieldValue('ID');
-  var value_image = generator.valueToCode(block, 'IMAGE', Order.ATOMIC);
+  var sourceString = generator.statementToCode(block, 'SOURCES');
   var posString = generator.valueToCode(block, 'POSITION', Order.ATOMIC);
   var sizeString = generator.valueToCode(block, 'SIZE', Order.ATOMIC);
+  var hitboxType = block.getFieldValue('HITBOX_TYPE');
+  const number_time_sprite = block.getFieldValue('TIME_SPRITE:');
+  const number_repeates = block.getFieldValue('REPETITIONS');
 
-  var src = '';
-  var src_type = 'url';
+  var hitboxString;
+  if (hitboxType === "ADVANCED"){
+    hitboxString = generator.statementToCode(block, 'ADVANCED_HITBOX');
+    if (hitboxString){
+      hitboxString = hitboxString.replaceAll(/}\s*{/g, "},{");
+      hitboxString = "[" + hitboxString + "]"
+    }
+    else {
+      hitboxString = "[]"
+    }
+  }
+  else {
+    hitboxString = "[]"
+  }
+
+  var hitboxObject = JSON.parse(hitboxString);
+
 
   if (sizeString) {
     sizeString = sizeString.slice(1, -1);
@@ -334,15 +353,111 @@ javascriptGenerator.forBlock['view2'] = function(block, generator) {
   else {
     posString = 'null'
   }
-  if (value_image) {
-    value_image = value_image.slice(1, -1);
-    value_image = JSON.parse(value_image);
-    src = value_image['src']
-    src_type = value_image['src_type']
+  
+  if (sourceString) {
+    sourceString = sourceString.replaceAll(/\]\s*\[/g, "],[");
+    sourceString = "[" + sourceString + "]"
   }
   else{
-    src = ""
+    sourceString = "[]"
   }
+
+  var sourceObject = JSON.parse(sourceString);
+  // Converter a string para objeto JSON
+  var sizeObject = JSON.parse(sizeString);
+  var posObject = JSON.parse(posString);
+
+  
+  var code = {
+    "id" : text_id,
+    "type" : "VIEW_IMAGE",
+    "sources" : sourceObject,
+    "position" : posObject,
+    "size" : sizeObject,
+    "turn" : {"x" : false, "y" : false},
+    "hitbox_type" : hitboxType,
+    "hitboxes" : hitboxObject,
+    "repetitions" : number_repeates,
+    "time_sprite" : number_time_sprite
+  }
+
+  return JSON.stringify(code, null, 2); // Retornar o JSON como string formatada
+};
+
+javascriptGenerator.forBlock['view_animated2'] = function(block, generator) {
+  var text_id = block.getFieldValue('ID');
+  var sourceString = generator.statementToCode(block, 'SOURCES');
+  var posString = generator.valueToCode(block, 'POSITION', Order.ATOMIC);
+  var sizeString = generator.valueToCode(block, 'SIZE', Order.ATOMIC);
+  const number_time_sprite = block.getFieldValue('TIME_SPRITE:');
+  const number_repeates = block.getFieldValue('REPETITIONS');
+
+  if (sizeString) {
+    sizeString = sizeString.slice(1, -1);
+  }
+  else {
+    sizeString = 'null'
+  }
+  if (posString) {
+    posString = posString.slice(1, -1);
+  }
+  else {
+    posString = 'null'
+  }
+  
+  if (sourceString) {
+    sourceString = sourceString.replaceAll(/\]\s*\[/g, "],[");
+    sourceString = "[" + sourceString + "]"
+  }
+  else{
+    sourceString = "[]"
+  }
+
+  var sourceObject = JSON.parse(sourceString);
+  // Converter a string para objeto JSON
+  var sizeObject = JSON.parse(sizeString);
+  var posObject = JSON.parse(posString);
+
+  
+  var code = {
+    "id" : text_id,
+    "type" : "VIEW_IMAGE",
+    "sources" : sourceObject,
+    "position" : posObject,
+    "size" : sizeObject,
+    "turn" : {"x" : false, "y" : false},
+    "repetitions" : number_repeates,
+    "time_sprite" : number_time_sprite
+  }
+
+  return [JSON.stringify(code, null, 2), javascriptGenerator.ORDER_NONE]; // Retornar o JSON como string formatada
+};
+
+javascriptGenerator.forBlock['view2'] = function(block, generator) {
+  var text_id = block.getFieldValue('ID');
+  var sourceString = generator.statementToCode(block, 'SOURCES');
+  var posString = generator.valueToCode(block, 'POSITION', Order.ATOMIC);
+  var sizeString = generator.valueToCode(block, 'SIZE', Order.ATOMIC);
+
+  if (sizeString) {
+    sizeString = sizeString.slice(1, -1);
+  }
+  else {
+    sizeString = 'null'
+  }
+  if (posString) {
+    posString = posString.slice(1, -1);
+  }
+  else {
+    posString = 'null'
+  }
+  if (sourceString) {
+    sourceString = sourceString.slice(1, -1);
+  }
+  else{
+    sourceString = "[]"
+  }
+  var sourceObject = JSON.parse(sourceString);
 
   var sizeObject = JSON.parse(sizeString);
   var posObject = JSON.parse(posString);
@@ -350,8 +465,7 @@ javascriptGenerator.forBlock['view2'] = function(block, generator) {
   var code = {
     "id" : text_id,
     "type" : "VIEW_IMAGE",
-    "src" : src,
-    "src_type" : src_type,
+    "sources" : [sourceObject],
     "position" : posObject,
     "size" : sizeObject,
     "turn" : {"x" : false, "y" : false}
@@ -359,6 +473,74 @@ javascriptGenerator.forBlock['view2'] = function(block, generator) {
 
   return [JSON.stringify(code, null, 2), javascriptGenerator.ORDER_NONE]; // Retornar o JSON como string formatada
 };
+
+javascriptGenerator.forBlock['view_draw'] = function(block,generator) {
+  const text_id = block.getFieldValue('ID');
+
+  var stringDraws = generator.statementToCode(block, 'DRAWS');
+  var hitboxType = block.getFieldValue('HITBOX_TYPE');
+
+  var hitboxString;
+  if (hitboxType === "ADVANCED"){
+    hitboxString = generator.statementToCode(block, 'ADVANCED_HITBOX');
+    if (hitboxString){
+      hitboxString = hitboxString.replaceAll(/}\s*{/g, "},{");
+      hitboxString = "[" + hitboxString + "]"
+    }
+    else {
+      hitboxString = "[]"
+    }
+  }
+  else {
+    hitboxString = "[]"
+  }
+
+  var hitboxObject = JSON.parse(hitboxString);
+
+  if (stringDraws){
+    stringDraws = stringDraws.replaceAll(/}\s*{/g, "},{");
+    stringDraws = "[" + stringDraws + "]"
+  }
+  else {
+    stringDraws = "[]"
+  }
+
+  var draws = JSON.parse(stringDraws);
+
+  var code = {
+    "id" : text_id,
+    "type" : "VIEW_SKETCH",
+    "draws" : draws,
+    "hitbox_type" : hitboxType,
+    "hitboxes" : hitboxObject
+  }
+
+  return JSON.stringify(code, null, 2) 
+}
+
+javascriptGenerator.forBlock['view_draw2'] = function(block,generator) {
+  const text_id = block.getFieldValue('ID');
+
+  var stringDraws = generator.statementToCode(block, 'DRAWS');
+
+  if (stringDraws){
+    stringDraws = stringDraws.replaceAll(/}\s*{/g, "},{");
+    stringDraws = "[" + stringDraws + "]"
+  }
+  else {
+    stringDraws = "[]"
+  }
+
+  var draws = JSON.parse(stringDraws);
+
+  var code = {
+    "id" : text_id,
+    "type" : "VIEW_SKETCH",
+    "draws" : draws
+  }
+
+  return [JSON.stringify(code, null, 2), javascriptGenerator.ORDER_NONE]; // Retornar o JSON como string formatada
+}
 
 
 //Logic blocks
@@ -1116,13 +1298,13 @@ javascriptGenerator.forBlock['draw_circle'] = function(block, generator) {
 
   const x = block.getFieldValue('X');
   const y = block.getFieldValue('Y');
-  const d = block.getFieldValue('D');
+  const radius = block.getFieldValue('RADIUS');
 
   var code = {
     "id" : text_id,
     "type" : "CIRCLE",
     "position" : {"x" : x, "y" : y},
-    "radius" : d / 2
+    "radius" : radius
   }
 
   return JSON.stringify(code, null, 2); // Retornar o JSON como string formatada
@@ -1144,50 +1326,6 @@ javascriptGenerator.forBlock['draw_ellipse'] = function(block, generator) {
   }
 
   return JSON.stringify(code, null, 2); // Retornar o JSON como string formatada
-}
-
-javascriptGenerator.forBlock['view_draw'] = function(block,generator) {
-  const text_id = block.getFieldValue('ID');
-
-  var stringDraws = generator.statementToCode(block, 'DRAWS');
-  var hitboxType = block.getFieldValue('HITBOX_TYPE');
-
-  var hitboxString;
-  if (hitboxType === "ADVANCED"){
-    hitboxString = generator.statementToCode(block, 'ADVANCED_HITBOX');
-    if (hitboxString){
-      hitboxString = hitboxString.replaceAll(/}\s*{/g, "},{");
-      hitboxString = "[" + hitboxString + "]"
-    }
-    else {
-      hitboxString = "[]"
-    }
-  }
-  else {
-    hitboxString = "[]"
-  }
-
-  var hitboxObject = JSON.parse(hitboxString);
-
-  if (stringDraws){
-    stringDraws = stringDraws.replaceAll(/}\s*{/g, "},{");
-    stringDraws = "[" + stringDraws + "]"
-  }
-  else {
-    stringDraws = "[]"
-  }
-
-  var draws = JSON.parse(stringDraws);
-
-  var code = {
-    "id" : text_id,
-    "type" : "VIEW_SKETCH",
-    "draws" : draws,
-    "hitbox_type" : hitboxType,
-    "hitboxes" : hitboxObject
-  }
-
-  return JSON.stringify(code, null, 2) 
 }
 
 javascriptGenerator.forBlock['begin_clip'] = function(block,generator) {
@@ -1411,13 +1549,13 @@ javascriptGenerator.forBlock['hitbox_circle'] = function(block, generator) {
 
   const x = block.getFieldValue('X');
   const y = block.getFieldValue('Y');
-  const d = block.getFieldValue('D');
+  const radius = block.getFieldValue('RADIUS');
 
   var code = {
     "id" : text_id,
     "type" : "CIRCLE",
     "position" : {"x" : x, "y" : y},
-    "radius" : d / 2
+    "radius" : radius
   }
 
   return JSON.stringify(code, null, 2); // Retornar o JSON como string formatada

@@ -17,8 +17,13 @@ const validateView = (view,reasons) => {
       reasons.push("View "+view.id+" does not have a size");
     }
     //Verificar se view tem source
-    if (!view.src) {
+    if (!view.sources) {
       reasons.push("View "+view.id+" does not have a source");
+    }
+    else{
+      if(view.sources.length===0){
+        reasons.push("View "+view.id+" does not have a source");
+      }
     }
   }
   else if (view.type == 'VIEW_SKETCH'){

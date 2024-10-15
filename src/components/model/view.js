@@ -9,7 +9,6 @@ export class View {
     this.size = size;
     this.srcImages = srcImages;
     this.timeSprite = timeSprite;
-    this.repeate = repeate;
     this.images = [];
     this.currentSprite = 0;
     this.currentTimeSprite = 0;
@@ -160,6 +159,10 @@ export class View {
       this.drawHitboxes(p5);
       p5.pop();
     }
+
+    if (this.repeate > 0){
+      this.changeSprite()
+    } 
   }
 
   mouseMoved(mX,mY) {
@@ -1809,8 +1812,8 @@ export class Circle extends DrawP5 {
     super(id);
     this.x = x;
     this.y = y;
-    this.w = r;
-    this.h = r;
+    this.w = r*2;
+    this.h = r*2;
     this.hover = false;
     this.pressed = false;
     this.typePressed = null;
@@ -1962,12 +1965,12 @@ export class Circle extends DrawP5 {
 }
 
 export class Ellipse extends DrawP5 {
-  constructor(id,x,y,w,h){
+  constructor(id,x,y,rw,rh){
     super(id);
     this.x = x;
     this.y = y;
-    this.w = w;
-    this.h = h;
+    this.w = rw*2;
+    this.h = rh*2;
     this.hover = false;
     this.pressed = false;
     this.typePressed = null;
