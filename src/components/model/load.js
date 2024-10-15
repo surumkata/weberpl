@@ -212,13 +212,24 @@ function loadHitboxes(view){
     return hitboxes;
 }
 
-
+function loadSource(src_type,src){
+    switch(src_type){
+        case 'URL' :
+            return [src];
+        case 'LIBRARY':
+            console.log(process.env.PUBLIC_URL + '/assets/'+src+'.png')
+            return [process.env.PUBLIC_URL + '/assets/'+src+'.png'];
+        default:
+            break;
+    }
+}
 
 function loadView(p5,view){
     let hitboxes = loadHitboxes(view);
     switch(view.type){
         case "VIEW_IMAGE":
-            let v = new View(p5,view.id,[view.src],new Size(view.size.x,view.size.y), new Position (view.position.x,view.position.y+HEIGHT_INV),0,0,view.turn,hitboxes,view.hitbox_type);
+            let src = loadSource(view.src_type,view.src)
+            let v = new View(p5,view.id,src,new Size(view.size.x,view.size.y), new Position (view.position.x,view.position.y+HEIGHT_INV),0,0,view.turn,hitboxes,view.hitbox_type);
             v.makeHitboxesBBox();
             return v
         case "VIEW_SKETCH":

@@ -20,6 +20,8 @@ const INITIAL =
               </value>
               <value name="IMAGE">
                 <block type="image">
+                    <field name="OPCAO1">BACKGROUND</field>
+                    <field name="OPCAO2">ROOM</field>
                 </block>
               </value>
             </block>
@@ -45,7 +47,8 @@ const INITIAL =
                     </value>
                     <value name="IMAGE">
                       <block type="image">
-                        <field name="IMAGE">door</field>
+                        <field name="OPCAO1">DOOR</field>
+                        <field name="OPCAO2">CLOSED</field>
                       </block>
                     </value>
                   </block>

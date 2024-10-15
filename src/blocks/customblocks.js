@@ -63,19 +63,6 @@ Blockly.Blocks['url'] = {
   }
 };
 
-Blockly.Blocks['image'] = {
-    init: function() {
-      this.appendDummyInput()
-          .appendField("IMAGE")
-          .appendField(new Blockly.FieldDropdown([["room","room"],["safe","cofre"], ["open_safe","open_cofre"], ["door","door"], ["open_door","open_door"], ["key","key"], ["active_key","active_key"], ["note","nota"], ["note_zoom","nota_nova"], ["magnifying_glass","lupa"], ["active_magnifying glass","active_lupa"]]), "IMAGE");
-      this.setInputsInline(false);
-      this.setOutput(true, "url");
-      this.setColour('%{BKY_UTILS}');
-   this.setTooltip("");
-   this.setHelpUrl("");
-    }
-  };
-
 Blockly.Blocks['story'] = {
   init: function() {
     this.appendDummyInput()
@@ -743,14 +730,18 @@ this.setHelpUrl("");
 }
 };
 
-Blockly.Blocks['custom_dropdown_block'] = {
+Blockly.Blocks['image'] = {
     init: function() {
       this.appendDummyInput()
           .appendField("IMAGE")
           .appendField(new Blockly.FieldDropdown([
-            ["porta", "PORTA"],
-            ["chave", "CHAVE"],
-            ["cofre", "COFRE"]
+            ["door", "DOOR"],
+            ["safe", "SAFE"],
+            ["key", "KEY"],
+            ['magnifyingglass','MAGNIFYINGGLASS'],
+            ['notes','NOTES'],
+            ['background','BACKGROUND'],
+
           ], this.updateOptions.bind(this)), 'OPCAO1')
           .appendField(new Blockly.FieldDropdown(this.getSecondOptions.bind(this)), 'OPCAO2');
       this.setColour('%{BKY_UTILS}');
@@ -767,25 +758,37 @@ Blockly.Blocks['custom_dropdown_block'] = {
     // Função para obter as opções do segundo dropdown com base na escolha do primeiro dropdown
     getSecondOptions: function(option1) {
       switch(option1) {
-        case 'PORTA':
+        case 'DOOR':
           return [
-            ["ABERTA", "ABERTA"],
-            ["FECHADA", "FECHADA"]
+            ["open", "OPEN"],
+            ["closed", "CLOSED"]
           ];
-        case 'CHAVE':
+        case 'KEY':
           return [
-            ["NORMAL", "NORMAL"],
-            ["ATIVA", "ATIVA"]
+            ["normal", "NORMAL"]
           ];
-        case 'COFRE':
+        case 'MAGNIFYINGGLASS':
           return [
-            ["ABERTO", "ABERTO"],
-            ["FECHADO", "FECHADO"]
+            ["normal", "NORMAL"]
+          ]
+        case 'NOTES':
+          return [
+            ["normal", "NORMAL"]
+          ]
+        case 'SAFE':
+          return [
+            ["open", "OPEN"],
+            ["closed", "CLOSED"]
           ];
+        case 'BACKGROUND':
+          return [
+            ["room", "ROOM"],
+            ["station", "STATION"]
+          ]
         default:
           return [
-            ["ABERTA", "ABERTA"],
-            ["FECHADA", "FECHADA"]
+            ["open", "OPEN"],
+            ["closed", "CLOSED"]
           ];
       }
     }

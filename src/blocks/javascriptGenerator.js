@@ -28,13 +28,21 @@ javascriptGenerator.forBlock['point'] = function(block, generator) {
 
 javascriptGenerator.forBlock['url'] = function(block, generator) {
   var text_url = block.getFieldValue('URL');
-  return [text_url, javascriptGenerator.ORDER_NONE];
+  var code = {
+              "src_type" : "URL",
+              "src" : text_url
+             }
+  return [JSON.stringify(code,null,2), javascriptGenerator.ORDER_NONE];
 };
 
 javascriptGenerator.forBlock['image'] = function(block, generator) {
-  var dropdown_image = block.getFieldValue('IMAGE');
-  var code = process.env.PUBLIC_URL + '/assets/'+dropdown_image+'.png';
-  return [code, javascriptGenerator.ORDER_NONE];
+  var opcao1 = block.getFieldValue('OPCAO1');
+  var opcao2 = block.getFieldValue('OPCAO2');
+  var code = {
+              "src_type" : "LIBRARY",
+              "src" : opcao1 + "_" + opcao2
+              };
+  return [JSON.stringify(code,null,2), javascriptGenerator.ORDER_NONE];
 };
 
 
@@ -242,6 +250,9 @@ javascriptGenerator.forBlock['view'] = function(block, generator) {
   var sizeString = generator.valueToCode(block, 'SIZE', Order.ATOMIC);
   var hitboxType = block.getFieldValue('HITBOX_TYPE');
 
+  let src_type = 'url';
+  let src = '';
+
   var hitboxString;
   if (hitboxType === "ADVANCED"){
     hitboxString = generator.statementToCode(block, 'ADVANCED_HITBOX');
@@ -273,19 +284,24 @@ javascriptGenerator.forBlock['view'] = function(block, generator) {
     posString = 'null'
   }
   if (value_image) {
-    value_image = value_image.slice(1,-1);
+    value_image = value_image.slice(1, -1);
+    value_image = JSON.parse(value_image);
+    src = value_image['src']
+    src_type = value_image['src_type']
   }
   else{
-    value_image = ""
+    src = ""
   }
   // Converter a string para objeto JSON
   var sizeObject = JSON.parse(sizeString);
   var posObject = JSON.parse(posString);
 
+  
   var code = {
     "id" : text_id,
     "type" : "VIEW_IMAGE",
-    "src" : value_image,
+    "src" : src,
+    "src_type" : src_type,
     "position" : posObject,
     "size" : sizeObject,
     "turn" : {"x" : false, "y" : false},
@@ -303,6 +319,9 @@ javascriptGenerator.forBlock['view2'] = function(block, generator) {
   var posString = generator.valueToCode(block, 'POSITION', Order.ATOMIC);
   var sizeString = generator.valueToCode(block, 'SIZE', Order.ATOMIC);
 
+  var src = '';
+  var src_type = 'url';
+
   if (sizeString) {
     sizeString = sizeString.slice(1, -1);
   }
@@ -316,10 +335,13 @@ javascriptGenerator.forBlock['view2'] = function(block, generator) {
     posString = 'null'
   }
   if (value_image) {
-    value_image = value_image.slice(1,-1);
+    value_image = value_image.slice(1, -1);
+    value_image = JSON.parse(value_image);
+    src = value_image['src']
+    src_type = value_image['src_type']
   }
   else{
-    value_image = ""
+    src = ""
   }
 
   var sizeObject = JSON.parse(sizeString);
@@ -328,7 +350,8 @@ javascriptGenerator.forBlock['view2'] = function(block, generator) {
   var code = {
     "id" : text_id,
     "type" : "VIEW_IMAGE",
-    "src" : value_image,
+    "src" : src,
+    "src_type" : src_type,
     "position" : posObject,
     "size" : sizeObject,
     "turn" : {"x" : false, "y" : false}
