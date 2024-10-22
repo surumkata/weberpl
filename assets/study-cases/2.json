@@ -1,0 +1,359 @@
+{
+   "title": "Indiana Jones",
+   "scenarios": [
+      {
+         "views": [
+            {
+               "sources": [
+                  [
+                     "URL",
+                     "https://i.imgur.com/jN2qEYM.png"
+                  ]
+               ],
+               "type": "VIEW_IMAGE",
+               "hitbox_type": "DEFAULT",
+               "id": "calices"
+            }
+         ],
+         "hitboxes": [
+            {
+               "position": {
+                  "x": 400.0,
+                  "y": 350.0
+               },
+               "size": {
+                  "x": 300.0,
+                  "y": 420.0
+               },
+               "type": "RECT",
+               "id": "calice"
+            }
+         ],
+         "initial_view": "calices",
+         "floor": 720,
+         "ceil": 0,
+         "id": "calices_room"
+      },
+      {
+         "views": [
+            {
+               "sources": [
+                  [
+                     "URL",
+                     "https://i.imgur.com/vvzvn2U.png"
+                  ]
+               ],
+               "type": "VIEW_IMAGE",
+               "hitbox_type": "DEFAULT",
+               "id": "tree_path_image"
+            }
+         ],
+         "hitboxes": [
+            {
+               "position": {
+                  "x": 0.0,
+                  "y": 360.0
+               },
+               "size": {
+                  "x": 400.0,
+                  "y": 300.0
+               },
+               "type": "RECT",
+               "id": "path1"
+            },
+            {
+               "position": {
+                  "x": 480.0,
+                  "y": 300.0
+               },
+               "size": {
+                  "x": 380.0,
+                  "y": 300.0
+               },
+               "type": "RECT",
+               "id": "path2"
+            },
+            {
+               "position": {
+                  "x": 880.0,
+                  "y": 360.0
+               },
+               "size": {
+                  "x": 400.0,
+                  "y": 300.0
+               },
+               "type": "RECT",
+               "id": "path3"
+            }
+         ],
+         "initial_view": "tree_path_image",
+         "floor": 720,
+         "ceil": 0,
+         "id": "choose_path"
+      }
+   ],
+   "events": [
+      {
+         "preconditions": {
+            "var": {
+               "type": "CLICKED_HITBOX",
+               "hitbox": "path1"
+            }
+         },
+         "posconditions": [
+            {
+               "type": "TRANSITION",
+               "transition": "dead_by_snakes"
+            }
+         ],
+         "id": "choose_path1"
+      },
+      {
+         "preconditions": {
+            "var": {
+               "type": "CLICKED_HITBOX",
+               "hitbox": "path2"
+            }
+         },
+         "posconditions": [
+            {
+               "type": "TRANSITION",
+               "transition": "temple_hallaway"
+            }
+         ],
+         "id": "choose_path2"
+      },
+      {
+         "preconditions": {
+            "var": {
+               "type": "CLICKED_HITBOX",
+               "hitbox": "path3"
+            }
+         },
+         "posconditions": [
+            {
+               "type": "TRANSITION",
+               "transition": "dead_by_giantball"
+            }
+         ],
+         "id": "choose_path3"
+      },
+      {
+         "preconditions": {
+            "var": {
+               "type": "CLICKED_NOT_HITBOX",
+               "hitbox": "calice"
+            }
+         },
+         "posconditions": [
+            {
+               "type": "TRANSITION",
+               "transition": "dead_by_calice"
+            }
+         ],
+         "id": "wrong_calice"
+      },
+      {
+         "preconditions": {
+            "var": {
+               "type": "CLICKED_HITBOX",
+               "hitbox": "calice"
+            }
+         },
+         "posconditions": [
+            {
+               "type": "END_GAME",
+               "message": "'You choose wisely!' the knight says. As you drink from the humble chalice, you feel a surge of energy."
+            }
+         ],
+         "id": "right_calice"
+      }
+   ],
+   "transitions": [
+      {
+         "view": {
+            "id": "temple_entrance",
+            "sources": [
+               [
+                  "URL",
+                  "https://i.imgur.com/F39MMol.png"
+               ]
+            ],
+            "type": "VIEW_IMAGE",
+            "hitbox_type": "DEFAULT"
+         },
+         "music": {
+            "src": "/mnt/c/Users/35191/Desktop/MyEscapeRoom/erpl-examples/study_cases/2/soundtrack.mp3",
+            "loop": false,
+            "id": "adventure_music"
+         },
+         "story": [
+            "You found the entrance of an ancient temple hidden deep in the jungle.",
+            "Legend says that within lies the sacred artifact, but beware the temple is filled with deadly traps.",
+            "Only the brave and wise may claim the treasure."
+         ],
+         "next": "three_path",
+         "next_type": "TRANSITION",
+         "id": "temple"
+      },
+      {
+         "view": {
+            "id": "hallaway",
+            "sources": [
+               [
+                  "URL",
+                  "https://i.imgur.com/foXjF80.png"
+               ]
+            ],
+            "type": "VIEW_IMAGE",
+            "hitbox_type": "DEFAULT"
+         },
+         "music": {
+            "src": "/mnt/c/Users/35191/Desktop/MyEscapeRoom/erpl-examples/study_cases/2/soundtrack.mp3",
+            "loop": false,
+            "id": "adventure_music"
+         },
+         "story": [
+            "You chose the right path and continued to enter deeper and deeper into the temple.",
+            "The narrow hallway is dimly lit, and the air grows heavier with each step.",
+            "Ahead lies the final challenge..."
+         ],
+         "next": "knight",
+         "next_type": "TRANSITION",
+         "id": "temple_hallaway"
+      },
+      {
+         "view": {
+            "id": "knight_image",
+            "sources": [
+               [
+                  "URL",
+                  "https://i.imgur.com/uyjlxlM.png"
+               ]
+            ],
+            "type": "VIEW_IMAGE",
+            "hitbox_type": "DEFAULT"
+         },
+         "music": {
+            "src": "/mnt/c/Users/35191/Desktop/MyEscapeRoom/erpl-examples/study_cases/2/soundtrack.mp3",
+            "loop": false,
+            "id": "adventure_music"
+         },
+         "story": [
+            "As you enter the chamber, you are greeted by a figure clad in ancient armor.",
+            "'I have been waiting for you,' the knight says.",
+            "'Before you are three chalices. One brings eternal life, but the others will seal your fate.",
+            "The choice is yours.'"
+         ],
+         "next": "calices_room",
+         "next_type": "SCENARIO",
+         "id": "knight"
+      },
+      {
+         "view": {
+            "sources": [
+               [
+                  "URL",
+                  "https://i.imgur.com/vvzvn2U.png"
+               ]
+            ],
+            "type": "VIEW_IMAGE",
+            "hitbox_type": "DEFAULT",
+            "id": "tree_path_image"
+         },
+         "music": {
+            "src": "/mnt/c/Users/35191/Desktop/MyEscapeRoom/erpl-examples/study_cases/2/soundtrack.mp3",
+            "loop": false,
+            "id": "adventure_music"
+         },
+         "story": [
+            "Before you are three paths, each leading deeper into the temple.",
+            "One path will take you safely to the treasure, but the others lead to certain death.",
+            "Choose wisely: 'The true path lies at the heart, where balance prevails.'"
+         ],
+         "next": "choose_path",
+         "next_type": "SCENARIO",
+         "id": "three_path"
+      },
+      {
+         "view": {
+            "id": "dead",
+            "sources": [
+               [
+                  "URL",
+                  "https://i.imgur.com/6NfF4MJ.png"
+               ]
+            ],
+            "type": "VIEW_IMAGE",
+            "hitbox_type": "DEFAULT"
+         },
+         "music": {
+            "src": "/mnt/c/Users/35191/Desktop/MyEscapeRoom/erpl-examples/study_cases/2/soundtrack.mp3",
+            "loop": false,
+            "id": "adventure_music"
+         },
+         "story": [
+            "You reach for a beautiful, ornate chalice.",
+            "As you drink, your vision blurs and you feel your strength fading.",
+            "The knight says: 'You have chosen poorly.'"
+         ],
+         "next": "temple",
+         "next_type": "TRANSITION",
+         "id": "dead_by_calice"
+      },
+      {
+         "view": {
+            "id": "giantball",
+            "sources": [
+               [
+                  "URL",
+                  "https://i.imgur.com/nRsi3X0.png"
+               ]
+            ],
+            "type": "VIEW_IMAGE",
+            "hitbox_type": "DEFAULT"
+         },
+         "music": {
+            "src": "/mnt/c/Users/35191/Desktop/MyEscapeRoom/erpl-examples/study_cases/2/soundtrack.mp3",
+            "loop": false,
+            "id": "adventure_music"
+         },
+         "story": [
+            "As you step onto the wrong path, the ground shakes.",
+            "A massive stone ball rolls towards you with terrifying speed.",
+            "There's no escape. Your adventure ends here, crushed by the temple's ancient trap."
+         ],
+         "next": "temple",
+         "next_type": "TRANSITION",
+         "id": "dead_by_giantball"
+      },
+      {
+         "view": {
+            "id": "snakes",
+            "sources": [
+               [
+                  "URL",
+                  "https://i.imgur.com/IvsDY75.png"
+               ]
+            ],
+            "type": "VIEW_IMAGE",
+            "hitbox_type": "DEFAULT"
+         },
+         "music": {
+            "src": "/mnt/c/Users/35191/Desktop/MyEscapeRoom/erpl-examples/study_cases/2/soundtrack.mp3",
+            "loop": false,
+            "id": "adventure_music"
+         },
+         "story": [
+            "The ground gives way beneath you, and you fall into a pit filled with snakes.",
+            "Thousands of them slither around, hissing and striking.",
+            "There's no way out, and your fear overwhelms you. 'Why did it have to be snakes?'"
+         ],
+         "next": "temple",
+         "next_type": "TRANSITION",
+         "id": "dead_by_snakes"
+      }
+   ],
+   "start": "temple",
+   "start_type": "TRANSITION"
+}
