@@ -12,6 +12,15 @@ function toUrlSafeBase64(str) {
 
 function HomePage() {
 
+
+  
+      const generate = (example) => {
+          let data = toUrlSafeBase64(example);
+          if (data !== "null" || data !== null) {
+            window.open(`#/editor/${data}`, "_blank", "noreferrer");
+          }
+      };
+
     // Função para gerar o link de jogo para um study-case específico
     const playStudyCase = (jsonPath) => {
         // Realiza fetch do arquivo JSON e, em seguida, codifica-o e abre o link

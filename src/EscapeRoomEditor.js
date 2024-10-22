@@ -270,11 +270,18 @@ function EscapeRoomEditor() {
       scenario.views.forEach(scnView => {
         scaleToEditView(scnView);
       })
-      scenario.objects.forEach(object => {
-        object.views.forEach(objView => {
-          scaleToEditView(objView);
+      if(scenario.objects){
+        scenario.objects.forEach(object => {
+          object.views.forEach(objView => {
+            scaleToEditView(objView);
+          })
         })
-      })
+      }
+      if(scenario.hitboxes){
+        scenario.hitboxes.forEach(hitbox => {
+          scaleToEditHitbox(hitbox)
+        })
+      }
     })
   }
 
@@ -410,12 +417,16 @@ function EscapeRoomEditor() {
   
   const makeScenariosTransitionsList = () => {
     const scenariosBlocks = workspaceRef.current.getBlocksByType('scenario');
+    const scenariosBlocks2 = workspaceRef.current.getBlocksByType('scenario2');
     const transitionsBlocks = workspaceRef.current.getBlocksByType('transition');
 
     var scenarios = []
     var transitions = []
 
     scenariosBlocks.forEach(scenarioBlock => {
+      scenarios.push(scenarioBlock.getFieldValue('ID'));
+    })
+    scenariosBlocks2.forEach(scenarioBlock => {
       scenarios.push(scenarioBlock.getFieldValue('ID'));
     })
     transitionsBlocks.forEach(transitionBlock => {

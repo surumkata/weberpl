@@ -46,13 +46,22 @@ export class Scenario {
       }
    }
 
-  draw(p5, variables){
+  draw(p5, variables,hitboxes=false){
     if (this.currentView != null && this.currentView in this.views){
       this.views[this.currentView].draw(p5);
       
       for (const [key, text] of Object.entries(this.texts)) {
         text.draw(p5,variables);
         }
+
+      if(hitboxes){
+        p5.push();
+        p5.fill(`rgb(0, 255, 0)`);
+        for(const [key,hitbox] of Object.entries(this.hitboxes)) {
+          hitbox.draw(p5);
+        }
+        p5.pop();
+      }
 
     }
   }

@@ -67,6 +67,7 @@ const TOOLBOX =
   '<xml xmlns="http://www.w3.org/1999/xhtml" id="toolbox" style="display: none;">\n' +
   '  <category name="SCENARIOS" colour="200">\n' +
   '    <block type="scenario"></block>\n' +
+  '    <block type="scenario2"></block>\n' +
   '    <block type="object"></block>\n' +
   '    <block type="transition"></block>\n' +
   '    <block type="sound"></block>\n' +
@@ -76,6 +77,8 @@ const TOOLBOX =
   '   <category name="TRIGGERS" colour="42">\n' +
   '     <block type="precond_click_obj"></block>\n' +
   '     <block type="precond_click_not_obj"></block>\n' +
+  '     <block type="precond_click_hitbox"></block>\n' +
+  '     <block type="precond_click_not_hitbox"></block>\n' +
   '     <block type="precond_obj_is_view"></block>\n' +
   '     <block type="precond_ev_already_hap"></block>\n' +
   '     <block type="precond_obj_in_use"></block>\n' +

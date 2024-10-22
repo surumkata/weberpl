@@ -333,6 +333,7 @@ function loadScenarios(p5,er,scenarios){
 }
 
 function loadPrecondition(precondition) {
+    console.log(precondition)
     const type = precondition.type;
     let eventPrecondition;
 
@@ -394,6 +395,7 @@ function loadPrecondition(precondition) {
 }
 
 function loadPreconditions(preconditions) {
+    console.log(preconditions)
     if (preconditions.operator) {
         const operator = preconditions.operator;
         const left = loadPreconditions(preconditions.left);

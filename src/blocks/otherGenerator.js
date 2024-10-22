@@ -37,6 +37,24 @@ phpGenerator.forBlock['scenario'] = function(block, generator) {
     return "\n";
    };
 
+//Scenario
+
+dartGenerator.forBlock['scenario2'] = function(block, generator) {
+    return "\n";
+   };
+   
+   luaGenerator.forBlock['scenario2'] = function(block, generator) {
+       return "\n";
+   };
+   
+   pythonGenerator.forBlock['scenario2'] = function(block, generator) {
+    return "\n";
+   };
+   
+   phpGenerator.forBlock['scenario2'] = function(block, generator) {
+       return "\n";
+      };
+
    //Event
 
    dartGenerator.forBlock['event'] = function(block, generator) {

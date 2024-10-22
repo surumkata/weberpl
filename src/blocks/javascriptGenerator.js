@@ -107,6 +107,56 @@ javascriptGenerator.forBlock['scenario'] = function(block, generator) {
 
   return JSON.stringify(code, null, 2);
 };
+
+javascriptGenerator.forBlock['scenario2'] = function(block, generator) {
+  var text_id = block.getFieldValue('ID');
+  var text_initial_view = block.getFieldValue('initial_view');
+  var stringViews = generator.statementToCode(block, 'VIEWS');
+  var stringHitboxes = generator.statementToCode(block, 'HITBOXES');
+  var stringSounds = generator.statementToCode(block, 'SOUNDS');
+
+  if(stringViews) {
+    stringViews = stringViews.replaceAll("}{","},\n{");
+    stringViews = "[" + stringViews + "]"
+  }
+  else {
+    stringViews = "[]"
+  }
+  
+  
+  if(stringHitboxes) {
+    stringHitboxes = stringHitboxes.replaceAll("}{","},\n{");
+    stringHitboxes = "[" + stringHitboxes + "]"
+  }
+  else {
+    stringHitboxes = "[]"
+  }
+
+  if(stringSounds) {
+    stringSounds = stringSounds.replaceAll("}{","},\n{");
+    stringSounds = "[" + stringSounds + "]"
+  }
+  else {
+    stringSounds = "[]"
+  }
+  
+  
+  var viewsObject = JSON.parse(stringViews);
+  var hitboxesObject = JSON.parse(stringHitboxes);
+  var soundsObject = JSON.parse(stringSounds);
+  
+  var code = {
+    'block_type' : 'SCENARIO',
+    'id' : text_id,
+    'initial_view' : text_initial_view,
+    'views' : viewsObject,
+    'hitboxes' : hitboxesObject,
+    'sounds' : soundsObject
+  }
+
+  return JSON.stringify(code, null, 2);
+};
+
 //Events block
 
 
@@ -808,10 +858,10 @@ return [challengeString, javascriptGenerator.ORDER_NONE];
 javascriptGenerator.forBlock['poscond_trans'] = function(block, generator) {
 var transition_id = block.getFieldValue('TRANSITION_ID');
 
-var code = {
+var code = { "var" : {
   'type' : 'TRANSITION',
   'transition' : transition_id
-  }
+  } }
 
 return [JSON.stringify(code, null, 2), javascriptGenerator.ORDER_NONE];
 };
@@ -822,12 +872,12 @@ var sound_id = block.getFieldValue('SOUND_ID');
 var source_type = block.getFieldValue('SRC_TYPE');
 var source_id = block.getFieldValue('SRC');
 
-var code = {
+var code = { "var" : {
   'type' : 'PLAY_SOUND',
   'sound' : sound_id,
   'source_id' : source_id,
   'source_type' : source_type
-}
+} }
 
 return [JSON.stringify(code, null, 2), javascriptGenerator.ORDER_NONE];
 };
@@ -838,10 +888,10 @@ return [JSON.stringify(code, null, 2), javascriptGenerator.ORDER_NONE];
 javascriptGenerator.forBlock['precond_click_obj'] = function(block, generator) {
 var object_id = block.getFieldValue('OBJECT_ID');
 
-var code = {
+var code = { "var" : {
   'type' : 'CLICKED_OBJECT',
   'object' : object_id,
-}
+} }
 
 return [JSON.stringify(code, null, 2), javascriptGenerator.ORDER_NONE];
 };
@@ -851,24 +901,47 @@ return [JSON.stringify(code, null, 2), javascriptGenerator.ORDER_NONE];
 javascriptGenerator.forBlock['precond_click_not_obj'] = function(block, generator) {
 var object_id = block.getFieldValue('OBJECT_ID');
 
-var code = {
+var code = { "var" : {
   'type' : 'CLICKED_NOT_OBJECT',
   'object' : object_id,
-}
+} }
 
 return [JSON.stringify(code, null, 2), javascriptGenerator.ORDER_NONE];
 };
 
+javascriptGenerator.forBlock['precond_click_hitbox'] = function(block, generator) {
+  var hitbox_id = block.getFieldValue('HITBOX_ID');
+  
+  var code = { "var" : {
+    'type' : 'CLICKED_HITBOX',
+    'hitbox' : hitbox_id,
+  } }
+  
+  return [JSON.stringify(code, null, 2), javascriptGenerator.ORDER_NONE];
+  };
+  
+  
+  
+  javascriptGenerator.forBlock['precond_click_not_hitbox'] = function(block, generator) {
+  var hitbox_id = block.getFieldValue('HITBOX_ID');
+  
+  var code = { "var" : {
+    'type' : 'CLICKED_NOT_HITBOX',
+    'hitbox' : hitbox_id,
+  } }
+  
+  return [JSON.stringify(code, null, 2), javascriptGenerator.ORDER_NONE];
+  };
 
 javascriptGenerator.forBlock['precond_obj_is_view'] = function(block, generator) {
 var object_id = block.getFieldValue('OBJECT_ID');
 var view_id = block.getFieldValue('VIEW_ID');
 
-var code = {
+var code = { "var" : {
   'type' : 'WHEN_OBJECT_IS_VIEW',
   'object' : object_id,
   'view' : view_id
-}
+} }
 
 return [JSON.stringify(code, null, 2), javascriptGenerator.ORDER_NONE];
 };
@@ -877,10 +950,10 @@ return [JSON.stringify(code, null, 2), javascriptGenerator.ORDER_NONE];
 javascriptGenerator.forBlock['precond_ev_already_hap'] = function(block, generator) {
 var event_id = block.getFieldValue('EVENT_ID');
 
-var code = {
+var code = { "var" : {
   'type' : 'AFTER_EVENT',
   'event' : event_id
-}
+} }
 
 return [JSON.stringify(code, null, 2), javascriptGenerator.ORDER_NONE];
 };
@@ -889,10 +962,10 @@ return [JSON.stringify(code, null, 2), javascriptGenerator.ORDER_NONE];
 javascriptGenerator.forBlock['precond_obj_in_use'] = function(block, generator) {
 var obj_id = block.getFieldValue('OBJECT_ID');
 
-var code = {
+var code = { "var" : {
   'type' : 'OBJ_IS_IN_USE',
   'object' : obj_id
-}
+} }
 
 return [JSON.stringify(code, null, 2), javascriptGenerator.ORDER_NONE];
 };
@@ -901,10 +974,10 @@ return [JSON.stringify(code, null, 2), javascriptGenerator.ORDER_NONE];
 javascriptGenerator.forBlock['precond_already_passed'] = function(block, generator) {
 var time = block.getFieldValue('SECONDS');
 
-var code = {
+var code = { "var" : {
   'type' : 'AFTER_TIME',
   'time' : parseInt(time) * 1000
-}
+} }
 
 return [JSON.stringify(code, null, 2), javascriptGenerator.ORDER_NONE];
 };

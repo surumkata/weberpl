@@ -1,6 +1,3 @@
-import { ViewSketch } from "./view";
-import { Position } from "./utils";
-
 // CLASSE DE UM OBJETO
 export class Object {
   constructor(id, scenarioId) {

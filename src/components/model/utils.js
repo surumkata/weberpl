@@ -102,6 +102,20 @@ export class Text {
   
         // Substituir a variável pelo tempo formatado (mm:ss)
         displayText = displayText.replace(`{${varName}}`, displayTime);
+
+      } else if (varName === '_timer_') {
+        // Substituir pelos segundos passados
+        const startTime = variables["__time__"]; // Tempo inicial do Date
+        const currentTime = new Date(); // Tempo atual
+        const elapsedTime = Math.floor((currentTime - startTime) / 1000); // Tempo passado em segundos
+        displayText = displayText.replace(`{${varName}}`, elapsedTime);
+      } else if (varName === '_timerms_') {
+        // Substituir pelos milissegundos passados
+        const startTime = variables["__time__"]; // Tempo inicial do Date
+        const currentTime = new Date(); // Tempo atual
+        const elapsedTime = currentTime - startTime; // Tempo passado em milissegundos
+        displayText = displayText.replace(`{${varName}}`, elapsedTime);
+      
       } else if (variables.hasOwnProperty(varName)) {
         // Substituir outras variáveis como no código original
         let value = variables[varName];

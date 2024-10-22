@@ -109,10 +109,17 @@ const validateScenario = (scenario,vars,reasons) => {
         reasons.push("View "+scenario.initial_view+" is not a view of scenario "+scenario.id)
       }
       let objects = scenario.objects
-      //Validar objetos de um cenario
-      objects.forEach(object => {
-        validateObject(object,vars,reasons);
-      })
+      if(objects){
+        //Validar objetos de um cenario
+        objects.forEach(object => {
+          validateObject(object,vars,reasons);
+        })
+      }
+
+      let hitboxes = scenario.hitboxes
+      if(hitboxes){
+        //TODO: validate hitboxes
+      }
       
       let sounds = scenario.sounds
       //Validar sons de um cenario
@@ -137,10 +144,16 @@ const validatePreCondition = (preCondition, vars, reasons) => {
         }
         break;
     case "CLICKED_NOT_OBJECT":
-        if(!(preCondition.object in vars.objects)){
-          reasons.push("Object "+preCondition.object+" does not exist in escape room");
-        }
+        //validate
         break;
+    case "CLICKED_HITBOX":
+          //validate
+          break;
+    case "CLICKED_NOT_HITBOX":
+          if(!(preCondition.hitbox in vars.objects)){
+            reasons.push("Hitbox "+preCondition.object+" does not exist in escape room");
+          }
+          break;
     case "WHEN_OBJECT_IS_VIEW":
         if(!(preCondition.object in vars.objects)){
           reasons.push("Object "+preCondition.object+" does not exist in escape room");
@@ -194,7 +207,6 @@ const validateSucessFailt = (posCondition, vars, reasons) => {
 }
 
 const validatePosConditions = (posConditions, vars,reasons) => {
-  console.log(posConditions);
 
   if (posConditions.length === 0) {
     reasons.push("Events must have at least 1 action.")
@@ -296,13 +308,13 @@ const validatePosConditions = (posConditions, vars,reasons) => {
 }
 
 const validateEvent = (event, vars,reasons) => {
-  if (event.preConditions === null) {
+  if (event.preconditions === null) {
     reasons.push("Events must have at least 1 trigger.")
   }
   else {
-    validatePreConditions(event.preConditions,vars,reasons);
+    validatePreConditions(event.preconditions,vars,reasons);
   }
-  validatePosConditions(event.posConditions,vars,reasons);
+  validatePosConditions(event.posconditions,vars,reasons);
 }
 
 const validateTransition = (transition,vars,reasons) => {

@@ -1,4 +1,4 @@
-import { collidePointCircle, collidePointEllipse, collidePointLine, collidePointPoint, collidePointPoly, collidePointRect, collidePointTriangle } from "p5collide";
+import { collidePointCircle, collidePointEllipse, collidePointLine, collidePointPoly, collidePointRect, collidePointTriangle } from "p5collide";
 import { Position } from "./utils";
 import { WIDTH, HEIGHT, HEIGHT_INV, SCALE_EDIT } from "./utils";
 

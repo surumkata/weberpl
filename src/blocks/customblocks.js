@@ -255,6 +255,37 @@ Blockly.Blocks['scenario'] = {
   }
 };
 
+Blockly.Blocks['scenario2'] = {
+  init: function() {
+    this.appendDummyInput()
+        .setAlign(Blockly.inputs.Align.CENTRE)
+        .appendField("SCENARIO")
+        .appendField(new Blockly.FieldTextInput("SCENARIO"), "ID");
+    this.appendDummyInput()
+        .setAlign(Blockly.inputs.Align.CENTRE)
+        .appendField("INITIAL VIEW:")
+        .appendField(new Blockly.FieldTextInput("VIEW"), "initial_view");
+    this.appendDummyInput()
+        .setAlign(Blockly.inputs.Align.CENTRE)
+        .appendField("VIEWS:");
+    this.appendStatementInput("VIEWS")
+        .setCheck("view");
+    this.appendDummyInput()
+        .setAlign(Blockly.inputs.Align.CENTRE)
+        .appendField("HITBOXES:");
+    this.appendStatementInput("HITBOXES")
+        .setCheck("hitbox");
+    this.appendDummyInput()
+        .setAlign(Blockly.inputs.Align.CENTRE)
+        .appendField("SOUNDS:");
+    this.appendStatementInput("SOUNDS")
+        .setCheck("sound");
+    this.setColour('%{BKY_SCENARIOS}');
+ this.setTooltip("");
+ this.setHelpUrl("");
+  }
+};
+
 Blockly.Blocks['event'] = {
   init: function() {
     this.appendDummyInput()
@@ -778,6 +809,32 @@ this.setTooltip("");
 this.setHelpUrl("");
 }
 };
+
+//Triggers blocks
+
+Blockly.Blocks['precond_click_hitbox'] = {
+  init: function() {
+    this.appendDummyInput()
+        .appendField("CLICK")
+        .appendField(new Blockly.FieldTextInput("HITBOX"), "HITBOX_ID");
+    this.setOutput(true, "trigger");
+    this.setColour('%{BKY_TRIGGERS}');
+  this.setTooltip("");
+  this.setHelpUrl("");
+  }
+  };
+  
+  Blockly.Blocks['precond_click_not_hitbox'] = {
+  init: function() {
+    this.appendDummyInput()
+        .appendField("CLICK NOT")
+        .appendField(new Blockly.FieldTextInput("HITBOX"), "HITBOX_ID");
+    this.setOutput(true, "trigger");
+    this.setColour('%{BKY_TRIGGERS}');
+  this.setTooltip("");
+  this.setHelpUrl("");
+  }
+  };
 
 Blockly.Blocks['precond_obj_is_view'] = {
 init: function() {
