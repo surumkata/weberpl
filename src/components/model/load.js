@@ -5,13 +5,13 @@ import { Position, Size } from './utils.js';
 import { Scenario } from './scenario.js';
 import { GameState } from './game_state.js';
 import { Inventory } from './inventory.js';
-import { WIDTH, HEIGHT, HEIGHT_INV, SCALE_EDIT, setHEIGHT, setHEIGHT_INV, setWIDTH } from './utils.js';
+import { WIDTH, HEIGHT, HEIGHT_INV, SCALE_EDIT, setHEIGHT, setHEIGHT_INV, setWIDTH, Text } from './utils.js';
 import {Transition } from './transition.js';
 
 import { Event } from './event.js';
 import { PreConditionOperatorAnd, PreConditionOperatorNot, PreConditionOperatorOr, PreConditionTree, PreConditionVar } from './precondition_tree.js';
-import { EventPreConditionAfterEvent,EventPreConditionAfterTime,EventPreConditionClickedNotObject,EventPreConditionClickedObject,EventPreConditionItemIsInUse,EventPreConditionWhenObjectIsView } from './precondition.js';
-import { EventPosConditionTransition, EventPosConditionConnections, EventPosConditionSequence, EventPosConditionQuestion, EventPosConditionChangeScenario,EventPosConditionRemoveObj,EventPosConditionEndGame,EventPosConditionMultipleChoice,EventPosConditionObjChangePosition,EventPosConditionObjScales,EventPosConditionObjChangeState,EventPosConditionObjPutInventory,EventPosConditionPlaySound,EventPosConditionShowMessage } from './poscondition.js';
+import { EventPreConditionIsEqualTo,EventPreConditionIsGreaterThan,EventPreConditionIsLessThan,EventPreConditionIsGreaterThanOrEqualTo,EventPreConditionIsLessThanOrEqualTo,EventPreConditionAfterEvent,EventPreConditionAfterTime,EventPreConditionClickedHitbox, EventPreConditionClickedNotHitbox, EventPreConditionClickedNotObject,EventPreConditionClickedObject,EventPreConditionItemIsInUse,EventPreConditionWhenObjectIsView } from './precondition.js';
+import { EventPosConditionShowFormatMessage, EventPosConditionEndGameFormatMessage,EventPosConditionVarDecreases,EventPosConditionVarIncreases,EventPosConditionVarBecomes,EventPosConditionTransition, EventPosConditionConnections, EventPosConditionSequence, EventPosConditionQuestion, EventPosConditionChangeScenario,EventPosConditionRemoveObj,EventPosConditionEndGame,EventPosConditionMultipleChoice,EventPosConditionObjChangePosition,EventPosConditionObjScales,EventPosConditionObjChangeState,EventPosConditionObjPutInventory,EventPosConditionPlaySound,EventPosConditionShowMessage } from './poscondition.js';
 import { HitboxArc, HitboxCircle, HitboxEllipse, HitboxLine, HitboxPolygon, HitboxRect, HitboxSquare, HitboxTriangle } from './hitbox.js';
 import { Sound } from './sound.js';
 
@@ -39,10 +39,12 @@ const load = (p5,json,edit=false) => {
 
     let transitions = json.transitions
     loadTransitions(p5,er,gs,transitions)
-    //let map = json.map
-    //let events = json.events
-    //let sounds = json.sounds
-    ////Load the room
+
+    let variables = json.variables ?? []
+    variables.forEach(variable => {
+        er.addVariable(variable.id,variable.number)
+    })
+
 
     if (json.start_type == 'TRANSITION'){
         gs.activeTransitionMode(er.transitions[json.start])
@@ -70,7 +72,17 @@ export {load};
 function loadTransitions(p5,er,gs,transitions){
     transitions.forEach(function(transition){
         let view = transition.view;
-        let tv = new View(p5,view.id,[view.src],gs.size,new Position(0,HEIGHT_INV),0,0,view.turn);
+        let turn = view.turn ?? {x: false, y: false};
+        let sources = loadSources(view.sources)
+        let tv = new View(p5,view.id,sources,gs.size,new Position(0,HEIGHT_INV),0,0,turn);
+
+        let format_story = false
+        let story = transition.story
+        if(transition.format_story){
+            format_story = true
+            story = transition.format_story
+        }
+
         var next_scenario = null;
         var next_transition = null;
         if (transition.next_type == "TRANSITION") {
@@ -79,7 +91,8 @@ function loadTransitions(p5,er,gs,transitions){
         else {
             next_scenario = transition.next;
         }
-        let t = new Transition(transition.id,tv,transition.story,next_scenario,next_transition);
+        let t = new Transition(transition.id,tv,story,next_scenario,next_transition,format_story);
+        console.log(t);
         er.addTransition(t);
     })
 }
@@ -201,7 +214,9 @@ function loadHitboxes(view){
         default:
             switch(view.type){
                 case "VIEW_IMAGE":
-                    hitboxes.push(new HitboxRect(view.id,view.position.x,view.position.y+HEIGHT_INV,view.size.x,view.size.y));
+                    let size = view.size ? new Size(view.size.x, view.size.y) : new Size(WIDTH, HEIGHT);
+                    let position = view.position ? new Position(view.position.x, view.position.y + HEIGHT_INV) : new Position(0, HEIGHT_INV);
+                    hitboxes.push(new HitboxRect(view.id,position.x,position.y,size.x,size.y));
                     break;
                 case "VIEW_SKETCH":
                     hitboxes = loadAdvancedHitbox(view.draws);
@@ -212,17 +227,21 @@ function loadHitboxes(view){
     return hitboxes;
 }
 
-function loadSource(sources){
+function loadSource(source){
+    switch(source[0]){
+        case 'URL' :
+            return source[1];
+        case 'LIB':
+            return process.env.PUBLIC_URL + '/assets/'+source[1]+'.png';
+        default:
+            return null;
+    }
+}
+
+function loadSources(sources){
     var result = []
     sources.forEach(source => {
-        switch(source[0]){
-            case 'URL' :
-                result.push([source[1]]);
-            case 'LIB':
-                result.push(process.env.PUBLIC_URL + '/assets/'+source[1]+'.png');
-            default:
-                break;
-        }
+        result.push(loadSource(source));
     })
     return result
     
@@ -232,12 +251,12 @@ function loadView(p5,view){
     let hitboxes = loadHitboxes(view);
     switch(view.type){
         case "VIEW_IMAGE":
-            let sources = loadSource(view.sources)
+            let sources = loadSources(view.sources)
             let time_sprite = view.time_sprite ?? 0;
             let repetitions = view.repetitions || Infinity;
             let turn = view.turn ?? {x: false, y: false};
-            let size = new Size(view.size.x,view.size.y);
-            let position = new Position (view.position.x,view.position.y+HEIGHT_INV);
+            let size = view.size ? new Size(view.size.x, view.size.y) : new Size(WIDTH, HEIGHT);
+            let position = view.position ? new Position(view.position.x, view.position.y + HEIGHT_INV) : new Position(0,HEIGHT_INV);
             let v = new View(p5,view.id,sources,size, position,time_sprite,repetitions,turn,hitboxes,view.hitbox_type);
             v.makeHitboxesBBox();
             return v
@@ -267,6 +286,25 @@ function loadObject(p5,scenario_id,object){
 }
 
 
+function loadTexts(dataTexts){
+    var texts = [];
+    dataTexts.forEach(data => {
+        let id = data.id;
+        let color = data.color ?? "#000000";
+        let width = data.width ?? 32;
+        let x = data.position.x;
+        let y = data.position.y + HEIGHT_INV;
+        let text = data.text ?? "";
+        let format_text = false;
+        if(data.format_text){
+            text = data.format_text;
+            format_text = true;
+        }
+        texts.push(new Text(id,text,x,y,width,color,format_text))
+    })
+    return texts;
+}
+
 function loadScenarios(p5,er,scenarios){
     scenarios.forEach(function(scenario){
         let s = new Scenario(scenario.id);
@@ -278,6 +316,12 @@ function loadScenarios(p5,er,scenarios){
             scenario.objects.forEach(object => {
                 er.addObject(loadObject(p5,scenario.id,object));
             })
+        }
+        if(scenario.hitboxes){
+            s.addHitboxes(loadAdvancedHitbox(scenario.hitboxes))
+        }
+        if(scenario.texts){
+            s.addTexts(loadTexts(scenario.texts))
         }
         if(scenario.sounds){
             scenario.sounds.forEach(scnSound => {
@@ -301,6 +345,14 @@ function loadPrecondition(precondition) {
             const clickedNotObjectId = precondition.object;
             eventPrecondition = new EventPreConditionClickedNotObject(clickedNotObjectId);
             break;
+        case "CLICKED_HITBOX":
+            const hitboxId = precondition.hitbox;
+            eventPrecondition = new EventPreConditionClickedHitbox(hitboxId);
+            break;
+        case "CLICKED_NOT_HITBOX":
+            const clickedNotHitboxId = precondition.hitbox;
+            eventPrecondition = new EventPreConditionClickedNotHitbox(clickedNotHitboxId);
+            break;
         case "WHEN_OBJECT_IS_VIEW":
             const whenObjectId = precondition.object;
             const viewId = precondition.view;
@@ -317,6 +369,21 @@ function loadPrecondition(precondition) {
         case "AFTER_TIME":
             const afterTime = precondition.time;
             eventPrecondition = new EventPreConditionAfterTime(afterTime);
+            break;
+        case "IS_EQUAL_TO":
+            eventPrecondition = new EventPreConditionIsEqualTo(precondition.variable,precondition.number);
+            break;
+        case "IS_GREATER_THAN":
+            eventPrecondition = new EventPreConditionIsGreaterThan(precondition.variable,precondition.number);
+            break;
+        case "IS_LESS_THAN":
+            eventPrecondition = new EventPreConditionIsLessThan(precondition.variable,precondition.number);
+            break;
+        case "IS_GREATER_THAN_OR_EQUAL_TO":
+            eventPrecondition = new EventPreConditionIsGreaterThanOrEqualTo(precondition.variable,precondition.number);
+            break;
+        case "IS_LESS_THAN_OR_EQUAL_TO":
+            eventPrecondition = new EventPreConditionIsLessThanOrEqualTo(precondition.variable,precondition.number);
             break;
         default:
             eventPrecondition = null;
@@ -355,7 +422,10 @@ function loadPosconditions(dataPosconditions) {
 
         switch (type) {
             case "END_GAME":
-                eventPoscondition = new EventPosConditionEndGame();
+                eventPoscondition = new EventPosConditionEndGame(dataAction.message);
+                break;
+            case "END_GAME_FORMAT_MESSAGE":
+                eventPoscondition = new EventPosConditionEndGameFormatMessage(dataAction.message);
                 break;
             case "OBJ_CHANGE_VIEW":
                 const objectId = dataAction.object;
@@ -376,6 +446,9 @@ function loadPosconditions(dataPosconditions) {
                 const message = dataAction.message;
                 const msgpos = dataAction.position;
                 eventPoscondition = new EventPosConditionShowMessage(message, new Position(msgpos.x, (msgpos.y+HEIGHT_INV)));
+                break;
+            case "SHOW_FORMAT_MESSAGE":
+                eventPoscondition = new EventPosConditionShowFormatMessage(dataAction.message, new Position(dataAction.position.x, (dataAction.position.y+HEIGHT_INV)));
                 break;
             case "OBJ_PUT_INVENTORY":
                 const objInventoryObjectId = dataAction.object;
@@ -398,37 +471,46 @@ function loadPosconditions(dataPosconditions) {
             case "QUESTION":
                 const question = dataAction.question;
                 const answer = dataAction.answer;
-                const sucess = new Event("sucess",{},loadPosconditions(dataAction.sucess.posConditions),null);
-                const fail = new Event("fail",{},loadPosconditions(dataAction.fail.posConditions),null);
+                const sucess = new Event("sucess",{},loadPosconditions(dataAction.sucess),null);
+                const fail = new Event("fail",{},loadPosconditions(dataAction.fail),null);
                 eventPoscondition = new EventPosConditionQuestion(answer, question, sucess, fail);
                 break;
             case "MULTIPLE_CHOICE":
                 const mc_question = dataAction.question;
                 const mc_answer = dataAction.answer;
                 const multipleChoices = dataAction.choices;
-                const mc_sucess = new Event("sucess",{},loadPosconditions(dataAction.sucess.posConditions),null);
-                const mc_fail = new Event("fail",{},loadPosconditions(dataAction.fail.posConditions),null);
+                const mc_sucess = new Event("sucess",{},loadPosconditions(dataAction.sucess),null);
+                const mc_fail = new Event("fail",{},loadPosconditions(dataAction.fail),null);
                 eventPoscondition = new EventPosConditionMultipleChoice(mc_question,mc_answer,multipleChoices,mc_sucess,mc_fail);
                 break;
             case "SEQUENCE":
                 const s_question = dataAction.question;
                 const sequence = dataAction.sequence;
-                const s_sucess = new Event("sucess",{},loadPosconditions(dataAction.sucess.posConditions),null);
-                const s_fail = new Event("fail",{},loadPosconditions(dataAction.fail.posConditions),null);
+                const s_sucess = new Event("sucess",{},loadPosconditions(dataAction.sucess),null);
+                const s_fail = new Event("fail",{},loadPosconditions(dataAction.fail),null);
                 eventPoscondition = new EventPosConditionSequence(s_question,sequence,s_sucess,s_fail);
                 break;
             case "CONNECTIONS":
                 const c_question = dataAction.question;
                 const list1 = dataAction.list1;
                 const list2 = dataAction.list2;
-                const c_sucess = new Event("sucess",{},loadPosconditions(dataAction.sucess.posConditions),null);
-                const c_fail = new Event("fail",{},loadPosconditions(dataAction.fail.posConditions),null);
+                const c_sucess = new Event("sucess",{},loadPosconditions(dataAction.sucess),null);
+                const c_fail = new Event("fail",{},loadPosconditions(dataAction.fail),null);
                 eventPoscondition = new EventPosConditionConnections(c_question,list1,list2,c_sucess,c_fail);
                 break;
             case "TRANSITION":
                 const transition_id = dataAction.transition;
                 eventPoscondition = new EventPosConditionTransition(transition_id);
                 break;
+            case "VAR_DECREASES":
+                eventPoscondition = new EventPosConditionVarDecreases(dataAction.variable,dataAction.number);
+                break;
+            case "VAR_INCREASES":
+                eventPoscondition = new EventPosConditionVarIncreases(dataAction.variable,dataAction.number);
+                break;
+            case "VAR_BECOMES":
+                eventPoscondition = new EventPosConditionVarBecomes(dataAction.variable,dataAction.number);
+                break;   
             default:
                 break;
         }

@@ -20,14 +20,14 @@ class EventPreConditionClickedObject extends EventPreCondition {
       const objectId = this.objectId;
       if (!room.objects.hasOwnProperty(objectId)) {
           return tested;
-      }
-      const object = room.objects[objectId];
-      if (object.reference === state.currentScenario) {
-          for (const [mX,mY] of state.bufferClickEvents) {
-              tested = object.haveClicked(mX,mY);
-              if (tested) {
-                  break;
-              }
+        }
+        const object = room.objects[objectId];
+        if (object.reference === state.currentScenario) {
+            for (const [mX,mY] of state.bufferClickEvents) {
+                tested = object.haveClicked(mX,mY);
+                if (tested) {
+                    break;
+                }
           }
       }
       return tested;
@@ -57,6 +57,61 @@ class EventPreConditionClickedNotObject extends EventPreCondition {
       return tested;
   }
 }
+
+// Subclasse EventPreConditionClickedObject
+class EventPreConditionClickedHitbox extends EventPreCondition {
+    constructor(hitboxId) {
+        super();
+        this.hitboxId = hitboxId;
+    }
+  
+    test(room, inventory, state) {
+        let tested = false;
+        const hitboxId = this.hitboxId;
+        
+        console.log(room.scenarios,state.currentScenario)
+        console.log(room.scenarios[state.currentScenario])
+
+        if(state.currentScenario == undefined || state.currentScenario == null){
+            return tested;
+        }
+        if (!room.scenarios[state.currentScenario].hitboxes.hasOwnProperty(hitboxId) || state.bufferClickEvents.length === 0){
+            return tested;
+        }
+        for (const [mX,mY] of state.bufferClickEvents) {
+            tested = room.scenarios[state.currentScenario].collide(mX,mY,hitboxId)
+            if (tested) {
+                break;
+            }
+        }
+        return tested;
+    }
+  }
+  
+  // Subclasse EventPreConditionClickedNotObject
+  class EventPreConditionClickedNotHitbox extends EventPreCondition {
+    constructor(hitboxId) {
+        super();
+        this.hitboxId = hitboxId;
+    }
+  
+    test(room, inventory, state) {
+        let tested = false;
+        const hitboxId = this.hitboxId;
+
+        if(state.currentScenario == undefined || state.currentScenario == null){
+            return tested;
+        }
+        if (!room.scenarios[state.currentScenario].hitboxes.hasOwnProperty(hitboxId) || state.bufferClickEvents.length === 0){
+            return tested;
+        }
+        tested = true;
+        for (const [mX,mY] of state.bufferClickEvents) {
+            tested = tested && !room.scenarios[state.currentScenario].collide(mX,mY,hitboxId)
+        }
+        return tested;
+    }
+  }
 
 // Subclasse EventPreConditionWhenObjectIsView
 class EventPreConditionWhenObjectIsView extends EventPreCondition {
@@ -149,6 +204,87 @@ class EventPreConditionAfterTime extends EventPreCondition {
   }
 }
 
+// Subclasse EventPreConditionIsEqualTo
+class EventPreConditionIsEqualTo extends EventPreCondition {
+    constructor(variable,number) {
+        super();
+        this.variable = variable;
+        this.number = number;
+    }
+  
+    test(room, inventory, state) {
+        if(room.variables.hasOwnProperty(this.variable)){
+            return room.variables[this.variable] == this.number
+        }
+        else return false;
+    }
+  }
+
+// Subclasse EventPreConditionIsGreaterThan
+class EventPreConditionIsGreaterThan extends EventPreCondition {
+    constructor(variable,number) {
+        super();
+        this.variable = variable;
+        this.number = number;
+    }
+  
+    test(room, inventory, state) {
+        if(room.variables.hasOwnProperty(this.variable)){
+            return room.variables[this.variable] > this.number
+        }
+        else return false;
+    }
+  }
+
+
+  // Subclasse EventPreConditionIsLessThan
+class EventPreConditionIsLessThan extends EventPreCondition {
+    constructor(variable,number) {
+        super();
+        this.variable = variable;
+        this.number = number;
+    }
+  
+    test(room, inventory, state) {
+        if(room.variables.hasOwnProperty(this.variable)){
+            return room.variables[this.variable] < this.number
+        }
+        else return false;
+    }
+  }
+
+    // Subclasse EventPreConditionIsGreaterThanOrEqualTo
+class EventPreConditionIsGreaterThanOrEqualTo extends EventPreCondition {
+    constructor(variable,number) {
+        super();
+        this.variable = variable;
+        this.number = number;
+    }
+  
+    test(room, inventory, state) {
+        if(room.variables.hasOwnProperty(this.variable)){
+            return room.variables[this.variable] >= this.number
+        }
+        else return false;
+    }
+  }
+
+      // Subclasse EventPreConditionIsLessThanOrEqualTo
+class EventPreConditionIsLessThanOrEqualTo extends EventPreCondition {
+    constructor(variable,number) {
+        super();
+        this.variable = variable;
+        this.number = number;
+    }
+  
+    test(room, inventory, state) {
+        if(room.variables.hasOwnProperty(this.variable)){
+            return room.variables[this.variable] <= this.number
+        }
+        else return false;
+    }
+  }
+
 export {
   EventPreCondition,
   EventPreConditionAfterEvent,
@@ -156,7 +292,14 @@ export {
   EventPreConditionClickedItem,
   EventPreConditionClickedNotObject,
   EventPreConditionClickedObject,
+  EventPreConditionClickedHitbox,
+  EventPreConditionClickedNotHitbox,
   EventPreConditionItemIsInUse,
   EventPreConditionItemNotInUse,
   EventPreConditionWhenObjectIsView,
+  EventPreConditionIsEqualTo,
+  EventPreConditionIsGreaterThan,
+  EventPreConditionIsLessThan,
+  EventPreConditionIsGreaterThanOrEqualTo,
+  EventPreConditionIsLessThanOrEqualTo
 };

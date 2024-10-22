@@ -4,7 +4,9 @@ export class Scenario {
       this.currentView = null;
       this.views = {};
       this.sounds = {};
-  }
+      this.hitboxes = {};
+      this.texts = {};
+ }
 
   changeCurrentView(viewId) {
       this.currentView = viewId;
@@ -19,19 +21,39 @@ export class Scenario {
       }
   }
 
-  draw(screen) {
-      if (this.currentView !== null) {
-          this.views[this.currentView].draw(screen);
-      }
-  }
-
   addSound(sound) {
       this.sounds[sound.id] = sound;
   }
 
-  draw(p5){
+  addHitboxes(hitboxes){
+      hitboxes.forEach(hitbox => {
+        this.hitboxes[hitbox.id] = hitbox
+      });
+  }
+
+  addTexts(texts){
+    texts.forEach(text => {
+      this.texts[text.id] = text
+    });
+}
+
+  collide(px,py,hitboxId){
+      if (!this.hitboxes.hasOwnProperty(hitboxId)){
+          return False
+      }
+      else{
+          return this.hitboxes[hitboxId].collide(px,py)
+      }
+   }
+
+  draw(p5, variables){
     if (this.currentView != null && this.currentView in this.views){
       this.views[this.currentView].draw(p5);
+      
+      for (const [key, text] of Object.entries(this.texts)) {
+        text.draw(p5,variables);
+        }
+
     }
   }
 }

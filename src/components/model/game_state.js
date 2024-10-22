@@ -1,5 +1,7 @@
 /* CLASSE DE DO ESTADO DE UMA ESCAPE ROOM */
 
+import { HEIGHT, HEIGHT_INV, WIDTH } from "./utils";
+
 export const State = Object.freeze({
   FINISH: 0,
   RUNNING: 1,
@@ -100,8 +102,9 @@ export class GameState {
       return this.state === State.TRANSITION_MODE;
   }
 
-  finishGame() {
+  finishGame(message) {
       this.state = State.FINISH;
+      this.endMessage = message;
   }
 
   activeChallengeMode(challenge) {
@@ -116,7 +119,6 @@ export class GameState {
 
   activeTransitionMode(transition) {
       this.transition = transition;
-      console.log(this.transition)
       //this.transition.defineSize(this.size);
       //this.transition.playMusic();
       this.state = State.TRANSITION_MODE;
@@ -133,4 +135,20 @@ export class GameState {
       this.state = State.RUNNING;
       this.transition = null;
   }
+
+  drawFinishScreen(p5) {
+    // Fundo colorido
+    p5.background(150); // Cinza (equivalente a Color.GRAY no pygame)
+  
+    // Definir a cor do texto (equivalente a Color.WHITE no pygame)
+    p5.fill(255); // Branco
+  
+    // Definir a fonte e tamanho do texto
+    p5.textSize(26);
+    p5.textAlign(p5.CENTER, p5.CENTER); // Centralizar o texto horizontalmente e verticalmente
+  
+    // Desenhar o texto na tela
+    p5.text(this.endMessage, WIDTH / 2, (HEIGHT+HEIGHT_INV) / 2);
+  }
+
 }

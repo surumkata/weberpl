@@ -9,6 +9,12 @@ export class EscapeRoom {
       this.events = {};
       this.eventsBuffer = {};
       this.transitions = {};
+      this.variables = {
+        "_timer_" : 0.0,
+        "_timerms_" : 0.0,
+        "_sucesses_" : 0.0,
+        "_fails_" : 0.0
+     }
   }
 
   // Função que add uma cena
@@ -30,6 +36,11 @@ export class EscapeRoom {
   addTransition(transition) {
       this.transitions[transition.id] = transition;
   }
+
+  // Função que add uma transição
+  addVariable(variable, number) {
+    this.variables[variable] = number;
+    }
 
   // Função que add um evento ao buffer
   addEventBuffer(id, preConditions, postConditions, repetitions) {
@@ -85,7 +96,7 @@ export class EscapeRoom {
   draw(p5, currentScenario, invisibleViews = 0, hitboxs = false){
     //Desenhar cena atual
     if (currentScenario in this.scenarios){
-      this.scenarios[currentScenario].draw(p5);
+      this.scenarios[currentScenario].draw(p5,this.variables);
     }
     else {
       return;

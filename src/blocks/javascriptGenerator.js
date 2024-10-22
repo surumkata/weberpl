@@ -941,8 +941,8 @@ var code = {
   'type' : 'QUESTION',
   'question' : question,
   'answer' : answer,
-  'sucess' : sucess,
-  'fail' : fail
+  'sucess' : sucess.posconditions,
+  'fail' : fail.posconditions
 };
 return [JSON.stringify(code, null, 2), javascriptGenerator.ORDER_NONE];
 };
@@ -977,8 +977,8 @@ var code = {
   'type' : 'MOTION_OBJECT',
   'motion_object' : motion_object,
   'trigger_object' : trigger_object,
-  'sucess' : sucess,
-  'fail' : fail
+  'sucess' : sucess.posconditions,
+  'fail' : fail.posconditions
 };
 return [JSON.stringify(code, null, 2), javascriptGenerator.ORDER_NONE];
 };
@@ -1016,8 +1016,8 @@ var code = {
   'question' : question,
   'choices' : [correct_answer,wrong_answer_1,wrong_answer_2,wrong_answer_3],
   'answer' : correct_answer,
-  'sucess' : sucess,
-  'fail' : fail
+  'sucess' : sucess.posconditions,
+  'fail' : fail.posconditions
 };
 return [JSON.stringify(code, null, 2), javascriptGenerator.ORDER_NONE];
 };
@@ -1059,8 +1059,8 @@ javascriptGenerator.forBlock['challenge_connection'] = function(block, generator
     'question' : question,
     'list1' : [a1,a2,a3,a4],
     'list2' : [b1,b2,b3,b4],
-    'sucess' : sucess,
-    'fail' : fail
+    'sucess' : sucess.posconditions,
+    'fail' : fail.posconditions
   };
   return [JSON.stringify(code, null, 2), javascriptGenerator.ORDER_NONE];
   };
@@ -1097,8 +1097,8 @@ javascriptGenerator.forBlock['challenge_connection'] = function(block, generator
     'type' : 'SEQUENCE',
     'question' : question,
     'sequence' : [a1,a2,a3,a4],
-    'sucess' : sucess,
-    'fail' : fail
+    'sucess' : sucess.posconditions,
+    'fail' : fail.posconditions
   };
   return [JSON.stringify(code, null, 2), javascriptGenerator.ORDER_NONE];
 };

@@ -173,10 +173,10 @@ class ChallengeMultipleChoice extends Challenge {
         this.answer = answer;
 
         this.choiceBoxes = [
-            [WIDTH/8+10, HEIGHT/8+10 + 2*(3*HEIGHT/4)/6, 3*WIDTH/4-20, (3*HEIGHT/4)/6-20],
-            [WIDTH/8+10, HEIGHT/8+10 + 3*(3*HEIGHT/4)/6, 3*WIDTH/4-20, (3*HEIGHT/4)/6-20],
-            [WIDTH/8+10, HEIGHT/8+10 + 4*(3*HEIGHT/4)/6, 3*WIDTH/4-20, (3*HEIGHT/4)/6-20],
-            [WIDTH/8+10, HEIGHT/8+10 + 5*(3*HEIGHT/4)/6, 3*WIDTH/4-20, (3*HEIGHT/4)/6-20]
+            [WIDTH/8+10, HEIGHT/8+10 + 2*(3*HEIGHT/4)/6 + HEIGHT_INV, 3*WIDTH/4-20, (3*HEIGHT/4)/6-20],
+            [WIDTH/8+10, HEIGHT/8+10 + 3*(3*HEIGHT/4)/6 + HEIGHT_INV, 3*WIDTH/4-20, (3*HEIGHT/4)/6-20],
+            [WIDTH/8+10, HEIGHT/8+10 + 4*(3*HEIGHT/4)/6 + HEIGHT_INV, 3*WIDTH/4-20, (3*HEIGHT/4)/6-20],
+            [WIDTH/8+10, HEIGHT/8+10 + 5*(3*HEIGHT/4)/6 + HEIGHT_INV, 3*WIDTH/4-20, (3*HEIGHT/4)/6-20]
         ]
 
         this.choiceHover = undefined;
@@ -221,7 +221,7 @@ class ChallengeMultipleChoice extends Challenge {
         p5.fill(this.textColor)
         p5.stroke(this.textStrokeColor);
         p5.strokeWeight(this.textStrokeWeight);
-        p5.text(this.question, WIDTH/8 + 10, HEIGHT/8 + 32);
+        p5.text(this.question, WIDTH/8 + 10, HEIGHT/8 + 32 + HEIGHT_INV);
     }
 
 
@@ -286,10 +286,10 @@ class ChallengeSequence extends Challenge {
 
 
         this.choiceBoxes = [
-            [WIDTH/8+10, HEIGHT/8+10 + 2*(3*HEIGHT/4)/6, 3*WIDTH/4-20, (3*HEIGHT/4)/6-20],
-            [WIDTH/8+10, HEIGHT/8+10 + 3*(3*HEIGHT/4)/6, 3*WIDTH/4-20, (3*HEIGHT/4)/6-20],
-            [WIDTH/8+10, HEIGHT/8+10 + 4*(3*HEIGHT/4)/6, 3*WIDTH/4-20, (3*HEIGHT/4)/6-20],
-            [WIDTH/8+10, HEIGHT/8+10 + 5*(3*HEIGHT/4)/6, 3*WIDTH/4-20, (3*HEIGHT/4)/6-20]
+            [WIDTH/8+10, HEIGHT/8+10 + 2*(3*HEIGHT/4)/6 + HEIGHT_INV, 3*WIDTH/4-20, (3*HEIGHT/4)/6-20],
+            [WIDTH/8+10, HEIGHT/8+10 + 3*(3*HEIGHT/4)/6 + HEIGHT_INV, 3*WIDTH/4-20, (3*HEIGHT/4)/6-20],
+            [WIDTH/8+10, HEIGHT/8+10 + 4*(3*HEIGHT/4)/6 + HEIGHT_INV, 3*WIDTH/4-20, (3*HEIGHT/4)/6-20],
+            [WIDTH/8+10, HEIGHT/8+10 + 5*(3*HEIGHT/4)/6 + HEIGHT_INV, 3*WIDTH/4-20, (3*HEIGHT/4)/6-20]
         ]
 
         this.choiceHover = undefined;
@@ -337,7 +337,7 @@ class ChallengeSequence extends Challenge {
         p5.fill(this.textColor)
         p5.stroke(this.textStrokeColor);
         p5.strokeWeight(this.textStrokeWeight);
-        p5.text(this.question, WIDTH/8 + 10, HEIGHT/8 + 32);
+        p5.text(this.question, WIDTH/8 + 10, HEIGHT/8 + 32 + HEIGHT_INV);
     }
 
     mousePressed(mX,mY,gameState) {

@@ -1,26 +1,27 @@
-import { HEIGHT_INV } from "./utils";
+import { HEIGHT_INV,replaceVariables } from "./utils";
 
 export class Transition {
-    constructor(id,background,story,next_scenario,next_transition) {
+    constructor(id,background,story,nextScenario,nextTransition,formatStory) {
         this.id = id;
         this.background = background;
         this.story = story;
-        this.nextScenario = next_scenario;
-        this.nextTransition = next_transition;
+        this.nextScenario = nextScenario;
+        this.nextTransition = nextTransition;
+        this.formatStory = formatStory;
 
         this.WHITE = 255
         this.GRAY = 128
         this.BLACK = 0
 
-        this.textSize = 32
-        this.textColor = this.BLACK
-        this.textStrokeColor = this.WHITE
+        this.textSize = 26
+        this.textColor = this.WHITE
+        this.textStrokeColor = this.BLACK
         this.textStrokeWeight = 1
 
         this.padding = 10
     }
 
-    draw(p5){
+    draw(p5,variables){
 
         this.background.draw(p5);
         var i = 1;
@@ -30,13 +31,19 @@ export class Transition {
         let textStrokeWeight = this.textStrokeWeight;
         let padding = this.padding;
 
+        let formatStory = this.formatStory
 
         this.story.forEach(function(line){
+            let displayText = line;
+            if (formatStory) {
+                displayText = replaceVariables(displayText,variables);
+              }
+
             p5.textSize(textSize);
             p5.fill(textColor);
             p5.stroke(textStrokeColor);
             p5.strokeWeight(textStrokeWeight);
-            p5.text(line, padding, HEIGHT_INV+textSize*i);
+            p5.text(displayText, padding, HEIGHT_INV+textSize*i);
             i++;
         })
         

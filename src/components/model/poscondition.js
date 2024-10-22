@@ -1,5 +1,5 @@
 // Import statements and class declarations omitted for brevity
-import { debug, BalloonMessage } from "./utils";
+import { debug, BalloonMessage, replaceVariables } from "./utils";
 import { PreConditionTree,PreConditionVar,PreConditionOperatorAnd } from "./precondition_tree";
 import { EventPreConditionClickedItem, EventPreConditionItemIsInUse, EventPreConditionItemNotInUse } from "./precondition";
 import { ChallengeConnections, ChallengeQuestion, ChallengeMultipleChoice, ChallengeSequence } from "./challenge";
@@ -15,13 +15,29 @@ class EventPosCondition {
 }
 
 class EventPosConditionEndGame extends EventPosCondition {
-  constructor(message = "") {
+  constructor(message = "Congratulations! You've Escaped.") {
       super("END_GAME");
       this.message = message;
   }
 
   do(room, inventory, state) {
-      state.finishGame();
+      state.finishGame(this.message);
+      debug("EVENT_ENDGAME.");
+  }
+}
+
+
+class EventPosConditionEndGameFormatMessage extends EventPosCondition {
+  constructor(message = "Congratulations! You've Escaped.") {
+      super("END_GAME");
+      this.message = message;
+  }
+
+  do(room, inventory, state) {
+      let displayText = this.message;
+      let variables = room.variables;
+      displayText = replaceVariables(displayText,variables);
+      state.finishGame(displayText);
       debug("EVENT_ENDGAME.");
   }
 }
@@ -74,6 +90,22 @@ class EventPosConditionShowMessage extends EventPosCondition {
 
   do(room, inventory, state) {
       state.bufferMessages.push(new BalloonMessage(this.message, this.position.x, this.position.y));
+      debug("EVENT_MESSAGE: Mostrando message '" + this.message + "'.");
+  }
+}
+
+class EventPosConditionShowFormatMessage extends EventPosCondition {
+  constructor(message, position) {
+      super("SHOW_MESSAGE");
+      this.message = message;
+      this.position = position;
+  }
+
+  do(room, inventory, state) {
+      let displayText = this.message;
+      displayText = replaceVariables(displayText,room.variables);
+
+      state.bufferMessages.push(new BalloonMessage(displayText, this.position.x, this.position.y));
       debug("EVENT_MESSAGE: Mostrando message '" + this.message + "'.");
   }
 }
@@ -258,14 +290,62 @@ class EventPosConditionTransition extends EventPosCondition {
   }
 }
 
+class EventPosConditionVarDecreases extends EventPosCondition {
+  constructor(variable,number){
+    super("VAR_DECREASES");
+    this.variable = variable;
+    this.number = number;
+  }
+
+  do(room,inventory,state){
+    if(room.variables.hasOwnProperty(this.variable)){
+      room.variables[this.variable] -= this.number
+      debug("EVENT_POSCONDITION_VAR_DECREASES: " + this.variable)
+    }
+  }
+}
+
+class EventPosConditionVarIncreases extends EventPosCondition {
+  constructor(variable,number){
+    super("VAR_INCREASES");
+    this.variable = variable;
+    this.number = number;
+  }
+
+  do(room,inventory,state){
+    if(room.variables.hasOwnProperty(this.variable)){
+      room.variables[this.variable] += this.number
+      debug("EVENT_POSCONDITION_VAR_INCREASES: " + this.variable)
+    }
+  }
+}
+
+class EventPosConditionVarBecomes extends EventPosCondition {
+  constructor(variable,number){
+    super("VAR_BECOMES");
+    this.variable = variable;
+    this.number = number;
+  }
+
+  do(room,inventory,state){
+    if(room.variables.hasOwnProperty(this.variable)){
+      room.variables[this.variable] = this.number
+      debug("EVENT_POSCONDITION_VAR_BECOMES: " + this.variable)
+    }
+  }
+}
+
+
 // Exporting the classes for use in other modules if needed
 export {
   EventPosCondition,
   EventPosConditionEndGame,
+  EventPosConditionEndGameFormatMessage,
   EventPosConditionObjChangeState,
   EventPosConditionObjChangePosition,
   EventPosConditionObjScales,
   EventPosConditionShowMessage,
+  EventPosConditionShowFormatMessage,
   EventPosConditionObjPutInventory,
   EventPosConditionChangeScenario,
   EventPosConditionActiveItem,
@@ -276,5 +356,8 @@ export {
   EventPosConditionMultipleChoice,
   EventPosConditionSequence,
   EventPosConditionConnections,
-  EventPosConditionTransition
+  EventPosConditionTransition,
+  EventPosConditionVarDecreases,
+  EventPosConditionVarIncreases,
+  EventPosConditionVarBecomes
 };

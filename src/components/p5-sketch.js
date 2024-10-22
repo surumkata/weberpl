@@ -27,6 +27,7 @@ const P5Sketch = ({ json }) => {
         p5.preload = () => {
             // Definindo os dados do jogo carregados
             gameData = load(p5, json);
+            gameData.escapeRoom.variables['__time__'] = gameData.gameState.time
         };
 
         p5.setup = (canvasParentRef) => {
@@ -45,13 +46,12 @@ const P5Sketch = ({ json }) => {
                 tryDoEvents(gameData);
                 gameData.gameState.updateBuffers(gameData.escapeRoom);
                 gameData.inventory.updateItems();
-
                 if (gameData.gameState.isRunning()) {
                     gameData.escapeRoom.draw(p5, gameData.gameState.currentScenario);
                     gameData.inventory.draw(p5);
                     gameData.gameState.drawMessages(p5);
                 } else if (gameData.gameState.isTransition()) {
-                    gameData.gameState.transition.draw(p5);
+                    gameData.gameState.transition.draw(p5,gameData.escapeRoom.variables);
                 } else if (gameData.gameState.isChallengeMode()) {
                     gameData.escapeRoom.draw(p5, gameData.gameState.currentScenario);
                     gameData.inventory.draw(p5);
@@ -76,7 +76,6 @@ const P5Sketch = ({ json }) => {
                         gameData.gameState.desactivateChallengeMode();
                     }
                 } else if (gameData.gameState.isTransition()) {
-                    console.log(gameData.gameState.transition);
                     if (gameData.gameState.transition.nextScenario !== null) {
                         gameData.gameState.desactivateTransitionMode();
                     } else {
