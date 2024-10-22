@@ -108,13 +108,15 @@ export class View {
       return
     }
 
+    
     var posX = this.position.x
     var posY = this.position.y
     var width = this.size.x
     var height = this.size.y
     var scaleX = 1;
     var scaleY = 1;
-
+    
+    console.log(width)
     if(this.turnX){
       posX *= -1;
       posX -= width;

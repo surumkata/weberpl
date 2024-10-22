@@ -57,10 +57,4 @@ export class PreConditionVar extends PreConditionNode {
   constructor(value) {
       super(value);
   }
-
-  test(room, inventory, state) {
-      // Implemente a lógica específica para testar a variável em JavaScript
-      // Exemplo: return room.checkIfConditionSatisfied(this.value);
-      return true; // Exemplo simplificado
-  }
 }

@@ -43,7 +43,10 @@ export class Item {
         this.position.y = this.slotPosition.y + padding;
     }
 
-    view.changeSize(this.size);
+    let scalex = this.size.x / width;
+    let scaley = this.size.y / height;
+    
+    view.changeSize(new Size(scalex,scaley));
     view.changePosition(this.position);
 
 

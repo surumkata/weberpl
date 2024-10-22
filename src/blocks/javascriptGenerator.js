@@ -138,8 +138,8 @@ javascriptGenerator.forBlock['event'] = function(block, generator) {
   var code = {
     "block_type" : "EVENT",
     "id" : text_id,
-    "preConditions" : ifObject,
-    "posConditions" : doObject,
+    "preconditions" : ifObject,
+    "posconditions" : doObject,
     "repetitions" : number_repetitions
   }
   return JSON.stringify(code, null, 2);

@@ -232,11 +232,13 @@ function loadView(p5,view){
     let hitboxes = loadHitboxes(view);
     switch(view.type){
         case "VIEW_IMAGE":
-            let src = loadSource(view.sources)
+            let sources = loadSource(view.sources)
             let time_sprite = view.time_sprite ?? 0;
             let repetitions = view.repetitions || Infinity;
             let turn = view.turn ?? {x: false, y: false};
-            let v = new View(p5,view.id,src,new Size(view.size.x,view.size.y), new Position (view.position.x,view.position.y+HEIGHT_INV),time_sprite,repetitions,turn,hitboxes,view.hitbox_type);
+            let size = new Size(view.size.x,view.size.y);
+            let position = new Position (view.position.x,view.position.y+HEIGHT_INV);
+            let v = new View(p5,view.id,sources,size, position,time_sprite,repetitions,turn,hitboxes,view.hitbox_type);
             v.makeHitboxesBBox();
             return v
         case "VIEW_SKETCH":
@@ -256,9 +258,11 @@ function loadObject(p5,scenario_id,object){
     object.views.forEach(objView => {
         o.addView(loadView(p5,objView));
     })
-    object.sounds.forEach(objSound => {
-        o.addSound(loadSound(objSound));
-    })
+    if(object.sounds){
+        object.sounds.forEach(objSound => {
+            o.addSound(loadSound(objSound));
+        })
+    }
     return o;
 }
 
@@ -270,12 +274,16 @@ function loadScenarios(p5,er,scenarios){
         scenario.views.forEach(scnView => {
             s.addView(loadView(p5,scnView));
         })
-        scenario.objects.forEach(object => {
-            er.addObject(loadObject(p5,scenario.id,object));
-        })
-        scenario.sounds.forEach(scnSound => {
-            s.addSound(loadSound(scnSound));
-        })
+        if(scenario.objects){
+            scenario.objects.forEach(object => {
+                er.addObject(loadObject(p5,scenario.id,object));
+            })
+        }
+        if(scenario.sounds){
+            scenario.sounds.forEach(scnSound => {
+                s.addSound(loadSound(scnSound));
+            })
+        }   
         er.addScenario(s);
     })
 }
@@ -335,13 +343,12 @@ function loadPreconditions(preconditions) {
                 return null;
         }
     } else {
-        return new PreConditionVar(loadPrecondition(preconditions));
+        return new PreConditionVar(loadPrecondition(preconditions.var));
     }
 }
 
 function loadPosconditions(dataPosconditions) {
     const posConditions = [];
-
     dataPosconditions.forEach(dataAction => {
         const type = dataAction.type;
         let eventPoscondition;
@@ -439,8 +446,8 @@ function loadEvents(dataEvents) {
 
     dataEvents.forEach(dataEvent => {
         const id = dataEvent.id;
-        const dataPreconditions = dataEvent.preConditions || {};
-        const dataPosconditions = dataEvent.posConditions;
+        const dataPreconditions = dataEvent.preconditions || {};
+        const dataPosconditions = dataEvent.posconditions;
         const repetitions = dataEvent.repetitions || Infinity;
         const preConditions = new PreConditionTree(loadPreconditions(dataPreconditions));
         const posConditions = loadPosconditions(dataPosconditions);
