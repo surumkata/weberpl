@@ -1,19 +1,19 @@
 {
   "files": {
     "main.css": "/weberpl/static/css/main.da470371.css",
-    "main.js": "/weberpl/static/js/main.642038d6.js",
+    "main.js": "/weberpl/static/js/main.499bf97c.js",
     "static/js/239.2acb20bd.chunk.js": "/weberpl/static/js/239.2acb20bd.chunk.js",
     "static/js/213.fdf33582.chunk.js": "/weberpl/static/js/213.fdf33582.chunk.js",
     "static/js/732.0cc59819.chunk.js": "/weberpl/static/js/732.0cc59819.chunk.js",
     "index.html": "/weberpl/index.html",
     "main.da470371.css.map": "/weberpl/static/css/main.da470371.css.map",
-    "main.642038d6.js.map": "/weberpl/static/js/main.642038d6.js.map",
+    "main.499bf97c.js.map": "/weberpl/static/js/main.499bf97c.js.map",
     "239.2acb20bd.chunk.js.map": "/weberpl/static/js/239.2acb20bd.chunk.js.map",
     "213.fdf33582.chunk.js.map": "/weberpl/static/js/213.fdf33582.chunk.js.map",
     "732.0cc59819.chunk.js.map": "/weberpl/static/js/732.0cc59819.chunk.js.map"
   },
   "entrypoints": [
     "static/css/main.da470371.css",
-    "static/js/main.642038d6.js"
+    "static/js/main.499bf97c.js"
   ]
 }
