@@ -82,14 +82,14 @@ Blockly.Blocks['url2'] = {
 Blockly.Blocks['image'] = {
   init: function() {
     this.appendDummyInput()
-        .appendField("IMAGE")
+        .appendField("IMAGELIB")
         .appendField(new Blockly.FieldDropdown([
-          ["door", "DOOR"],
-          ["safe", "SAFE"],
-          ["key", "KEY"],
-          ['magnifyingglass','MAGNIFYINGGLASS'],
-          ['notes','NOTES'],
-          ['background','BACKGROUND'],
+          ["DOOR", "DOOR"],
+          ["SAFE", "SAFE"],
+          ["KEY", "KEY"],
+          ['MAGNIFYING GLASS','MAGNIFYINGGLASS'],
+          ['NOTES','NOTES'],
+          ['BACKGROUND','BACKGROUND'],
 
         ], this.updateOptions.bind(this)), 'OPCAO1')
         .appendField(new Blockly.FieldDropdown(this.getSecondOptions.bind(this)), 'OPCAO2');
@@ -110,35 +110,35 @@ Blockly.Blocks['image'] = {
     switch(option1) {
       case 'DOOR':
         return [
-          ["open", "OPEN"],
-          ["closed", "CLOSED"]
+          ["OPEN", "OPEN"],
+          ["CLOSED", "CLOSED"]
         ];
       case 'KEY':
         return [
-          ["normal", "NORMAL"]
+          ["NORMAL", "NORMAL"]
         ];
       case 'MAGNIFYINGGLASS':
         return [
-          ["normal", "NORMAL"]
+          ["NORMAL", "NORMAL"]
         ]
       case 'NOTES':
         return [
-          ["normal", "NORMAL"]
+          ["NORMAL", "NORMAL"]
         ]
       case 'SAFE':
         return [
-          ["open", "OPEN"],
-          ["closed", "CLOSED"]
+          ["OPEN", "OPEN"],
+          ["CLOSED", "CLOSED"]
         ];
       case 'BACKGROUND':
         return [
-          ["room", "ROOM"],
-          ["station", "STATION"]
+          ["ROOM", "ROOM"],
+          ["STATION", "STATION"]
         ]
       default:
         return [
-          ["open", "OPEN"],
-          ["closed", "CLOSED"]
+          ["OPEN", "OPEN"],
+          ["CLOSED", "CLOSED"]
         ];
     }
   }
@@ -147,14 +147,14 @@ Blockly.Blocks['image'] = {
 Blockly.Blocks['image2'] = {
   init: function() {
     this.appendDummyInput()
-        .appendField("IMAGE")
+        .appendField("IMAGELIB")
         .appendField(new Blockly.FieldDropdown([
-          ["door", "DOOR"],
-          ["safe", "SAFE"],
-          ["key", "KEY"],
-          ['magnifyingglass','MAGNIFYINGGLASS'],
-          ['notes','NOTES'],
-          ['background','BACKGROUND'],
+          ["DOOR", "DOOR"],
+          ["SAFE", "SAFE"],
+          ["KEY", "KEY"],
+          ['MAGNIFYIN GGLASS','MAGNIFYINGGLASS'],
+          ['NOTES','NOTES'],
+          ['BACKGROUND','BACKGROUND'],
 
         ], this.updateOptions.bind(this)), 'OPCAO1')
         .appendField(new Blockly.FieldDropdown(this.getSecondOptions.bind(this)), 'OPCAO2');
@@ -174,35 +174,35 @@ Blockly.Blocks['image2'] = {
     switch(option1) {
       case 'DOOR':
         return [
-          ["open", "OPEN"],
-          ["closed", "CLOSED"]
+          ["OPEN", "OPEN"],
+          ["CLOSED", "CLOSED"]
         ];
       case 'KEY':
         return [
-          ["normal", "NORMAL"]
+          ["NORMAL", "NORMAL"]
         ];
       case 'MAGNIFYINGGLASS':
         return [
-          ["normal", "NORMAL"]
+          ["NORMAL", "NORMAL"]
         ]
       case 'NOTES':
         return [
-          ["normal", "NORMAL"]
+          ["NORMAL", "NORMAL"]
         ]
       case 'SAFE':
         return [
-          ["open", "OPEN"],
-          ["closed", "CLOSED"]
+          ["OPEN", "OPEN"],
+          ["CLOSED", "CLOSED"]
         ];
       case 'BACKGROUND':
         return [
-          ["room", "ROOM"],
-          ["station", "STATION"]
+          ["ROOM", "ROOM"],
+          ["STATION", "STATION"]
         ]
       default:
         return [
-          ["open", "OPEN"],
-          ["closed", "CLOSED"]
+          ["OPEN", "OPEN"],
+          ["CLOSED", "CLOSED"]
         ];
     }
   }
@@ -386,7 +386,7 @@ Blockly.Blocks['view'] = {
   init: function() {
     this.appendDummyInput('ID')
       .setAlign(Blockly.inputs.Align.CENTRE)
-      .appendField('VIEW')
+      .appendField('VIEW IMAGE')
       .appendField(new Blockly.FieldTextInput('VIEW'), 'ID');
     this.appendDummyInput('HITBOX')
     .setAlign(Blockly.inputs.Align.CENTRE)
@@ -434,7 +434,7 @@ Blockly.Blocks['view'] = {
       this.appendStatementInput('ADVANCED_HITBOX')
         .setCheck('hitbox');
 
-      this.moveInputBefore('ADVANCED_HITBOX', 'SOURCES');
+      this.moveInputBefore('ADVANCED_HITBOX', 'SOURCE');
       this.moveInputBefore('ADVANCED_HITBOX_LABEL', 'ADVANCED_HITBOX');
     }
 
@@ -447,7 +447,7 @@ Blockly.Blocks['view_animated'] = {
   init: function() {
     this.appendDummyInput('ID')
       .setAlign(Blockly.inputs.Align.CENTRE)
-      .appendField('VIEW ANIMATED')
+      .appendField('VIEW ANIMATION')
       .appendField(new Blockly.FieldTextInput('VIEW'), 'ID');
     this.appendDummyInput('HITBOX')
     .setAlign(Blockly.inputs.Align.CENTRE)
@@ -513,7 +513,7 @@ Blockly.Blocks['view_animated2'] = {
   init: function() {
     this.appendDummyInput('ID')
       .setAlign(Blockly.inputs.Align.CENTRE)
-      .appendField('VIEW ANIMATED')
+      .appendField('VIEW ANIMATION')
       .appendField(new Blockly.FieldTextInput('VIEW'), 'ID');
     this.appendStatementInput('SOURCES')
       .setAlign(Blockly.inputs.Align.CENTRE)
@@ -546,7 +546,7 @@ Blockly.Blocks['view2'] = {
   init: function() {
     this.appendDummyInput()
       .setAlign(Blockly.inputs.Align.CENTRE)
-      .appendField("VIEW")
+      .appendField("VIEW IMAGE")
       .appendField(new Blockly.FieldTextInput("VIEW"), "ID");
     this.appendValueInput("SOURCE")
         .setCheck("url")
@@ -736,8 +736,8 @@ this.setHelpUrl("");
 Blockly.Blocks['poscond_remove_obj'] = {
 init: function() {
   this.appendDummyInput()
-      .appendField(new Blockly.FieldTextInput("OBJECT"), "OBJECT_ID")
-      .appendField("IS REMOVED");
+      .appendField("REMOVE")
+      .appendField(new Blockly.FieldTextInput("OBJECT"), "OBJECT_ID");
   this.setOutput(true, "action");
   this.setColour('%{BKY_ACTIONS}');
 this.setTooltip("");
@@ -969,24 +969,24 @@ this.setHelpUrl("");
 Blockly.Blocks['challenge_connection'] = {
 init: function() {
   this.appendDummyInput()
-      .appendField("CHALLENGE CONNECTION");
+      .appendField("CHALLENGE MATCH");
   this.appendDummyInput()
       .appendField("QUESTION:")
       .appendField(new Blockly.FieldTextInput("QUESTION"), "QUESTION");
   this.appendDummyInput()
-      .appendField("CONNECT 1:")
+      .appendField("MATCH 1:")
       .appendField(new Blockly.FieldTextInput("A1"), "A1")
       .appendField(new Blockly.FieldTextInput("B1"), "B1");
   this.appendDummyInput()
-      .appendField("CONNECT 2:")
+      .appendField("MATCH 2:")
       .appendField(new Blockly.FieldTextInput("A2"), "A2")
       .appendField(new Blockly.FieldTextInput("B2"), "B2");
   this.appendDummyInput()
-      .appendField("CONNECT 3:")
+      .appendField("MATCH 3:")
       .appendField(new Blockly.FieldTextInput("A3"), "A3")
       .appendField(new Blockly.FieldTextInput("B3"), "B3");
   this.appendDummyInput()
-      .appendField("CONNECT 4:")
+      .appendField("MATCH 4:")
       .appendField(new Blockly.FieldTextInput("A4"), "A4")
       .appendField(new Blockly.FieldTextInput("B4"), "B4");
   this.appendValueInput("SUCESS")
@@ -1173,6 +1173,7 @@ init: function() {
 Blockly.Blocks['draw_square'] = {
   init: function() {
     this.appendDummyInput('ID')
+      .setAlign(Blockly.inputs.Align.CENTRE)
       .appendField('SQUARE')
       .appendField(new Blockly.FieldTextInput('SQUARE'), 'ID');
     this.appendDummyInput('XY')
@@ -1565,6 +1566,7 @@ Blockly.Blocks['hitbox_polygon'] = {
 Blockly.Blocks['hitbox_square'] = {
   init: function() {
     this.appendDummyInput('ID')
+      .setAlign(Blockly.inputs.Align.CENTRE)
       .appendField('SQUARE')
       .appendField(new Blockly.FieldTextInput('SQUARE'), 'ID');
     this.appendDummyInput('XY')
