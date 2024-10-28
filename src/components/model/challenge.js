@@ -429,13 +429,13 @@ class ChallengeSlidingPuzzle extends Challenge {
     loadImages(p5) {
         this.img = p5.loadImage(this.imageSrc, (img) => {
             img.resize(this.gridWidth, this.gridWidth); // Redimensiona a imagem para um quadrado do tamanho do canvas
-            this.initPieces(p5, img);
+            this.initPieces(img);
             this.loadedImage = true;
         });
     }
 
     // Inicializar as peças do puzzle
-    initPieces(p5, img) {
+    initPieces(img) {
         for (let y = 0; y < this.gridSize; y++) {
             for (let x = 0; x < this.gridSize; x++) {
                 if (x === 2 && y === 2) continue; // Deixa o último espaço vazio
@@ -457,6 +457,10 @@ class ChallengeSlidingPuzzle extends Challenge {
             const moves = this.getPossibleMoves(x, y);
             const randomMove = moves[Math.floor(Math.random() * moves.length)];
             this.movePiece(randomMove.x, randomMove.y);
+        }
+
+        if(this.isSolved()){
+            this.shufflePuzzle();
         }
     }
 
