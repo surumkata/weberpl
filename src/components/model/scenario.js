@@ -5,7 +5,7 @@ export class Scenario {
       this.views = {};
       this.sounds = {};
       this.hitboxes = {};
-      this.texts = {};
+      this.texts = [];
  }
 
   changeCurrentView(viewId) {
@@ -33,7 +33,7 @@ export class Scenario {
 
   addTexts(texts){
     texts.forEach(text => {
-      this.texts[text.id] = text
+      this.texts.push(text);
     });
 }
 
@@ -50,9 +50,9 @@ export class Scenario {
     if (this.currentView != null && this.currentView in this.views){
       this.views[this.currentView].draw(p5);
       
-      for (const [key, text] of Object.entries(this.texts)) {
-        text.draw(p5,variables);
-        }
+      this.texts.forEach(text => {
+        text.draw(p5,variables)
+      })
 
       if(hitboxes){
         p5.push();

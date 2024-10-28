@@ -11,7 +11,7 @@ import {Transition } from './transition.js';
 import { Event } from './event.js';
 import { PreConditionOperatorAnd, PreConditionOperatorNot, PreConditionOperatorOr, PreConditionTree, PreConditionVar } from './precondition_tree.js';
 import { EventPreConditionIsEqualTo,EventPreConditionIsGreaterThan,EventPreConditionIsLessThan,EventPreConditionIsGreaterThanOrEqualTo,EventPreConditionIsLessThanOrEqualTo,EventPreConditionAfterEvent,EventPreConditionAfterTime,EventPreConditionClickedHitbox, EventPreConditionClickedNotHitbox, EventPreConditionClickedNotObject,EventPreConditionClickedObject,EventPreConditionItemIsInUse,EventPreConditionWhenObjectIsView } from './precondition.js';
-import { EventPosConditionShowFormatMessage, EventPosConditionEndGameFormatMessage,EventPosConditionVarDecreases,EventPosConditionVarIncreases,EventPosConditionVarBecomes,EventPosConditionTransition, EventPosConditionConnections, EventPosConditionSequence, EventPosConditionQuestion, EventPosConditionChangeScenario,EventPosConditionRemoveObj,EventPosConditionEndGame,EventPosConditionMultipleChoice,EventPosConditionObjChangePosition,EventPosConditionObjScales,EventPosConditionObjChangeState,EventPosConditionObjPutInventory,EventPosConditionPlaySound,EventPosConditionShowMessage } from './poscondition.js';
+import { EventPosConditionPuzzle,EventPosConditionShowFormatMessage, EventPosConditionEndGameFormatMessage,EventPosConditionVarDecreases,EventPosConditionVarIncreases,EventPosConditionVarBecomes,EventPosConditionTransition, EventPosConditionConnections, EventPosConditionSequence, EventPosConditionQuestion, EventPosConditionChangeScenario,EventPosConditionRemoveObj,EventPosConditionEndGame,EventPosConditionMultipleChoice,EventPosConditionObjChangePosition,EventPosConditionObjScales,EventPosConditionObjChangeState,EventPosConditionObjPutInventory,EventPosConditionPlaySound,EventPosConditionShowMessage } from './poscondition.js';
 import { HitboxArc, HitboxCircle, HitboxEllipse, HitboxLine, HitboxPolygon, HitboxRect, HitboxSquare, HitboxTriangle } from './hitbox.js';
 import { Sound } from './sound.js';
 
@@ -92,7 +92,6 @@ function loadTransitions(p5,er,gs,transitions){
             next_scenario = transition.next;
         }
         let t = new Transition(transition.id,tv,story,next_scenario,next_transition,format_story);
-        console.log(t);
         er.addTransition(t);
     })
 }
@@ -289,9 +288,11 @@ function loadObject(p5,scenario_id,object){
 function loadTexts(dataTexts){
     var texts = [];
     dataTexts.forEach(data => {
-        let id = data.id;
         let color = data.color ?? "#000000";
         let width = data.width ?? 32;
+        if (width < 2){
+            width = 2;
+        }
         let x = data.position.x;
         let y = data.position.y + HEIGHT_INV;
         let text = data.text ?? "";
@@ -300,7 +301,7 @@ function loadTexts(dataTexts){
             text = data.format_text;
             format_text = true;
         }
-        texts.push(new Text(id,text,x,y,width,color,format_text))
+        texts.push(new Text(text,x,y,width,color,format_text))
     })
     return texts;
 }
@@ -333,7 +334,6 @@ function loadScenarios(p5,er,scenarios){
 }
 
 function loadPrecondition(precondition) {
-    console.log(precondition)
     const type = precondition.type;
     let eventPrecondition;
 
@@ -395,7 +395,6 @@ function loadPrecondition(precondition) {
 }
 
 function loadPreconditions(preconditions) {
-    console.log(preconditions)
     if (preconditions.operator) {
         const operator = preconditions.operator;
         const left = loadPreconditions(preconditions.left);
@@ -491,6 +490,12 @@ function loadPosconditions(dataPosconditions) {
                 const s_sucess = new Event("sucess",{},loadPosconditions(dataAction.sucess),null);
                 const s_fail = new Event("fail",{},loadPosconditions(dataAction.fail),null);
                 eventPoscondition = new EventPosConditionSequence(s_question,sequence,s_sucess,s_fail);
+                break;
+            case "PUZZLE":
+                const image = loadSource(dataAction.sources[0]);
+                console.log(image)
+                const p_sucess = new Event("sucess",{},loadPosconditions(dataAction.sucess),null);
+                eventPoscondition = new EventPosConditionPuzzle(image,p_sucess);
                 break;
             case "CONNECTIONS":
                 const c_question = dataAction.question;

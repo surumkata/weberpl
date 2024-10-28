@@ -389,6 +389,77 @@ class ChallengeSequence extends Challenge {
     }
 }
 
+class ChallengePuzzle extends Challenge {
+    constructor(imageSrc, sucess) {
+        super(sucess,null);
+        this.imageSrc = imageSrc;       // Imagem do quebra-cabeça
+        //this.masks = maskSrcs.map(src => loadImage(src));  // Máscaras de cada peça
+        this.pieces = [];                       // Array para guardar cada peça recortada
+        //this.initPieces();                      // Inicializar peças recortadas
+        this.loadedImage = false;
+    }
+
+    // Inicializa as peças recortando-as usando as máscaras
+    initPieces() {
+        for (let i = 0; i < this.masks.length; i++) {
+            const mask = this.masks[i];
+            const pieceGraphics = createGraphics(mask.width, mask.height);
+            
+            pieceGraphics.image(this.image, 0, 0);  // Desenha imagem no gráfico da peça
+            pieceGraphics.mask(mask);               // Aplica a máscara
+            
+            this.pieces.push({
+                graphic: pieceGraphics,             // Imagem recortada da peça
+                x: random(width),                   // Posição inicial aleatória
+                y: random(height),
+                correctX: i * mask.width,           // Coordenadas do alvo final da peça
+                correctY: 0,
+                isPlaced: false                     // Peça não está no local correto inicialmente
+            });
+        }
+    }
+
+    // Desenha todas as peças na tela
+    draw(p5) {
+
+        if(!this.loadedImage){
+            console.log(this.imageSrc)
+            this.image = p5.loadImage(this.imageSrc);
+            this.loadedImage = true;
+        }
+        p5.image(this.image,0,0)
+
+        //for (let piece of this.pieces) {
+        //    if (!piece.isPlaced) {
+        //        p5.image(piece.graphic, piece.x, piece.y);
+        //    } else {
+        //        p5.image(piece.graphic, piece.correctX, piece.correctY);
+        //    }
+        //}
+    }
+
+    // Verifica se uma peça foi clicada e a move
+    mousePressed(mx, my) {
+        for (let piece of this.pieces) {
+            if (mx > piece.x && mx < piece.x + piece.graphic.width &&
+                my > piece.y && my < piece.y + piece.graphic.height &&
+                !piece.isPlaced) {
+                
+                piece.x = mx - piece.graphic.width / 2;
+                piece.y = my - piece.graphic.height / 2;
+                
+                // Se a posição estiver próxima do local correto, considera a peça encaixada
+                if (dist(piece.x, piece.y, piece.correctX, piece.correctY) < 10) {
+                    piece.isPlaced = true;
+                    piece.x = piece.correctX;
+                    piece.y = piece.correctY;
+                }
+                break;
+            }
+        }
+    }
+}
+
 class ChallengeConnections extends Challenge{
     constructor(question, list1, list2, sucess, fail){
         super(sucess,fail);
@@ -597,5 +668,6 @@ export {
     ChallengeQuestion,
     ChallengeMultipleChoice,
     ChallengeSequence,
-    ChallengeConnections
+    ChallengeConnections,
+    ChallengePuzzle
 };

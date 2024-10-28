@@ -444,6 +444,7 @@ function EscapeRoomEditor() {
       "scenarios" : [],
       "events" : [],
       "transitions" : [],
+      "variables" : [],
       "start_type" : "",
       "start" : ""
     };
@@ -454,6 +455,7 @@ function EscapeRoomEditor() {
           er.title = block.title;
           er.start_type = block.start_type;
           er.start = block.start;
+          er.variables = block.variables
           break;
         case 'SCENARIO':
           delete block.block_type;

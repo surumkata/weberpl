@@ -4,13 +4,28 @@ javascriptGenerator.forBlock['escape_room'] = function(block, generator) {
   var text_title = block.getFieldValue('TITLE');
   var start_type = block.getFieldValue('TYPE');
   var start_id = block.getFieldValue('START');
+  var stringVariables = generator.statementToCode(block, 'VARIABLES');
+
+  if(stringVariables) {
+    stringVariables = stringVariables.replaceAll("}{","},\n{");
+    stringVariables = "[" + stringVariables + "]"
+  }
+  else {
+    stringVariables = "[]"
+  }
+  
+  
+  var variableObject = JSON.parse(stringVariables);
 
   var code = {
     "block_type" : "ESCAPE_ROOM",
     "title" : text_title,
+    "variables" : variableObject,
     "start_type" : start_type,
     "start" : start_id
   };
+
+  console.log(code)
 
   return JSON.stringify(code, null, 2); // Retornar o JSON como string formatada
 };
@@ -64,6 +79,7 @@ javascriptGenerator.forBlock['scenario'] = function(block, generator) {
   var text_initial_view = block.getFieldValue('initial_view');
   var stringViews = generator.statementToCode(block, 'VIEWS');
   var stringObjects = generator.statementToCode(block, 'OBJECTS');
+  var stringTexts = generator.statementToCode(block, 'TEXTS');
   var stringSounds = generator.statementToCode(block, 'SOUNDS');
 
   if(stringViews) {
@@ -83,6 +99,14 @@ javascriptGenerator.forBlock['scenario'] = function(block, generator) {
     stringObjects = "[]"
   }
 
+  if(stringTexts) {
+    stringTexts = stringTexts.replaceAll("}{","},\n{");
+    stringTexts = "[" + stringTexts + "]"
+  }
+  else {
+    stringTexts = "[]"
+  }
+
   if(stringSounds) {
     stringSounds = stringSounds.replaceAll("}{","},\n{");
     stringSounds = "[" + stringSounds + "]"
@@ -94,6 +118,7 @@ javascriptGenerator.forBlock['scenario'] = function(block, generator) {
   
   var viewsObject = JSON.parse(stringViews);
   var objectsObject = JSON.parse(stringObjects);
+  var textsObject = JSON.parse(stringTexts);
   var soundsObject = JSON.parse(stringSounds);
   
   var code = {
@@ -102,6 +127,7 @@ javascriptGenerator.forBlock['scenario'] = function(block, generator) {
     'initial_view' : text_initial_view,
     'views' : viewsObject,
     'objects' : objectsObject,
+    'texts' : textsObject,
     'sounds' : soundsObject
   }
 
@@ -882,8 +908,112 @@ var code = { "var" : {
 return [JSON.stringify(code, null, 2), javascriptGenerator.ORDER_NONE];
 };
 
+javascriptGenerator.forBlock['poscond_var_decreases'] = function(block, generator) {
+  var var_id = block.getFieldValue('VARIABLE');
+  const number = block.getFieldValue('NUMBER');
+  
+  var code = {
+    "type": "VAR_DECREASES",
+    "variable": var_id,
+    "number": number
+  }
+  
+  return [JSON.stringify(code, null, 2), javascriptGenerator.ORDER_NONE];
+  };
+
+javascriptGenerator.forBlock['poscond_var_increases'] = function(block, generator) {
+  var var_id = block.getFieldValue('VARIABLE');
+  const number = block.getFieldValue('NUMBER');
+  
+  var code = {
+    "type": "VAR_INCREASES",
+    "variable": var_id,
+    "number": number
+  }
+  
+  return [JSON.stringify(code, null, 2), javascriptGenerator.ORDER_NONE];
+  };
+
+javascriptGenerator.forBlock['poscond_var_becomes'] = function(block, generator) {
+  var var_id = block.getFieldValue('VARIABLE');
+  const number = block.getFieldValue('NUMBER');
+  
+  var code = {
+    "type": "VAR_BECOMES",
+    "variable": var_id,
+    "number": number
+  }
+  
+  return [JSON.stringify(code, null, 2), javascriptGenerator.ORDER_NONE];
+  };
+
 //Triggers blocks
 
+
+javascriptGenerator.forBlock['precond_var_is_equal_to'] = function(block, generator) {
+  var var_id = block.getFieldValue('VARIABLE');
+  const number = block.getFieldValue('NUMBER');
+  
+  var code = { "var" : {
+    "type": "IS_EQUAL_TO",
+    "variable": var_id,
+    "number": number
+  } }
+  
+  return [JSON.stringify(code, null, 2), javascriptGenerator.ORDER_NONE];
+  };
+
+javascriptGenerator.forBlock['precond_var_is_greater_than'] = function(block, generator) {
+  var var_id = block.getFieldValue('VARIABLE');
+  const number = block.getFieldValue('NUMBER');
+  
+  var code = { "var" : {
+    "type": "IS_GREATER_THAN",
+    "variable": var_id,
+    "number": number
+  } }
+  
+  return [JSON.stringify(code, null, 2), javascriptGenerator.ORDER_NONE];
+  };
+
+javascriptGenerator.forBlock['precond_var_is_less_than'] = function(block, generator) {
+  var var_id = block.getFieldValue('VARIABLE');
+  const number = block.getFieldValue('NUMBER');
+  
+  var code = { "var" : {
+    "type": "IS_LESS_THAN",
+    "variable": var_id,
+    "number": number
+  } }
+  
+  return [JSON.stringify(code, null, 2), javascriptGenerator.ORDER_NONE];
+  };
+
+javascriptGenerator.forBlock['precond_var_is_greater_than_or_equal_to'] = function(block, generator) {
+  var var_id = block.getFieldValue('VARIABLE');
+  const number = block.getFieldValue('NUMBER');
+  
+  var code = { "var" : {
+    "type": "IS_GREATER_THAN_OR_EQUAL_TO",
+    "variable": var_id,
+    "number": number
+  } }
+  
+  return [JSON.stringify(code, null, 2), javascriptGenerator.ORDER_NONE];
+  };
+
+javascriptGenerator.forBlock['precond_var_is_less_than_or_equal_to'] = function(block, generator) {
+  var var_id = block.getFieldValue('VARIABLE');
+  const number = block.getFieldValue('NUMBER');
+  
+  var code = { "var" : {
+    "type": "IS_LESS_THAN_OR_EQUAL_TO",
+    "variable": var_id,
+    "number": number
+  } }
+  
+  return [JSON.stringify(code, null, 2), javascriptGenerator.ORDER_NONE];
+  };
 
 javascriptGenerator.forBlock['precond_click_obj'] = function(block, generator) {
 var object_id = block.getFieldValue('OBJECT_ID');
@@ -1650,4 +1780,68 @@ javascriptGenerator.forBlock['hitbox_ellipse'] = function(block, generator) {
   }
 
   return JSON.stringify(code, null, 2); // Retornar o JSON como string formatada
+}
+
+javascriptGenerator.forBlock['text'] = function(block, generator) {
+  const text = block.getFieldValue('TEXT');
+
+  const color = generator.quote_(block.getFieldValue('COLOUR'));
+
+  var posString = generator.valueToCode(block, 'POSITION', Order.ATOMIC);
+
+  if(posString){
+    posString = posString.slice(1,-1);
+  }
+  else {
+    posString = 'null'
+  }
+  var positionObject = JSON.parse(posString);
+
+  const width = block.getFieldValue('WIDTH');
+
+  const code = {
+    "text" : text,
+    "color" : color.slice(1,-1),
+    "position" : positionObject,
+    "width" : width
+  };
+  return JSON.stringify(code, null, 2);
+}
+
+javascriptGenerator.forBlock['format_text'] = function(block, generator) {
+  const text = block.getFieldValue('TEXT');
+
+  const color = generator.quote_(block.getFieldValue('COLOUR'));
+
+  var posString = generator.valueToCode(block, 'POSITION', Order.ATOMIC);
+
+  if(posString){
+    posString = posString.slice(1,-1);
+  }
+  else {
+    posString = 'null'
+  }
+  var positionObject = JSON.parse(posString);
+
+  const width = block.getFieldValue('WIDTH');
+
+  const code = {
+    "format_text" : text,
+    "color" : color.slice(1,-1),
+    "position" : positionObject,
+    "width" : width
+  };
+  return JSON.stringify(code, null, 2);
+}
+
+javascriptGenerator.forBlock['variable'] = function(block, generator) {
+  const id = block.getFieldValue('VARIABLE');
+
+  const number = block.getFieldValue('NUMBER');
+
+  const code = {
+    "id" : id,
+    "number" : number
+  };
+  return JSON.stringify(code, null, 2);
 }

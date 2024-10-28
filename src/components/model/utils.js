@@ -46,8 +46,7 @@ export class Size {
 }
 
 export class Text {
-    constructor(id, text, x, y, size, color, textFormat = false) {
-      this.id = id;
+    constructor(text, x, y, size, color, textFormat = false) {
       this.size = parseInt(size * 0.8); // tamanho da fonte
       this.color = color; // cor em formato p5.js
       this.text = text;
@@ -58,7 +57,7 @@ export class Text {
   
     draw(p5, variables) {
       let displayText = this.text;
-  
+      
       if (this.textFormat) {
         displayText = replaceVariables(displayText,variables);
       }

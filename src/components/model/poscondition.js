@@ -2,7 +2,7 @@
 import { debug, BalloonMessage, replaceVariables } from "./utils";
 import { PreConditionTree,PreConditionVar,PreConditionOperatorAnd } from "./precondition_tree";
 import { EventPreConditionClickedItem, EventPreConditionItemIsInUse, EventPreConditionItemNotInUse } from "./precondition";
-import { ChallengeConnections, ChallengeQuestion, ChallengeMultipleChoice, ChallengeSequence } from "./challenge";
+import { ChallengeConnections, ChallengeQuestion, ChallengeMultipleChoice, ChallengeSequence, ChallengePuzzle } from "./challenge";
 
 class EventPosCondition {
   constructor(type) {
@@ -276,6 +276,20 @@ class EventPosConditionConnections extends EventPosCondition {
   }
 }
 
+class EventPosConditionPuzzle extends EventPosCondition {
+  constructor(image, sucessEvent) {
+      super("PUZZLE");
+      this.image = image;
+      console.log("pos",image)
+      this.sucessEvent = sucessEvent;
+  }
+
+  do(room,inventory,state){
+    state.activeChallengeMode(new ChallengePuzzle(this.image, this.sucessEvent));
+    debug("EVENT_POSCONDITION_PUZZLE");
+  }
+}
+
 class EventPosConditionTransition extends EventPosCondition {
   constructor(transition_id){
     super("TRANSITION");
@@ -359,5 +373,6 @@ export {
   EventPosConditionTransition,
   EventPosConditionVarDecreases,
   EventPosConditionVarIncreases,
-  EventPosConditionVarBecomes
+  EventPosConditionVarBecomes,
+  EventPosConditionPuzzle
 };

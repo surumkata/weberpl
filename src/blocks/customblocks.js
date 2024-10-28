@@ -24,6 +24,11 @@ Blockly.Blocks['escape_room'] = {
         .appendField("ESCAPE ROOM")
         .appendField(new Blockly.FieldTextInput("My Escape Room"), "TITLE");
     this.appendDummyInput()
+        .setAlign(Blockly.inputs.Align.CENTRE)
+        .appendField("VARIABLES:");
+    this.appendStatementInput("VARIABLES")
+        .setCheck("variable");
+    this.appendDummyInput()
         .appendField("STARTS WITH")
         .appendField(new Blockly.FieldDropdown([["TRANSITION","TRANSITION"], ["SCENARIO","SCENARIO"]]), "TYPE")
         .appendField(new Blockly.FieldTextInput("ID"), "START");
@@ -246,6 +251,11 @@ Blockly.Blocks['scenario'] = {
         .setCheck("object");
     this.appendDummyInput()
         .setAlign(Blockly.inputs.Align.CENTRE)
+        .appendField("TEXTS:");
+    this.appendStatementInput("TEXTS")
+        .setCheck("text");
+    this.appendDummyInput()
+        .setAlign(Blockly.inputs.Align.CENTRE)
         .appendField("SOUNDS:");
     this.appendStatementInput("SOUNDS")
         .setCheck("sound");
@@ -275,6 +285,11 @@ Blockly.Blocks['scenario2'] = {
         .appendField("HITBOXES:");
     this.appendStatementInput("HITBOXES")
         .setCheck("hitbox");
+    this.appendDummyInput()
+        .setAlign(Blockly.inputs.Align.CENTRE)
+        .appendField("TEXTS:");
+    this.appendStatementInput("TEXTS")
+        .setCheck("text");
     this.appendDummyInput()
         .setAlign(Blockly.inputs.Align.CENTRE)
         .appendField("SOUNDS:");
@@ -784,7 +799,111 @@ this.setHelpUrl("");
 }
 };
 
+Blockly.Blocks['poscond_var_decreases'] = {
+  init: function() {
+    this.appendDummyInput()
+      .appendField(new Blockly.FieldTextInput('VARIABLE'), 'VARIABLE')
+      .appendField('DECREASES')
+      .appendField(new Blockly.FieldNumber(0), 'NUMBER');
+    this.setOutput(true, "action");
+    this.setColour('%{BKY_ACTIONS}');
+  this.setTooltip("");
+  this.setHelpUrl("");
+  }
+  };
+
+Blockly.Blocks['poscond_var_increases'] = {
+  init: function() {
+    this.appendDummyInput()
+      .appendField(new Blockly.FieldTextInput('VARIABLE'), 'VARIABLE')
+      .appendField('INCREASES')
+      .appendField(new Blockly.FieldNumber(0), 'NUMBER');
+    this.setOutput(true, "action");
+    this.setColour('%{BKY_ACTIONS}');
+  this.setTooltip("");
+  this.setHelpUrl("");
+  }
+  };
+
+Blockly.Blocks['poscond_var_becomes'] = {
+  init: function() {
+    this.appendDummyInput()
+      .appendField(new Blockly.FieldTextInput('VARIABLE'), 'VARIABLE')
+      .appendField('BECOMES')
+      .appendField(new Blockly.FieldNumber(0), 'NUMBER');
+    this.setOutput(true, "action");
+    this.setColour('%{BKY_ACTIONS}');
+  this.setTooltip("");
+  this.setHelpUrl("");
+  }
+  };
+
 //Triggers blocks
+
+Blockly.Blocks['precond_var_is_equal_to'] = {
+  init: function() {
+    this.appendDummyInput()
+      .appendField(new Blockly.FieldTextInput('VARIABLE'), 'VARIABLE')
+      .appendField('IS EQUAL TO')
+      .appendField(new Blockly.FieldNumber(0), 'NUMBER');
+    this.setOutput(true, "trigger");
+    this.setColour('%{BKY_TRIGGERS}');
+  this.setTooltip("");
+  this.setHelpUrl("");
+  }
+  };
+
+Blockly.Blocks['precond_var_is_greater_than'] = {
+  init: function() {
+    this.appendDummyInput()
+      .appendField(new Blockly.FieldTextInput('VARIABLE'), 'VARIABLE')
+      .appendField('IS GREATER THAN')
+      .appendField(new Blockly.FieldNumber(0), 'NUMBER');
+    this.setOutput(true, "trigger");
+    this.setColour('%{BKY_TRIGGERS}');
+  this.setTooltip("");
+  this.setHelpUrl("");
+  }
+  };
+
+Blockly.Blocks['precond_var_is_less_than'] = {
+  init: function() {
+    this.appendDummyInput()
+      .appendField(new Blockly.FieldTextInput('VARIABLE'), 'VARIABLE')
+      .appendField('IS LESS THAN')
+      .appendField(new Blockly.FieldNumber(0), 'NUMBER');
+    this.setOutput(true, "trigger");
+    this.setColour('%{BKY_TRIGGERS}');
+  this.setTooltip("");
+  this.setHelpUrl("");
+  }
+  };
+  
+Blockly.Blocks['precond_var_is_greater_than_or_equal_to'] = {
+  init: function() {
+    this.appendDummyInput()
+      .appendField(new Blockly.FieldTextInput('VARIABLE'), 'VARIABLE')
+      .appendField('IS GREATER THAN OR EQUAL TO')
+      .appendField(new Blockly.FieldNumber(0), 'NUMBER');
+    this.setOutput(true, "trigger");
+    this.setColour('%{BKY_TRIGGERS}');
+  this.setTooltip("");
+  this.setHelpUrl("");
+  }
+  };
+
+Blockly.Blocks['precond_var_is_less_than_or_equal_to'] = {
+  init: function() {
+    this.appendDummyInput()
+      .appendField(new Blockly.FieldTextInput('VARIABLE'), 'VARIABLE')
+      .appendField('IS LESS THAN OR EQUAL TO')
+      .appendField(new Blockly.FieldNumber(0), 'NUMBER');
+    this.setOutput(true, "trigger");
+    this.setColour('%{BKY_TRIGGERS}');
+  this.setTooltip("");
+  this.setHelpUrl("");
+  }
+  };
 
 Blockly.Blocks['precond_click_obj'] = {
 init: function() {
@@ -809,8 +928,6 @@ this.setTooltip("");
 this.setHelpUrl("");
 }
 };
-
-//Triggers blocks
 
 Blockly.Blocks['precond_click_hitbox'] = {
   init: function() {
@@ -1716,5 +1833,81 @@ Blockly.Blocks['hitbox_ellipse']  = {
     this.setTooltip('');
     this.setHelpUrl('');
     this.setColour('%{BKY_HITBOXES}');
+  }
+};
+
+
+Blockly.Blocks['text']  = {
+  init: function() {
+    this.appendDummyInput('NAME')
+      .setAlign(Blockly.inputs.Align.CENTRE)
+      .appendField('TEXT');
+    this.appendDummyInput('TEXT')
+      .setAlign(Blockly.inputs.Align.CENTRE)
+      .appendField(new Blockly.FieldTextInput('TEXT'), 'TEXT');
+    this.appendDummyInput('ATRBS')
+      .setAlign(Blockly.inputs.Align.CENTRE)
+      .appendField('COLOR:')
+      .appendField(new FieldColourHsvSliders('#ff0000'), 'COLOUR')
+    this.appendValueInput('POSITION')
+      .setCheck('point')
+      .setAlign(Blockly.inputs.Align.CENTRE)
+      .appendField('POSITION: ');
+    this.appendDummyInput('WIDTH')
+      .setAlign(Blockly.inputs.Align.CENTRE)
+      .appendField('WIDTH:')
+      .appendField(new Blockly.FieldNumber(32, 0), 'WIDTH');
+    this.setPreviousStatement(true, 'text');
+    this.setNextStatement(true, 'text');
+    this.setTooltip('');
+    this.setHelpUrl('');
+    this.setColour('%{BKY_SOUNDS}');
+  }
+};
+
+Blockly.Blocks['format_text']  = {
+  init: function() {
+    this.appendDummyInput('NAME')
+      .setAlign(Blockly.inputs.Align.CENTRE)
+      .appendField('FORMAT TEXT');
+    this.appendDummyInput('TEXT')
+      .setAlign(Blockly.inputs.Align.CENTRE)
+      .appendField(new Blockly.FieldTextInput('TEXT'), 'TEXT');
+    this.appendDummyInput('ATRBS')
+      .setAlign(Blockly.inputs.Align.CENTRE)
+      .appendField('COLOR:')
+      .appendField(new FieldColourHsvSliders('#ff0000'), 'COLOUR')
+    this.appendValueInput('POSITION')
+      .setCheck('point')
+      .setAlign(Blockly.inputs.Align.CENTRE)
+      .appendField('POSITION: ');
+    this.appendDummyInput('WIDTH')
+      .setAlign(Blockly.inputs.Align.CENTRE)
+      .appendField('WIDTH:')
+      .appendField(new Blockly.FieldNumber(32, 0), 'WIDTH');
+    this.setPreviousStatement(true, 'text');
+    this.setNextStatement(true, 'text');
+    this.setTooltip('');
+    this.setHelpUrl('');
+    this.setColour('%{BKY_SOUNDS}');
+  }
+};
+                    
+
+Blockly.Blocks['variable']  = {
+  init: function() {
+    this.appendDummyInput('VARIABLE')
+      .setAlign(Blockly.inputs.Align.CENTRE)
+      .appendField('VARIABLE')
+      .appendField(new Blockly.FieldTextInput('VARIABLE'), 'VARIABLE');
+    this.appendDummyInput('VALUE')
+      .setAlign(Blockly.inputs.Align.CENTRE)
+      .appendField('VALUE:')
+      .appendField(new Blockly.FieldNumber(0), 'NUMBER');
+    this.setPreviousStatement(true, 'variable');
+    this.setNextStatement(true, 'variable');
+    this.setTooltip('');
+    this.setHelpUrl('');
+    this.setColour('%{BKY_SOUNDS}');
   }
 };

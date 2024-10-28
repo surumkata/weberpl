@@ -78,6 +78,12 @@ const validateObject = (object,vars,reasons) => {
   }
 }
 
+const validateText = (text, reasons) => {
+  if (!text.position) {
+    reasons.push("Text does not have a position");
+  }
+}
+
 const validateScenario = (scenario,vars,reasons) => {
     //Verificar se existem cenarios com o mesmo id
     if (scenario.id in vars.scenarios){
@@ -120,6 +126,11 @@ const validateScenario = (scenario,vars,reasons) => {
       if(hitboxes){
         //TODO: validate hitboxes
       }
+
+      let texts = scenario.texts
+      texts.forEach(text => {
+        validateText(text,reasons);
+      })
       
       let sounds = scenario.sounds
       //Validar sons de um cenario
@@ -342,16 +353,20 @@ const validateTransition = (transition,vars,reasons) => {
 
 
 const validate = (er) => {
+
+    console.log("dk",er);
     let scenarios = er.scenarios;
     let events = er.events;
     let transitions = er.transitions;
+    let variables = er.variables;
     var reasons = []
 
     var vars = {
       scenarios : {},
       objects : {},
       events : [],
-      transitions : []
+      transitions : [],
+      variables : []
     }
 
     //Verificar se existe pelo menos 1 cenario

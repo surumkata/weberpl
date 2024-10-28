@@ -71,6 +71,9 @@ const TOOLBOX =
   '    <block type="object"></block>\n' +
   '    <block type="transition"></block>\n' +
   '    <block type="sound"></block>\n' +
+  '    <block type="variable"></block>\n' +
+  '    <block type="text"></block>\n' +
+  '    <block type="format_text"></block>\n' +
   '  </category>\n' +
   '  <category name="EVENTS" colour="300">\n' +
   '   <block type="event"></block>\n' +
@@ -83,6 +86,11 @@ const TOOLBOX =
   '     <block type="precond_ev_already_hap"></block>\n' +
   '     <block type="precond_obj_in_use"></block>\n' +
   '     <block type="precond_already_passed"></block>\n' +
+  '     <block type="precond_var_is_equal_to"></block>\n' +
+  '     <block type="precond_var_is_greater_than"></block>\n' +
+  '     <block type="precond_var_is_less_than"></block>\n' +
+  '     <block type="precond_var_is_greater_than_or_equal_to"></block>\n' +
+  '     <block type="precond_var_is_less_than_or_equal_to"></block>\n' +
   '     <block type="not"></block>\n' +
   '     <block type="andpre"></block>\n' +
   '     <block type="or"></block>\n' +
@@ -100,6 +108,9 @@ const TOOLBOX =
   '     <block type="poscond_comeca_des"></block>\n' +
   '     <block type="poscond_trans"></block>\n' +
   '     <block type="poscond_play_sound"></block>\n' +
+  '     <block type="poscond_var_decreases"></block>\n' +
+  '     <block type="poscond_var_increases"></block>\n' +
+  '     <block type="poscond_var_becomes"></block>\n' +
   '     <block type="andpos"></block>\n' +
   '   </category>\n' +
   '   <category name="CHALLENGES" colour="285">\n' +
