@@ -119,6 +119,7 @@ const TOOLBOX =
   '     <block type="challenge_multiple_choice"></block>\n' +
   '     <block type="challenge_connection"></block>\n' +
   '     <block type="challenge_sequence"></block>\n' +
+  '     <block type="challenge_puzzle"></block>\n' +
   '   </category>\n' +
   '  </category>\n' +
   '  <category name="VIEWS" colour="80">\n' +

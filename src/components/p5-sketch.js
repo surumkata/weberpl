@@ -94,6 +94,29 @@ const P5Sketch = ({ json }) => {
                 }  
             }
         };
+
+        p5.mouseReleased = () => {
+            if (gameData) {
+                if (gameData.gameState.isChallengeMode()) {
+                    const event = gameData.gameState.challenge.mouseReleased(p5.mouseX, p5.mouseY);
+                    if(event !== undefined && event !== 0){
+                        console.log(event);
+                        doEvent(gameData,event);
+                        gameData.gameState.desactivateChallengeMode();
+                    } else if (event === 0) {
+                        gameData.gameState.desactivateChallengeMode();
+                    }
+                }
+            }
+        }
+
+        p5.mouseDragged = () => {
+            if (gameData) {
+                if (gameData.gameState.isChallengeMode()) {
+                    gameData.gameState.challenge.mouseDragged(p5.mouseX, p5.mouseY);
+                }
+            }
+        }
     };
 
     return (

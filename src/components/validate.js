@@ -203,13 +203,14 @@ const validatePreConditions = (preConditions, vars,reasons) => {
 }
 
 const validateSucessFailt = (posCondition, vars, reasons) => {
-  if (posCondition.sucess.length === 0) {
+  console.log(posCondition)
+  if (posCondition.sucess == undefined || posCondition.sucess.length === 0) {
     reasons.push("Sucess of challenge must have at least 1 action.")
   }
   else {
     validatePosConditions(posCondition.sucess,vars,reasons);
   }
-  if (posCondition.fail.length === 0) {
+  if (posCondition.fail == undefined || posCondition.fail.length === 0) {
     reasons.push("Fail of challenge must have at least 1 action.")
   }
   else {
@@ -217,10 +218,21 @@ const validateSucessFailt = (posCondition, vars, reasons) => {
   }
 }
 
+const validateSucess = (posCondition, vars, reasons) => {
+  console.log(posCondition)
+  if (posCondition.sucess == undefined || posCondition.sucess.length === 0) {
+    reasons.push("Sucess of challenge must have at least 1 action.")
+  }
+  else {
+    validatePosConditions(posCondition.sucess,vars,reasons);
+  }
+}
+
 const validatePosConditions = (posConditions, vars,reasons) => {
 
-  if (posConditions.length === 0) {
+  if (posConditions == undefined || posConditions.length === 0) {
     reasons.push("Events must have at least 1 action.")
+    return;
   }
 
   posConditions.forEach(posCondition => {
@@ -306,6 +318,9 @@ const validatePosConditions = (posConditions, vars,reasons) => {
           break;
       case "CONNECTIONS":
           validateSucessFailt(posCondition,vars,reasons);
+          break;
+      case "PUZZLE":
+          validateSucess(posCondition,vars,reasons);
           break;
       case "TRANSITION":
           if(!(vars.transitions.includes(posCondition.transition))){

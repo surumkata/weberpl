@@ -323,7 +323,10 @@ javascriptGenerator.forBlock['sound'] = function(block,generator) {
   return JSON.stringify(code, null, 2); // Retornar o JSON como string formatada
 }
 
+
 //Views Array Block
+
+
 
 javascriptGenerator.forBlock['view'] = function(block, generator) {
   var text_id = block.getFieldValue('ID');
@@ -1137,15 +1140,15 @@ else {
   failString = "[]"
 }
 
-var sucess = JSON.parse(sucessString);
+var sucess = JSON.parse(sucessString);  
 var fail = JSON.parse(failString);
 
 var code = {
   'type' : 'QUESTION',
   'question' : question,
   'answer' : answer,
-  'sucess' : sucess.posconditions,
-  'fail' : fail.posconditions
+  'sucess' : sucess,
+  'fail' : fail
 };
 return [JSON.stringify(code, null, 2), javascriptGenerator.ORDER_NONE];
 };
@@ -1173,15 +1176,15 @@ else {
   failString = "[]"
 }
 
-var sucess = JSON.parse(sucessString);
+var sucess = JSON.parse(sucessString);  
 var fail = JSON.parse(failString);
 
 var code = {
   'type' : 'MOTION_OBJECT',
   'motion_object' : motion_object,
   'trigger_object' : trigger_object,
-  'sucess' : sucess.posconditions,
-  'fail' : fail.posconditions
+  'sucess' : sucess,
+  'fail' : fail
 };
 return [JSON.stringify(code, null, 2), javascriptGenerator.ORDER_NONE];
 };
@@ -1211,7 +1214,7 @@ else {
   failString = "[]"
 }
 
-var sucess = JSON.parse(sucessString);
+var sucess = JSON.parse(sucessString);  
 var fail = JSON.parse(failString);
 
 var code = {
@@ -1219,8 +1222,8 @@ var code = {
   'question' : question,
   'choices' : [correct_answer,wrong_answer_1,wrong_answer_2,wrong_answer_3],
   'answer' : correct_answer,
-  'sucess' : sucess.posconditions,
-  'fail' : fail.posconditions
+  'sucess' : sucess,
+  'fail' : fail
 };
 return [JSON.stringify(code, null, 2), javascriptGenerator.ORDER_NONE];
 };
@@ -1254,7 +1257,7 @@ javascriptGenerator.forBlock['challenge_connection'] = function(block, generator
     failString = "[]"
   }
 
-  var sucess = JSON.parse(sucessString);
+  var sucess = JSON.parse(sucessString);  
   var fail = JSON.parse(failString);
 
   var code = {
@@ -1262,8 +1265,8 @@ javascriptGenerator.forBlock['challenge_connection'] = function(block, generator
     'question' : question,
     'list1' : [a1,a2,a3,a4],
     'list2' : [b1,b2,b3,b4],
-    'sucess' : sucess.posconditions,
-    'fail' : fail.posconditions
+    'sucess' : sucess,
+    'fail' : fail
   };
   return [JSON.stringify(code, null, 2), javascriptGenerator.ORDER_NONE];
   };
@@ -1293,15 +1296,48 @@ javascriptGenerator.forBlock['challenge_connection'] = function(block, generator
     failString = "[]"
   }
 
-  var sucess = JSON.parse(sucessString);
+  var sucess = JSON.parse(sucessString);  
   var fail = JSON.parse(failString);
 
   var code = {
     'type' : 'SEQUENCE',
     'question' : question,
     'sequence' : [a1,a2,a3,a4],
-    'sucess' : sucess.posconditions,
-    'fail' : fail.posconditions
+    'sucess' : sucess,
+    'fail' : fail
+  };
+  return [JSON.stringify(code, null, 2), javascriptGenerator.ORDER_NONE];
+};
+
+javascriptGenerator.forBlock['challenge_puzzle'] = function(block, generator) {
+  var sucessString = generator.valueToCode(block, 'SUCESS', Order.ATOMIC);
+
+  var sourceString = generator.valueToCode(block, 'SOURCE', Order.ATOMIC);
+  if (sourceString) {
+    sourceString = sourceString.slice(1, -1);
+  }
+  else{
+    sourceString = "[]"
+  }
+  var sourceObject = JSON.parse(sourceString);
+
+  if(sucessString){
+    sucessString = sucessString.slice(1,-1);
+    sucessString = "[" + sucessString + "]";
+  }
+  else {
+    sucessString = "[]"
+  }
+
+  var sucess = JSON.parse(sucessString);
+  //if(sucess.length > 0){
+  //  sucess = sucess.posconditions
+  //}
+
+  var code = {
+    'type' : 'PUZZLE',
+    'sources' : [sourceObject],
+    'sucess' : sucess,
   };
   return [JSON.stringify(code, null, 2), javascriptGenerator.ORDER_NONE];
 };

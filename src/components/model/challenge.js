@@ -1,6 +1,6 @@
 //Módulo dos Desafios (Challenges)
 
-import {WIDTH, HEIGHT, HEIGHT_INV} from './utils'
+import {WIDTH, HEIGHT, HEIGHT_INV, Position} from './utils'
 
 //Classe abstracta de Desafio
 class Challenge {
@@ -33,13 +33,10 @@ class Challenge {
         // Abstract method to be implemented in subclasses
     }
 
-    mousePressed(mX,mY,gameState) {
-        // Abstract method to be implemented in subclasses
-    }
-
-    mouseMoved(mX,mY){
-        // Abstract method to be implemented in subclasses
-    }
+    mousePressed(mX, mY) {}
+    mouseReleased() {}
+    mouseDragged(mX, mY) {}
+    mouseMoved(mX, mY){}
 
     drawBigBackground(p5) {
         p5.fill(this.backgroundColor);
@@ -66,6 +63,29 @@ class Challenge {
             return true;
         }
         return false;
+    }
+
+    // Função auxiliar para detetar colisão com um retângulo, considerando 75% da área
+    rectCollisionRect(rect1, rect2) {
+        // Extrai as coordenadas e dimensões dos retângulos
+        const [x1, y1, w1, h1] = rect1;
+        const [x2, y2, w2, h2] = rect2;
+
+        // Calcula os limites dos retângulos para verificar sobreposição
+        const xOverlap = Math.max(0, Math.min(x1 + w1, x2 + w2) - Math.max(x1, x2));
+        const yOverlap = Math.max(0, Math.min(y1 + h1, y2 + h2) - Math.max(y1, y2));
+
+        // Calcula a área de interseção
+        const overlapArea = xOverlap * yOverlap;
+
+        // Calcula 75% da área do retângulo menor para comparar
+        const area1 = w1 * h1;
+        const area2 = w2 * h2;
+        const minArea = Math.min(area1, area2);
+        const requiredOverlap = 0.75 * minArea;
+
+        // Verifica se a área de interseção é pelo menos 75% da área do menor retângulo
+        return overlapArea >= requiredOverlap;
     }
 
     //Função auxiliar para detetar colisão com um triângulo
@@ -389,76 +409,188 @@ class ChallengeSequence extends Challenge {
     }
 }
 
-class ChallengePuzzle extends Challenge {
+class ChallengePuzzle extends Challenge{
     constructor(imageSrc, sucess) {
         super(sucess,null);
-        this.imageSrc = imageSrc;       // Imagem do quebra-cabeça
-        //this.masks = maskSrcs.map(src => loadImage(src));  // Máscaras de cada peça
-        this.pieces = [];                       // Array para guardar cada peça recortada
-        //this.initPieces();                      // Inicializar peças recortadas
+        this.imageSrc = imageSrc;
+        this.maskSrcs = [];
+        for(let i = 0; i < 12; i++){
+            this.maskSrcs.push(process.env.PUBLIC_URL + `/assets/masks/mask${i}.png`);
+        }
         this.loadedImage = false;
+
+        this.scale = 0.7;
+
+        this.mask_width=557 * this.scale;
+        this.mask_height=419 * this.scale;
+
+        this.correct_x = WIDTH/2 - this.mask_width/2;
+        this.correct_y = HEIGHT/2 - this.mask_height/2 + HEIGHT_INV;
+        
+        this.piece_width = this.mask_width/4;
+        this.piece_height = this.mask_height/3;
+
+        this.pieces = [];
+
+        
+        this.rect1 = [this.bigBackground[0]+25,this.bigBackground[1],this.bigBackground[2]/4-25,this.bigBackground[3]];
+        this.rect2 = [this.bigBackground[0] + this.bigBackground[2]/4*3,this.bigBackground[1],this.bigBackground[2]/4-25,this.bigBackground[3]];
+
+        this.pecasPosicoes = this.distribuirPecasAleatoriamente(this.rect1,this.rect2,this.piece_width,this.piece_height); 
+        console.log(this.pecasPosicoes)
+    
+        this.initPieces();
+
+        
+
+        this.pressed = false;
+        this.lastPosition = new Position(0,0);
+
+        this.piecesDones = 0;
+
+    }
+
+    loadImages(p5){
+        console.log("loading")
+        this.imgs = []
+        this.masks = []
+        this.img = p5.loadImage(this.imageSrc);
+        for (let i = 0; i < 12; i++) {
+            console.log("loading ",i)
+            this.masks.push(p5.loadImage(this.maskSrcs[i]));
+        }
+        this.loadedImage = true;
+    }
+
+    distribuirPecasAleatoriamente(rect1, rect2, pecasW, pecasH) {
+        const pecasPosicoes = [];
+      
+        // Função para gerar uma posição aleatória dentro dos limites de um retângulo
+        function gerarPosicaoAleatoria(rect) {
+            const x = rect[0] + Math.random() * (rect[2] - pecasW);
+            const y = rect[1] + Math.random() * (rect[3] - pecasH);
+            return { x: Math.floor(x), y: Math.floor(y) };
+        }
+    
+        // Colocar 6 peças no primeiro retângulo
+        for (let i = 0; i < 6; i++) {
+            const posicao = gerarPosicaoAleatoria(rect1);
+            pecasPosicoes.push(posicao);
+        }
+    
+        // Colocar 6 peças no segundo retângulo
+        for (let i = 0; i < 6; i++) {
+            const posicao = gerarPosicaoAleatoria(rect2);
+            pecasPosicoes.push(posicao);
+        }
+    
+        return pecasPosicoes;
     }
 
     // Inicializa as peças recortando-as usando as máscaras
     initPieces() {
-        for (let i = 0; i < this.masks.length; i++) {
-            const mask = this.masks[i];
-            const pieceGraphics = createGraphics(mask.width, mask.height);
-            
-            pieceGraphics.image(this.image, 0, 0);  // Desenha imagem no gráfico da peça
-            pieceGraphics.mask(mask);               // Aplica a máscara
-            
-            this.pieces.push({
-                graphic: pieceGraphics,             // Imagem recortada da peça
-                x: random(width),                   // Posição inicial aleatória
-                y: random(height),
-                correctX: i * mask.width,           // Coordenadas do alvo final da peça
-                correctY: 0,
-                isPlaced: false                     // Peça não está no local correto inicialmente
-            });
-        }
-    }
-
-    // Desenha todas as peças na tela
-    draw(p5) {
-
-        if(!this.loadedImage){
-            console.log(this.imageSrc)
-            this.image = p5.loadImage(this.imageSrc);
-            this.loadedImage = true;
-        }
-        p5.image(this.image,0,0)
-
-        //for (let piece of this.pieces) {
-        //    if (!piece.isPlaced) {
-        //        p5.image(piece.graphic, piece.x, piece.y);
-        //    } else {
-        //        p5.image(piece.graphic, piece.correctX, piece.correctY);
-        //    }
-        //}
-    }
-
-    // Verifica se uma peça foi clicada e a move
-    mousePressed(mx, my) {
-        for (let piece of this.pieces) {
-            if (mx > piece.x && mx < piece.x + piece.graphic.width &&
-                my > piece.y && my < piece.y + piece.graphic.height &&
-                !piece.isPlaced) {
-                
-                piece.x = mx - piece.graphic.width / 2;
-                piece.y = my - piece.graphic.height / 2;
-                
-                // Se a posição estiver próxima do local correto, considera a peça encaixada
-                if (dist(piece.x, piece.y, piece.correctX, piece.correctY) < 10) {
-                    piece.isPlaced = true;
-                    piece.x = piece.correctX;
-                    piece.y = piece.correctY;
-                }
-                break;
+        for (let j = 0; j < 3 ; j++){
+            for (let i = 0; i < 4; i++) {
+                const index = i + j*4;
+                this.pieces.push({
+                    x: this.pecasPosicoes[index].x - this.piece_width * i,
+                    y: this.pecasPosicoes[index].y - this.piece_height * j,
+                    hitbox_x : this.piece_width * i,
+                    hitbox_y : this.piece_height * j,
+                    isPlaced: false,
+                    startBoard : Math.floor(Math.random() * 2) + 1
+                });
             }
         }
     }
+
+    draw(p5) {
+        // Fundo colorido
+        this.drawBigBackground(p5)
+
+        if (!this.loadedImage) {
+            this.loadImages(p5);
+        }
+
+        if(this.loadedImage){
+                for (let i = 0; i < 12; i++) {
+                    const image = this.img.get()
+                    const piece = this.pieces[i]
+                    image.resize(this.mask_width,this.mask_height);
+                    this.masks[i].resize(this.mask_width,this.mask_height);
+                    image.mask(this.masks[i]);
+                    p5.image(image,piece.x,piece.y);
+                    let c = p5.color(255, 128, 128);
+                    c.setAlpha(0);
+                    p5.fill(c);
+                    if(!piece.isPlaced){
+                        p5.rect(this.correct_x + piece.hitbox_x, this.correct_y + piece.hitbox_y, this.piece_width , this.piece_height);
+                        //p5.rect(this.pecasPosicoes[i].x, this.pecasPosicoes[i].y, this.piece_width , this.piece_height);
+                    }
+                }
+                let c = p5.color(255, 128, 128);
+                c.setAlpha(10);
+                p5.fill(c);
+                //p5.rect(this.rect1[0],this.rect1[1],this.rect1[2],this.rect1[3]);
+                //p5.rect(this.rect2[0],this.rect2[1],this.rect2[2],this.rect2[3]);
+        }
+    }
+
+    mouseDragged(mx, my) {
+        if (this.pressed){
+            let changeX = this.lastPosition.x - mx;
+            let changeY = this.lastPosition.y - my;
+            
+            this.pieces[this.piecePressed].x -= changeX;
+            this.pieces[this.piecePressed].y -= changeY;
+            console.log("moved", this.pieces[this.piecePressed].x,this.pieces[this.piecePressed].y)
+            this.lastPosition = new Position(mx,my);
+        } 
+    }
+
+    mouseReleased(){
+        console.log("unpressed")
+        if(this.pressed){
+            this.pressed = false;
+            let piece = this.pieces[this.piecePressed]
+            if(super.rectCollisionRect([piece.x,piece.y,this.piece_width,this.piece_height],[this.correct_x,this.correct_y,this.piece_width,this.piece_height])){
+                piece.isPlaced = true;
+                piece.x = this.correct_x;
+                piece.y = this.correct_y;
+                this.piecesDones++;
+                if(this.piecesDones == 12){
+                    return this.sucess;
+                }
+            }
+        }
+        return undefined;
+        
+    }
+
+    mousePressed(mX, mY) {
+        if (super.rectCollision(mX,mY,this.bigBackground)){
+            for (let i = 0; i < 12; i++) {
+                const piece = this.pieces[i];
+                const rect = [piece.x + piece.hitbox_x, piece.y + piece.hitbox_y, this.piece_width , this.piece_height];
+                if(super.rectCollision(mX,mY,rect) && !piece.isPlaced){
+                    console.log("pressed",i)
+                    this.pressed = true;
+                    this.piecePressed = i;
+                    this.lastPosition = new Position(mX,mY);
+    
+                }
+            }
+            return undefined;
+        }
+        else{
+            return 0;
+        }
+        
+    }
 }
+
+
+
 
 class ChallengeConnections extends Challenge{
     constructor(question, list1, list2, sucess, fail){
