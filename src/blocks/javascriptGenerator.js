@@ -1342,6 +1342,38 @@ javascriptGenerator.forBlock['challenge_puzzle'] = function(block, generator) {
   return [JSON.stringify(code, null, 2), javascriptGenerator.ORDER_NONE];
 };
 
+javascriptGenerator.forBlock['challenge_sliding_puzzle'] = function(block, generator) {
+  var sucessString = generator.valueToCode(block, 'SUCESS', Order.ATOMIC);
+
+  var sourceString = generator.valueToCode(block, 'SOURCE', Order.ATOMIC);
+  if (sourceString) {
+    sourceString = sourceString.slice(1, -1);
+  }
+  else{
+    sourceString = "[]"
+  }
+  var sourceObject = JSON.parse(sourceString);
+
+  if(sucessString){
+    sucessString = sucessString.slice(1,-1);
+    sucessString = "[" + sucessString + "]";
+  }
+  else {
+    sucessString = "[]"
+  }
+
+  var sucess = JSON.parse(sucessString);
+  //if(sucess.length > 0){
+  //  sucess = sucess.posconditions
+  //}
+
+  var code = {
+    'type' : 'SLIDEPUZZLE',
+    'sources' : [sourceObject],
+    'sucess' : sucess,
+  };
+  return [JSON.stringify(code, null, 2), javascriptGenerator.ORDER_NONE];
+};
 
 
 //UTILS

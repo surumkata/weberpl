@@ -11,7 +11,7 @@ import {Transition } from './transition.js';
 import { Event } from './event.js';
 import { PreConditionOperatorAnd, PreConditionOperatorNot, PreConditionOperatorOr, PreConditionTree, PreConditionVar } from './precondition_tree.js';
 import { EventPreConditionIsEqualTo,EventPreConditionIsGreaterThan,EventPreConditionIsLessThan,EventPreConditionIsGreaterThanOrEqualTo,EventPreConditionIsLessThanOrEqualTo,EventPreConditionAfterEvent,EventPreConditionAfterTime,EventPreConditionClickedHitbox, EventPreConditionClickedNotHitbox, EventPreConditionClickedNotObject,EventPreConditionClickedObject,EventPreConditionItemIsInUse,EventPreConditionWhenObjectIsView } from './precondition.js';
-import { EventPosConditionPuzzle,EventPosConditionShowFormatMessage, EventPosConditionEndGameFormatMessage,EventPosConditionVarDecreases,EventPosConditionVarIncreases,EventPosConditionVarBecomes,EventPosConditionTransition, EventPosConditionConnections, EventPosConditionSequence, EventPosConditionQuestion, EventPosConditionChangeScenario,EventPosConditionRemoveObj,EventPosConditionEndGame,EventPosConditionMultipleChoice,EventPosConditionObjChangePosition,EventPosConditionObjScales,EventPosConditionObjChangeState,EventPosConditionObjPutInventory,EventPosConditionPlaySound,EventPosConditionShowMessage } from './poscondition.js';
+import { EventPosConditionSlidePuzzle, EventPosConditionPuzzle,EventPosConditionShowFormatMessage, EventPosConditionEndGameFormatMessage,EventPosConditionVarDecreases,EventPosConditionVarIncreases,EventPosConditionVarBecomes,EventPosConditionTransition, EventPosConditionConnections, EventPosConditionSequence, EventPosConditionQuestion, EventPosConditionChangeScenario,EventPosConditionRemoveObj,EventPosConditionEndGame,EventPosConditionMultipleChoice,EventPosConditionObjChangePosition,EventPosConditionObjScales,EventPosConditionObjChangeState,EventPosConditionObjPutInventory,EventPosConditionPlaySound,EventPosConditionShowMessage } from './poscondition.js';
 import { HitboxArc, HitboxCircle, HitboxEllipse, HitboxLine, HitboxPolygon, HitboxRect, HitboxSquare, HitboxTriangle } from './hitbox.js';
 import { Sound } from './sound.js';
 
@@ -493,9 +493,13 @@ function loadPosconditions(dataPosconditions) {
                 break;
             case "PUZZLE":
                 const image = loadSource(dataAction.sources[0]);
-                console.log(image)
                 const p_sucess = new Event("sucess",{},loadPosconditions(dataAction.sucess),null);
                 eventPoscondition = new EventPosConditionPuzzle(image,p_sucess);
+                break;
+            case "SLIDEPUZZLE":
+                const sp_image = loadSource(dataAction.sources[0]);
+                const sp_sucess = new Event("sucess",{},loadPosconditions(dataAction.sucess),null);
+                eventPoscondition = new EventPosConditionSlidePuzzle(sp_image,sp_sucess);
                 break;
             case "CONNECTIONS":
                 const c_question = dataAction.question;

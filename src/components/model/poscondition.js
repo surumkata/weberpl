@@ -2,7 +2,7 @@
 import { debug, BalloonMessage, replaceVariables } from "./utils";
 import { PreConditionTree,PreConditionVar,PreConditionOperatorAnd } from "./precondition_tree";
 import { EventPreConditionClickedItem, EventPreConditionItemIsInUse, EventPreConditionItemNotInUse } from "./precondition";
-import { ChallengeConnections, ChallengeQuestion, ChallengeMultipleChoice, ChallengeSequence, ChallengePuzzle } from "./challenge";
+import { ChallengeConnections, ChallengeQuestion, ChallengeMultipleChoice, ChallengeSequence, ChallengePuzzle, ChallengeSlidingPuzzle } from "./challenge";
 
 class EventPosCondition {
   constructor(type) {
@@ -280,13 +280,25 @@ class EventPosConditionPuzzle extends EventPosCondition {
   constructor(image, sucessEvent) {
       super("PUZZLE");
       this.image = image;
-      console.log("pos",image)
       this.sucessEvent = sucessEvent;
   }
 
   do(room,inventory,state){
     state.activeChallengeMode(new ChallengePuzzle(this.image, this.sucessEvent));
     debug("EVENT_POSCONDITION_PUZZLE");
+  }
+}
+
+class EventPosConditionSlidePuzzle extends EventPosCondition {
+  constructor(image, sucessEvent) {
+      super("SLIDE_PUZZLE");
+      this.image = image;
+      this.sucessEvent = sucessEvent;
+  }
+
+  do(room,inventory,state){
+    state.activeChallengeMode(new ChallengeSlidingPuzzle(this.image, this.sucessEvent));
+    debug("EVENT_POSCONDITION_SLIDEPUZZLE");
   }
 }
 
@@ -374,5 +386,6 @@ export {
   EventPosConditionVarDecreases,
   EventPosConditionVarIncreases,
   EventPosConditionVarBecomes,
-  EventPosConditionPuzzle
+  EventPosConditionPuzzle,
+  EventPosConditionSlidePuzzle
 };

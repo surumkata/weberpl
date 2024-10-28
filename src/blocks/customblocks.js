@@ -1148,6 +1148,8 @@ this.setHelpUrl("");
 }
 };
 
+
+
 Blockly.Blocks['challenge_puzzle'] = {
   init: function() {
     this.appendDummyInput()
@@ -1165,6 +1167,24 @@ Blockly.Blocks['challenge_puzzle'] = {
   this.setHelpUrl("");
   }
   };
+
+Blockly.Blocks['challenge_sliding_puzzle'] = {
+  init: function() {
+    this.appendDummyInput()
+        .appendField("CHALLENGE SLIDING PUZZLE");
+    this.appendValueInput('SOURCE')
+      .setAlign(Blockly.inputs.Align.CENTRE)
+      .setCheck('url')
+      .appendField('IMAGE:');
+    this.appendValueInput("SUCESS")
+        .setCheck("action")
+        .appendField("IF SUCESS DO:");
+    this.setOutput(true, "challenge");
+    this.setColour('%{BKY_CHALLENGES}');
+  this.setTooltip("");
+  this.setHelpUrl("");
+  }
+};
 
 //UTILS
 

@@ -322,6 +322,9 @@ const validatePosConditions = (posConditions, vars,reasons) => {
       case "PUZZLE":
           validateSucess(posCondition,vars,reasons);
           break;
+      case "SLIDEPUZZLE":
+          validateSucess(posCondition,vars,reasons);
+          break;
       case "TRANSITION":
           if(!(vars.transitions.includes(posCondition.transition))){
             reasons.push("Transition "+posCondition.transition+" does not exist in escape room");

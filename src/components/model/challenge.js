@@ -409,6 +409,118 @@ class ChallengeSequence extends Challenge {
     }
 }
 
+class ChallengeSlidingPuzzle extends Challenge {
+    constructor(imageSrc, sucess) {
+        super(sucess, null);
+        this.imageSrc = imageSrc;
+        this.gridSize = 3;
+        this.gridWidth = WIDTH / 4;
+        this.pieceSize = this.gridWidth / this.gridSize;
+        this.emptyPos = { x: 2, y: 2 }; // Posição inicial do espaço vazio
+        this.pieces = [];
+        this.loadedImage = false;
+
+        // Definir offset para centralizar o puzzle
+        this.offsetX = WIDTH / 2 - this.gridWidth / 2;
+        this.offsetY = HEIGHT_INV + HEIGHT / 2 - this.gridWidth / 2;
+    }
+
+    // Carregar e dividir a imagem
+    loadImages(p5) {
+        this.img = p5.loadImage(this.imageSrc, (img) => {
+            img.resize(this.gridWidth, this.gridWidth); // Redimensiona a imagem para um quadrado do tamanho do canvas
+            this.initPieces(p5, img);
+            this.loadedImage = true;
+        });
+    }
+
+    // Inicializar as peças do puzzle
+    initPieces(p5, img) {
+        for (let y = 0; y < this.gridSize; y++) {
+            for (let x = 0; x < this.gridSize; x++) {
+                if (x === 2 && y === 2) continue; // Deixa o último espaço vazio
+                
+                // Cria uma peça a partir de um trecho da imagem
+                const piece = img.get(x * this.pieceSize, y * this.pieceSize, this.pieceSize, this.pieceSize);
+                this.pieces.push({ img: piece, correctPos: { x, y }, pos: { x, y } });
+            }
+        }
+
+        // Embaralha as peças
+        this.shufflePuzzle();
+    }
+
+    // Embaralhar as peças de maneira que seja solucionável
+    shufflePuzzle() {
+        for (let i = 0; i < 100; i++) {
+            const { x, y } = this.emptyPos;
+            const moves = this.getPossibleMoves(x, y);
+            const randomMove = moves[Math.floor(Math.random() * moves.length)];
+            this.movePiece(randomMove.x, randomMove.y);
+        }
+    }
+
+    // Obter as posições possíveis para mover
+    getPossibleMoves(x, y) {
+        const moves = [];
+        if (x > 0) moves.push({ x: x - 1, y });
+        if (x < this.gridSize - 1) moves.push({ x: x + 1, y });
+        if (y > 0) moves.push({ x, y: y - 1 });
+        if (y < this.gridSize - 1) moves.push({ x, y: y + 1 });
+        return moves;
+    }
+
+    // Mover uma peça para o espaço vazio
+    movePiece(x, y) {
+        const piece = this.pieces.find(p => p.pos.x === x && p.pos.y === y);
+        if (piece) {
+            const { x: emptyX, y: emptyY } = this.emptyPos;
+            piece.pos = { x: emptyX, y: emptyY };
+            this.emptyPos = { x, y };
+        }
+    }
+
+    // Verificar se o puzzle está completo
+    isSolved() {
+        return this.pieces.every(piece => piece.pos.x === piece.correctPos.x && piece.pos.y === piece.correctPos.y);
+    }
+
+    // Desenhar o puzzle
+    draw(p5) {
+        this.drawBigBackground(p5);
+
+        if (!this.loadedImage) {
+            this.loadImages(p5);
+            return;
+        }
+
+        // Desenha cada peça com o deslocamento para centralizar
+        for (let piece of this.pieces) {
+            p5.image(
+                piece.img,
+                piece.pos.x * this.pieceSize + this.offsetX,
+                piece.pos.y * this.pieceSize + this.offsetY
+            );
+        }
+    }
+
+    // Evento de clique
+    mousePressed(mX, mY) {
+        const x = Math.floor((mX - this.offsetX) / this.pieceSize);
+        const y = Math.floor((mY - this.offsetY) / this.pieceSize);
+        if (Math.abs(this.emptyPos.x - x) + Math.abs(this.emptyPos.y - y) === 1) {
+            this.movePiece(x, y);
+
+            // Verificar se o puzzle está resolvido
+            if (this.isSolved()) {
+                return this.sucess;
+            }
+        }
+        return undefined;
+    }
+}
+
+
 class ChallengePuzzle extends Challenge{
     constructor(imageSrc, sucess) {
         super(sucess,null);
@@ -801,5 +913,6 @@ export {
     ChallengeMultipleChoice,
     ChallengeSequence,
     ChallengeConnections,
-    ChallengePuzzle
+    ChallengePuzzle,
+    ChallengeSlidingPuzzle
 };
