@@ -158,7 +158,7 @@ function HomePage() {
               </div>
               <div className="nav-links">
                 <a className="a-img" href="/"><img src="/weberpl/logo_extenso.png" /></a>
-                <a className="a-img" href="/"><img src="/weberpl/icons/edit.png" /></a>
+                <a className="a-img" href="/#/editor"><img src="/weberpl/icons/edit.png" /></a>
                 <div className="dropdown">
                   <button className="dropbtn">Import <i className="fa fa-caret-down"></i></button>
                   <div className="dropdown-content">
@@ -180,7 +180,7 @@ function HomePage() {
                     <div>
                         <img src={studyCase.image} alt={studyCase.title} className="study-case-img" />
                         <p>{studyCase.title}</p>
-                        <button className="play-btn" id="" title="PLAY" onClick={() => play(examples[0].json)}>
+                        <button className="play-btn" id="" title="PLAY" onClick={() => play(studyCase.json)}>
                             <img src='/weberpl/logo.png' alt="Logo" />
                             <span>PLAY</span>
                         </button>
@@ -205,7 +205,7 @@ function HomePage() {
                     </div>
                 ))}
             </div>
-            
+
             <br></br>
             <br></br>
             <br></br>
