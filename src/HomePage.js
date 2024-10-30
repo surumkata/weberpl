@@ -157,8 +157,8 @@ function HomePage() {
                 </label>
               </div>
               <div className="nav-links">
-                <a className="a-img" href="/"><img src="/weberpl/logo_extenso.png" /></a>
-                <a className="a-img" href="/#/editor"><img src="/weberpl/icons/edit.png" /></a>
+                <a className="a-img" href="/weberpl/"><img src="/weberpl/logo_extenso.png" /></a>
+                <a className="a-img" href="/weberpl/#/editor"><img src="/weberpl/icons/edit.png" /></a>
                 <div className="dropdown">
                   <button className="dropbtn">Import <i className="fa fa-caret-down"></i></button>
                   <div className="dropdown-content">
