@@ -2,7 +2,7 @@
 body {
     font-family: Arial, sans-serif;
     background-color: #f4f4f9;
-    color: #333;
+    color: #17116e;
     margin: 0;
     padding: 0;
 }
@@ -11,13 +11,13 @@ body {
 h1 {
     font-size: 2em;
     text-align: center;
-    color: #333;
+    color: #17116e;
     margin-top: 20px;
 }
 
 h3 {
     font-size: 1.5em;
-    color: #555;
+    color: #17116e;
     margin-left: 10px;
     text-align: center;
 }
@@ -29,7 +29,7 @@ h3 {
     flex-wrap: wrap;
     justify-content: center;
     gap: 20px;
-    padding: 20px;
+    padding: 10px;
 }
 
 /* Estilos dos cards de cada estudo */
@@ -59,7 +59,7 @@ h3 {
 p {
     margin: 10px;
     font-weight: bold;
-    color: #666;
+    color: #17116e;
 }
 
 .editor-img {

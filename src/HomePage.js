@@ -147,7 +147,7 @@ function HomePage() {
     };
 
     return (
-        <div>
+        <div style={{backgroundColor: "#f4f4f9"}}>
             <div className="nav">
               <input type="checkbox" id="nav-check"/>
               <div className="nav-header"></div>
@@ -209,9 +209,10 @@ function HomePage() {
             <br></br>
             <br></br>
             <br></br>
-
+            <br></br>
+            <br></br>
             <Footer />
-            </div>
+        </div>
     );
 }
 
