@@ -510,17 +510,22 @@ class ChallengeSlidingPuzzle extends Challenge {
 
     // Evento de clique
     mousePressed(mX, mY) {
-        const x = Math.floor((mX - this.offsetX) / this.pieceSize);
-        const y = Math.floor((mY - this.offsetY) / this.pieceSize);
-        if (Math.abs(this.emptyPos.x - x) + Math.abs(this.emptyPos.y - y) === 1) {
-            this.movePiece(x, y);
+        if (super.rectCollision(mX,mY,this.bigBackground)){
+            const x = Math.floor((mX - this.offsetX) / this.pieceSize);
+            const y = Math.floor((mY - this.offsetY) / this.pieceSize);
+            if (Math.abs(this.emptyPos.x - x) + Math.abs(this.emptyPos.y - y) === 1) {
+                this.movePiece(x, y);
 
-            // Verificar se o puzzle está resolvido
-            if (this.isSolved()) {
-                return this.sucess;
+                // Verificar se o puzzle está resolvido
+                if (this.isSolved()) {
+                    return this.sucess;
+                }
             }
+            return undefined;
         }
-        return undefined;
+        else{
+            return 0;
+        }
     }
 }
 

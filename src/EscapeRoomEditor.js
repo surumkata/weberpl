@@ -18,7 +18,6 @@ import { validate } from './components/validate';
 import { load } from './components/model/load';
 
 import './Navebar.css'
-import Footer from './Footer';
 
 import { jsPDF } from 'jspdf';
 
@@ -832,8 +831,7 @@ function EscapeRoomEditor() {
             {<ReactP5Wrapper sketch={sketch} />}
           </div>
       </div>
-    </div>    
-    <Footer/>
+    </div>   
     </div>
   );
 }
