@@ -1,0 +1,196 @@
+{
+  "title": "ESCAPE ROOM",
+  "scenarios": [
+    {
+      "id": "ROOM",
+      "initial_view": "WALL",
+      "views": [
+        {
+          "id": "WALL",
+          "type": "VIEW_IMAGE",
+          "sources": [
+            [
+              "LIB",
+              "BACKGROUND_ROOM"
+            ]
+          ],
+          "position": {
+            "x": 0,
+            "y": 0
+          },
+          "size": {
+            "x": 1280,
+            "y": 720
+          },
+          "turn": {
+            "x": false,
+            "y": false
+          },
+          "hitbox_type": "DEFAULT",
+          "hitboxes": []
+        }
+      ],
+      "objects": [
+        {
+          "id": "DOOR",
+          "initial_view": "SKETCH",
+          "views": [
+            {
+              "id": "CLOSED DOOR",
+              "type": "VIEW_IMAGE",
+              "sources": [
+                [
+                  "LIB",
+                  "DOOR_CLOSED"
+                ]
+              ],
+              "position": {
+                "x": 480,
+                "y": 360
+              },
+              "size": {
+                "x": 225,
+                "y": 300
+              },
+              "turn": {
+                "x": false,
+                "y": false
+              },
+              "hitbox_type": "DEFAULT",
+              "hitboxes": []
+            },
+            {
+              "id": "SKETCH",
+              "type": "VIEW_SKETCH",
+              "draws": [
+                {
+                  "type": "FILL",
+                  "color": "#ffffff",
+                  "alpha": 255
+                },
+                {
+                  "id": "CIRCLE1",
+                  "type": "CIRCLE",
+                  "position": {
+                    "x": 222,
+                    "y": 390
+                  },
+                  "radius": 80
+                },
+                {
+                  "id": "CIRCLE2",
+                  "type": "CIRCLE",
+                  "position": {
+                    "x": 224,
+                    "y": 282
+                  },
+                  "radius": 60
+                },
+                {
+                  "id": "CIRCLE3",
+                  "type": "CIRCLE",
+                  "position": {
+                    "x": 222,
+                    "y": 510
+                  },
+                  "radius": 100
+                },
+                {
+                  "type": "FILL",
+                  "color": "#ff8800",
+                  "alpha": 255
+                },
+                {
+                  "id": "TRIANGLE",
+                  "type": "TRIANGLE",
+                  "point1": {
+                    "x": 200,
+                    "y": 300
+                  },
+                  "point2": {
+                    "x": 100,
+                    "y": 270
+                  },
+                  "point3": {
+                    "x": 200,
+                    "y": 280
+                  }
+                },
+                {
+                  "type": "FILL",
+                  "color": "#000000",
+                  "alpha": 255
+                },
+                {
+                  "id": "CIRCLE4",
+                  "type": "CIRCLE",
+                  "position": {
+                    "x": 205,
+                    "y": 264
+                  },
+                  "radius": 10
+                },
+                {
+                  "id": "CIRCLE4",
+                  "type": "CIRCLE",
+                  "position": {
+                    "x": 245,
+                    "y": 264
+                  },
+                  "radius": 10
+                },
+                {
+                  "type": "FILL",
+                  "color": "#522c00",
+                  "alpha": 255
+                },
+                {
+                  "id": "TRIANGLE2",
+                  "type": "TRIANGLE",
+                  "point1": {
+                    "x": 170,
+                    "y": 360
+                  },
+                  "point2": {
+                    "x": 50,
+                    "y": 370
+                  },
+                  "point3": {
+                    "x": 170,
+                    "y": 380
+                  }
+                },
+                {
+                  "id": "TRIANGLE3",
+                  "type": "TRIANGLE",
+                  "point1": {
+                    "x": 280,
+                    "y": 360
+                  },
+                  "point2": {
+                    "x": 400,
+                    "y": 370
+                  },
+                  "point3": {
+                    "x": 280,
+                    "y": 380
+                  }
+                }
+              ],
+              "hitbox_type": "DEFAULT",
+              "hitboxes": []
+            }
+          ],
+          "sounds": []
+        }
+      ],
+      "texts": [],
+      "sounds": []
+    }
+  ],
+  "events": [],
+  "transitions": [],
+  "variables": [],
+  "start_type": "SCENARIO",
+  "start": "ROOM"
+}
