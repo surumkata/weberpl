@@ -769,7 +769,7 @@ function EscapeRoomEditor() {
           </label>
         </div>
         <div className="nav-links">
-          <a className="a-img" href="/"><img src="/weberpl/logo_extenso.png" /></a>
+          <a className="a-img" href="/weberpl/"><img src="/weberpl/logo_extenso.png" /></a>
           <div className="dropdown">
             <button className="dropbtn">Export <i className="fa fa-caret-down"></i></button>
             <div className="dropdown-content">
