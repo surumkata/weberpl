@@ -1,0 +1,844 @@
+{
+   "title": "Mission Solar System",
+   "scenarios": [
+      {
+         "views": [
+            {
+               "sources": [
+                  [
+                     "URL",
+                     "https://i.imgur.com/1cnOzeT.png"
+                  ]
+               ],
+               "type": "VIEW_IMAGE",
+               "hitbox_type": "DEFAULT",
+               "id": "background"
+            }
+         ],
+         "objects": [
+            {
+               "views": [
+                  {
+                     "sources": [
+                        [
+                           "URL",
+                           "https://i.imgur.com/HTOk0dQ.png"
+                        ]
+                     ],
+                     "type": "VIEW_IMAGE",
+                     "hitbox_type": "DEFAULT",
+                     "id": "exit_sign",
+                     "size": {
+                        "x": 50.0,
+                        "y": 50.0
+                     },
+                     "position": {
+                        "x": 1050.0,
+                        "y": 250.0
+                     }
+                  }
+               ],
+               "initial_view": "exit_sign",
+               "id": "sign"
+            },
+            {
+               "views": [
+                  {
+                     "sources": [
+                        [
+                           "URL",
+                           "https://i.imgur.com/myQi7XF.png"
+                        ]
+                     ],
+                     "type": "VIEW_IMAGE",
+                     "hitbox_type": "DEFAULT",
+                     "id": "door_closed",
+                     "size": {
+                        "x": 271,
+                        "y": 284
+                     },
+                     "position": {
+                        "x": 504.5,
+                        "y": 326.0
+                     }
+                  },
+                  {
+                     "sources": [
+                        [
+                           "URL",
+                           "https://i.imgur.com/CRysPgR.png"
+                        ],
+                        [
+                           "URL",
+                           "https://i.imgur.com/r8ALV3z.png"
+                        ]
+                     ],
+                     "repetitions": 1,
+                     "time_sprite": 3,
+                     "type": "VIEW_IMAGE",
+                     "hitbox_type": "DEFAULT",
+                     "id": "door_opened",
+                     "size": {
+                        "x": 271,
+                        "y": 284
+                     },
+                     "position": {
+                        "x": 504.5,
+                        "y": 326.0
+                     }
+                  }
+               ],
+               "position_reference": "floor",
+               "initial_view": "door_closed",
+               "id": "door_left"
+            },
+            {
+               "views": [
+                  {
+                     "sources": [
+                        [
+                           "URL",
+                           "https://i.imgur.com/myQi7XF.png"
+                        ]
+                     ],
+                     "type": "VIEW_IMAGE",
+                     "hitbox_type": "DEFAULT",
+                     "id": "door_closed",
+                     "size": {
+                        "x": 271,
+                        "y": 284
+                     },
+                     "position": {
+                        "x": 931.17,
+                        "y": 326.0
+                     }
+                  },
+                  {
+                     "sources": [
+                        [
+                           "URL",
+                           "https://i.imgur.com/CRysPgR.png"
+                        ],
+                        [
+                           "URL",
+                           "https://i.imgur.com/r8ALV3z.png"
+                        ]
+                     ],
+                     "repetitions": 1,
+                     "time_sprite": 3,
+                     "type": "VIEW_IMAGE",
+                     "hitbox_type": "DEFAULT",
+                     "id": "door_opened",
+                     "size": {
+                        "x": 271,
+                        "y": 284
+                     },
+                     "position": {
+                        "x": 931.17,
+                        "y": 326.0
+                     }
+                  },
+                  {
+                     "sources": [
+                        [
+                           "URL",
+                           "https://i.imgur.com/5C6hLMq.png"
+                        ]
+                     ],
+                     "type": "VIEW_IMAGE",
+                     "hitbox_type": "DEFAULT",
+                     "id": "door_broken",
+                     "size": {
+                        "x": 271,
+                        "y": 284
+                     },
+                     "position": {
+                        "x": 931.17,
+                        "y": 326.0
+                     }
+                  }
+               ],
+               "position_reference": "floor",
+               "initial_view": "door_broken",
+               "id": "door_right"
+            }
+         ],
+         "texts": [
+            {
+               "format_text": "{_regressive_timer_5min_}",
+               "color": "#0000ff",
+               "position": {
+                  "x": 555.0,
+                  "y": 100.0
+               },
+               "width": 100.0
+            },
+            {
+               "format_text": "{lifes} remaining attempts",
+               "color": "#0000ff",
+               "position": {
+                  "x": 500.0,
+                  "y": 200.0
+               },
+               "width": 40.0
+            }
+         ],
+         "sounds": [],
+         "floor": 610.0,
+         "initial_view": "background",
+         "ceil": 0,
+         "id": "station"
+      },
+      {
+         "views": [
+            {
+               "sources": [
+                  [
+                     "URL",
+                     "https://i.imgur.com/1cnOzeT.png"
+                  ]
+               ],
+               "type": "VIEW_IMAGE",
+               "hitbox_type": "DEFAULT",
+               "id": "background"
+            }
+         ],
+         "objects": [
+            {
+               "views": [
+                  {
+                     "sources": [
+                        [
+                           "URL",
+                           "https://i.imgur.com/oAEH8Oq.png"
+                        ]
+                     ],
+                     "type": "VIEW_IMAGE",
+                     "hitbox_type": "DEFAULT",
+                     "id": "chave_fendas",
+                     "size": {
+                        "x": 50.0,
+                        "y": 50.0
+                     },
+                     "position": {
+                        "x": 200.0,
+                        "y": 500.0
+                     }
+                  }
+               ],
+               "initial_view": "chave_fendas",
+               "id": "chave"
+            },
+            {
+               "views": [
+                  {
+                     "sources": [
+                        [
+                           "URL",
+                           "https://i.imgur.com/CRysPgR.png"
+                        ],
+                        [
+                           "URL",
+                           "https://i.imgur.com/r8ALV3z.png"
+                        ]
+                     ],
+                     "repetitions": 1,
+                     "time_sprite": 3,
+                     "type": "VIEW_IMAGE",
+                     "hitbox_type": "DEFAULT",
+                     "id": "door_opened",
+                     "size": {
+                        "x": 271,
+                        "y": 284
+                     },
+                     "position": {
+                        "x": 824.5,
+                        "y": 326.0
+                     }
+                  }
+               ],
+               "position_reference": "floor",
+               "initial_view": "door_opened",
+               "id": "door3"
+            }
+         ],
+         "floor": 610.0,
+         "initial_view": "background",
+         "ceil": 0,
+         "id": "station2"
+      }
+   ],
+   "events": [
+      {
+         "preconditions": {
+            "operator": "AND",
+            "left": {
+               "operator": "AND",
+               "left": {
+                  "var": {
+                     "type": "CLICKED_OBJECT",
+                     "object": "door_right"
+                  }
+               },
+               "right": {
+                  "var": {
+                     "type": "WHEN_OBJECT_IS_VIEW",
+                     "object": "door_right",
+                     "view": "door_broken"
+                  }
+               }
+            },
+            "right": {
+               "var": {
+                  "type": "OBJ_IS_IN_USE",
+                  "object": "chave"
+               }
+            }
+         },
+         "posconditions": [
+            {
+               "type": "OBJ_CHANGE_VIEW",
+               "object": "door_right",
+               "view": "door_closed"
+            },
+            {
+               "type": "SHOW_MESSAGE",
+               "message": "The system is back up again.",
+               "position": {
+                  "x": 930.0,
+                  "y": 320.0
+               }
+            }
+         ],
+         "id": "fix_door"
+      },
+      {
+         "preconditions": {
+            "var": {
+               "type": "CLICKED_OBJECT",
+               "object": "chave"
+            }
+         },
+         "posconditions": [
+            {
+               "type": "OBJ_PUT_INVENTORY",
+               "object": "chave"
+            }
+         ],
+         "id": "pegar_chave"
+      },
+      {
+         "preconditions": {
+            "operator": "AND",
+            "left": {
+               "operator": "AND",
+               "left": {
+                  "var": {
+                     "type": "CLICKED_OBJECT",
+                     "object": "door_left"
+                  }
+               },
+               "right": {
+                  "var": {
+                     "type": "WHEN_OBJECT_IS_VIEW",
+                     "object": "door_left",
+                     "view": "door_closed"
+                  }
+               }
+            },
+            "right": {
+               "var": {
+                  "type": "IS_EQUAL_TO",
+                  "variable": "fails",
+                  "number": 0.0
+               }
+            }
+         },
+         "posconditions": [
+            {
+               "question": "O que \u00e9 medido pela escala Richter?",
+               "choices": [
+                  "Temperatura",
+                  "Intensidade s\u00edsmica",
+                  "Press\u00e3o atmosf\u00e9rica",
+                  "Velocidade do som"
+               ],
+               "answer": "Intensidade s\u00edsmica",
+               "sucess": [
+                  {
+                     "type": "VAR_INCREASES",
+                     "variable": "sucesses",
+                     "number": 1.0
+                  }
+               ],
+               "fail": [
+                  {
+                     "type": "VAR_INCREASES",
+                     "variable": "fails",
+                     "number": 1.0
+                  },
+                  {
+                     "type": "VAR_DECREASES",
+                     "variable": "lifes",
+                     "number": 1.0
+                  },
+                  {
+                     "type": "SHOW_FORMAT_MESSAGE",
+                     "message": "Wrong! You have {lifes} lifes left.",
+                     "position": {
+                        "x": 497.0,
+                        "y": 310.0
+                     }
+                  }
+               ],
+               "type": "MULTIPLE_CHOICE",
+               "id": "question"
+            }
+         ],
+         "id": "first_challenge"
+      },
+      {
+         "preconditions": {
+            "operator": "AND",
+            "left": {
+               "operator": "AND",
+               "left": {
+                  "var": {
+                     "type": "CLICKED_OBJECT",
+                     "object": "door_left"
+                  }
+               },
+               "right": {
+                  "var": {
+                     "type": "WHEN_OBJECT_IS_VIEW",
+                     "object": "door_left",
+                     "view": "door_closed"
+                  }
+               }
+            },
+            "right": {
+               "var": {
+                  "type": "IS_EQUAL_TO",
+                  "variable": "fails",
+                  "number": 1.0
+               }
+            }
+         },
+         "posconditions": [
+            {
+               "question": "Quem formulou a Teoria da Relatividade?",
+               "choices": [
+                  "Isaac Newton",
+                  "Albert Einstein",
+                  "Galileo Galilei",
+                  "Stephen Hawking"
+               ],
+               "answer": "Albert Einstein",
+               "sucess": [
+                  {
+                     "type": "VAR_INCREASES",
+                     "variable": "sucesses",
+                     "number": 1.0
+                  }
+               ],
+               "fail": [
+                  {
+                     "type": "VAR_INCREASES",
+                     "variable": "fails",
+                     "number": 1.0
+                  },
+                  {
+                     "type": "VAR_DECREASES",
+                     "variable": "lifes",
+                     "number": 1.0
+                  },
+                  {
+                     "type": "SHOW_FORMAT_MESSAGE",
+                     "message": "Wrong! You have {lifes} lifes left.",
+                     "position": {
+                        "x": 497.0,
+                        "y": 310.0
+                     }
+                  }
+               ],
+               "type": "MULTIPLE_CHOICE",
+               "id": "question2"
+            }
+         ],
+         "id": "second_challenge"
+      },
+      {
+         "preconditions": {
+            "operator": "AND",
+            "left": {
+               "operator": "AND",
+               "left": {
+                  "var": {
+                     "type": "CLICKED_OBJECT",
+                     "object": "door_right"
+                  }
+               },
+               "right": {
+                  "var": {
+                     "type": "WHEN_OBJECT_IS_VIEW",
+                     "object": "door_right",
+                     "view": "door_closed"
+                  }
+               }
+            },
+            "right": {
+               "var": {
+                  "type": "IS_EQUAL_TO",
+                  "variable": "fails",
+                  "number": 0.0
+               }
+            }
+         },
+         "posconditions": [
+            {
+               "question": "Quem formulou a Teoria da Relatividade?",
+               "choices": [
+                  "Isaac Newton",
+                  "Albert Einstein",
+                  "Galileo Galilei",
+                  "Stephen Hawking"
+               ],
+               "answer": "Albert Einstein",
+               "sucess": [
+                  {
+                     "type": "VAR_INCREASES",
+                     "variable": "sucesses",
+                     "number": 1.0
+                  }
+               ],
+               "fail": [
+                  {
+                     "type": "VAR_INCREASES",
+                     "variable": "fails",
+                     "number": 1.0
+                  },
+                  {
+                     "type": "VAR_DECREASES",
+                     "variable": "lifes",
+                     "number": 1.0
+                  },
+                  {
+                     "type": "SHOW_FORMAT_MESSAGE",
+                     "message": "Wrong! You have {lifes} lifes left.",
+                     "position": {
+                        "x": 497.0,
+                        "y": 310.0
+                     }
+                  }
+               ],
+               "type": "MULTIPLE_CHOICE",
+               "id": "question2"
+            }
+         ],
+         "id": "second_challenge2"
+      },
+      {
+         "preconditions": {
+            "operator": "AND",
+            "left": {
+               "operator": "AND",
+               "left": {
+                  "var": {
+                     "type": "CLICKED_OBJECT",
+                     "object": "door_right"
+                  }
+               },
+               "right": {
+                  "var": {
+                     "type": "WHEN_OBJECT_IS_VIEW",
+                     "object": "door_right",
+                     "view": "door_closed"
+                  }
+               }
+            },
+            "right": {
+               "var": {
+                  "type": "IS_EQUAL_TO",
+                  "variable": "fails",
+                  "number": 1.0
+               }
+            }
+         },
+         "posconditions": [
+            {
+               "question": "Qual \u00e9 a f\u00f3rmula qu\u00edmica da \u00e1gua?",
+               "choices": [
+                  "H2O",
+                  "CO2",
+                  "O2",
+                  "H2SO4"
+               ],
+               "answer": "H2O",
+               "sucess": [
+                  {
+                     "type": "VAR_INCREASES",
+                     "variable": "sucesses",
+                     "number": 1.0
+                  }
+               ],
+               "fail": [
+                  {
+                     "type": "VAR_INCREASES",
+                     "variable": "fails",
+                     "number": 1.0
+                  },
+                  {
+                     "type": "VAR_DECREASES",
+                     "variable": "lifes",
+                     "number": 1.0
+                  },
+                  {
+                     "type": "SHOW_FORMAT_MESSAGE",
+                     "message": "Wrong! You have {lifes} lifes left.",
+                     "position": {
+                        "x": 497.0,
+                        "y": 310.0
+                     }
+                  }
+               ],
+               "type": "MULTIPLE_CHOICE",
+               "id": "question3"
+            }
+         ],
+         "id": "third_challenge"
+      },
+      {
+         "preconditions": {
+            "var": {
+               "type": "IS_EQUAL_TO",
+               "variable": "sucesses",
+               "number": 1.0
+            }
+         },
+         "posconditions": [
+            {
+               "type": "OBJ_CHANGE_VIEW",
+               "object": "door_left",
+               "view": "door_opened"
+            }
+         ],
+         "repetitions": 1,
+         "id": "open_door_left"
+      },
+      {
+         "preconditions": {
+            "var": {
+               "type": "IS_EQUAL_TO",
+               "variable": "sucesses",
+               "number": 2.0
+            }
+         },
+         "posconditions": [
+            {
+               "type": "OBJ_CHANGE_VIEW",
+               "object": "door_right",
+               "view": "door_opened"
+            }
+         ],
+         "repetitions": 1,
+         "id": "open_door_right"
+      },
+      {
+         "preconditions": {
+            "operator": "AND",
+            "left": {
+               "var": {
+                  "type": "CLICKED_OBJECT",
+                  "object": "door_right"
+               }
+            },
+            "right": {
+               "var": {
+                  "type": "WHEN_OBJECT_IS_VIEW",
+                  "object": "door_right",
+                  "view": "door_opened"
+               }
+            }
+         },
+         "posconditions": [
+            {
+               "type": "END_GAME_FORMAT_MESSAGE",
+               "message": "Congratulations! You finish in {_timer_} seconds."
+            }
+         ],
+         "id": "endgame"
+      },
+      {
+         "preconditions": {
+            "var": {
+               "type": "AFTER_TIME",
+               "time": 300000.0
+            }
+         },
+         "posconditions": [
+            {
+               "type": "END_GAME",
+               "message": "Time's up! The Space Station exploded."
+            }
+         ],
+         "id": "explosion"
+      },
+      {
+         "preconditions": {
+            "var": {
+               "type": "IS_EQUAL_TO",
+               "variable": "lifes",
+               "number": 0.0
+            }
+         },
+         "posconditions": [
+            {
+               "type": "END_GAME",
+               "message": "You failed twice! The Space Station exploded."
+            }
+         ],
+         "id": "explosion2"
+      },
+      {
+         "preconditions": {
+            "operator": "AND",
+            "left": {
+               "var": {
+                  "type": "CLICKED_OBJECT",
+                  "object": "door_left"
+               }
+            },
+            "right": {
+               "var": {
+                  "type": "WHEN_OBJECT_IS_VIEW",
+                  "object": "door_left",
+                  "view": "door_opened"
+               }
+            }
+         },
+         "posconditions": [
+            {
+               "type": "CHANGE_SCENARIO",
+               "scenario": "station2"
+            }
+         ],
+         "id": "change_room"
+      },
+      {
+         "preconditions": {
+            "operator": "AND",
+            "left": {
+               "var": {
+                  "type": "CLICKED_OBJECT",
+                  "object": "door3"
+               }
+            },
+            "right": {
+               "var": {
+                  "type": "WHEN_OBJECT_IS_VIEW",
+                  "object": "door3",
+                  "view": "door_opened"
+               }
+            }
+         },
+         "posconditions": [
+            {
+               "type": "CHANGE_SCENARIO",
+               "scenario": "station"
+            }
+         ],
+         "id": "change_room2"
+      },
+      {
+         "preconditions": {
+            "operator": "AND",
+            "left": {
+               "operator": "AND",
+               "left": {
+                  "var": {
+                     "type": "CLICKED_OBJECT",
+                     "object": "door_right"
+                  }
+               },
+               "right": {
+                  "var": {
+                     "type": "WHEN_OBJECT_IS_VIEW",
+                     "object": "door_right",
+                     "view": "door_broken"
+                  }
+               }
+            },
+            "right": {
+               "operator": "NOT",
+               "left": {
+                  "var": {
+                     "type": "OBJ_IS_IN_USE",
+                     "object": "chave"
+                  }
+               },
+               "right": null
+            }
+         },
+         "posconditions": [
+            {
+               "type": "SHOW_MESSAGE",
+               "message": "The system is down, needs repair",
+               "position": {
+                  "x": 920.0,
+                  "y": 320.0
+               }
+            }
+         ],
+         "id": "warning_aviso"
+      }
+   ],
+   "transitions": [
+      {
+         "view": {
+            "id": "space_station",
+            "sources": [
+               [
+                  "URL",
+                  "https://i.imgur.com/Y7WKD64.png"
+               ]
+            ],
+            "type": "VIEW_IMAGE",
+            "hitbox_type": "DEFAULT"
+         },
+         "music": {
+            "sources": [
+               [
+                  "PATH",
+                  "/mnt/c/Users/35191/Desktop/MyEscapeRoom/erpl-examples/study_cases/4/intro.mp3"
+               ]
+            ],
+            "loop": false
+         },
+         "format_story": [
+            "You and your team are astronauts on a special mission to explore the solar system.",
+            "However, during the journey, you get trapped in a space station and need to solve a",
+            "series of puzzles to escape before time runs out and the spaceship leaves without you.",
+            "You have {_regressive_timer_5min_} to escape and if you make a mistake more than once the space station explodes."
+         ],
+         "next": "station",
+         "next_type": "SCENARIO",
+         "id": "intro"
+      }
+   ],
+   "variables": [
+      {
+         "number": 2.0,
+         "id": "lifes"
+      },
+      {
+         "number": 0.0,
+         "id": "sucesses"
+      },
+      {
+         "number": 0.0,
+         "id": "fails"
+      }
+   ],
+   "start": "intro",
+   "start_type": "TRANSITION"
+}

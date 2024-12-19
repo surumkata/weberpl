@@ -1,19 +1,19 @@
 {
   "files": {
-    "main.css": "/weberpl/static/css/main.f72b2271.css",
-    "main.js": "/weberpl/static/js/main.95081f8b.js",
+    "main.css": "/weberpl/static/css/main.caae2e96.css",
+    "main.js": "/weberpl/static/js/main.88e98ca3.js",
     "static/js/239.2acb20bd.chunk.js": "/weberpl/static/js/239.2acb20bd.chunk.js",
     "static/js/213.fdf33582.chunk.js": "/weberpl/static/js/213.fdf33582.chunk.js",
     "static/js/732.0cc59819.chunk.js": "/weberpl/static/js/732.0cc59819.chunk.js",
     "index.html": "/weberpl/index.html",
-    "main.f72b2271.css.map": "/weberpl/static/css/main.f72b2271.css.map",
-    "main.95081f8b.js.map": "/weberpl/static/js/main.95081f8b.js.map",
+    "main.caae2e96.css.map": "/weberpl/static/css/main.caae2e96.css.map",
+    "main.88e98ca3.js.map": "/weberpl/static/js/main.88e98ca3.js.map",
     "239.2acb20bd.chunk.js.map": "/weberpl/static/js/239.2acb20bd.chunk.js.map",
     "213.fdf33582.chunk.js.map": "/weberpl/static/js/213.fdf33582.chunk.js.map",
     "732.0cc59819.chunk.js.map": "/weberpl/static/js/732.0cc59819.chunk.js.map"
   },
   "entrypoints": [
-    "static/css/main.f72b2271.css",
-    "static/js/main.95081f8b.js"
+    "static/css/main.caae2e96.css",
+    "static/js/main.88e98ca3.js"
   ]
 }

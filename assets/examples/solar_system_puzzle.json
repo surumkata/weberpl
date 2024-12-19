@@ -1,0 +1,163 @@
+{
+  "title": "ESCAPE ROOM",
+  "scenarios": [
+    {
+      "id": "ROOM",
+      "initial_view": "WALL",
+      "views": [
+        {
+          "id": "WALL",
+          "type": "VIEW_IMAGE",
+          "sources": [
+            [
+              "LIB",
+              "BACKGROUND_ROOM"
+            ]
+          ],
+          "position": {
+            "x": 0,
+            "y": 0
+          },
+          "size": {
+            "x": 1280,
+            "y": 720
+          },
+          "turn": {
+            "x": false,
+            "y": false
+          },
+          "hitbox_type": "DEFAULT",
+          "hitboxes": []
+        }
+      ],
+      "objects": [
+        {
+          "id": "DOOR",
+          "initial_view": "CLOSED",
+          "views": [
+            {
+              "id": "CLOSED",
+              "type": "VIEW_IMAGE",
+              "sources": [
+                [
+                  "LIB",
+                  "DOOR_CLOSED"
+                ]
+              ],
+              "position": {
+                "x": 480,
+                "y": 360
+              },
+              "size": {
+                "x": 225,
+                "y": 300
+              },
+              "turn": {
+                "x": false,
+                "y": false
+              },
+              "hitbox_type": "DEFAULT",
+              "hitboxes": []
+            },
+            {
+              "id": "OPEN",
+              "type": "VIEW_IMAGE",
+              "sources": [
+                [
+                  "LIB",
+                  "DOOR_OPEN"
+                ]
+              ],
+              "position": {
+                "x": 480,
+                "y": 360
+              },
+              "size": {
+                "x": 225,
+                "y": 300
+              },
+              "turn": {
+                "x": false,
+                "y": false
+              },
+              "hitbox_type": "DEFAULT",
+              "hitboxes": []
+            }
+          ],
+          "sounds": []
+        }
+      ],
+      "texts": [],
+      "sounds": []
+    }
+  ],
+  "events": [
+    {
+      "id": "OPEN DOOR",
+      "preconditions": {
+        "operator": "AND",
+        "left": {
+          "var": {
+            "type": "CLICKED_OBJECT",
+            "object": "DOOR"
+          }
+        },
+        "right": {
+          "var": {
+            "type": "WHEN_OBJECT_IS_VIEW",
+            "object": "DOOR",
+            "view": "CLOSED"
+          }
+        }
+      },
+      "posconditions": [
+        {
+          "type": "PUZZLE",
+          "sources": [
+            [
+              "URL",
+              "https://i.imgur.com/devMFaM.png"
+            ]
+          ],
+          "sucess": [
+            {
+              "type": "OBJ_CHANGE_VIEW",
+              "object": "DOOR",
+              "view": "OPEN"
+            }
+          ]
+        }
+      ],
+      "repetitions": null
+    },
+    {
+      "id": "END GAME",
+      "preconditions": {
+        "operator": "AND",
+        "left": {
+          "var": {
+            "type": "CLICKED_OBJECT",
+            "object": "DOOR"
+          }
+        },
+        "right": {
+          "var": {
+            "type": "WHEN_OBJECT_IS_VIEW",
+            "object": "DOOR",
+            "view": "OPEN"
+          }
+        }
+      },
+      "posconditions": [
+        {
+          "type": "END_GAME"
+        }
+      ],
+      "repetitions": 1
+    }
+  ],
+  "transitions": [],
+  "variables": [],
+  "start_type": "SCENARIO",
+  "start": "ROOM"
+}
